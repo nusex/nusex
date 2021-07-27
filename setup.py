@@ -54,6 +54,7 @@ setuptools.setup(
         "Natural Language :: English",
         "Operating System :: MacOS",
         "Operating System :: Microsoft :: Windows",
+        "Operating System :: OS Independent",
         "Operating System :: POSIX",
         "Operating System :: Unix",
         "Programming Language :: Python :: 3",
@@ -63,6 +64,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Topic :: Software Development",
+        "Topic :: Software Development :: Code Generators",
         "Topic :: Utilities",
     ],
     project_urls={
