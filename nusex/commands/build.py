@@ -1,3 +1,4 @@
+import os
 import json
 import re
 from pathlib import Path
@@ -97,6 +98,11 @@ def build(name, ignore_exts, ignore_dirs):
         raise TemplateBuildError(
             "template names can only contain lower case letters, numbers, and dashes"
         )
+    if os.path.isfile(CONFIG_DIR / f"{name}.nsx"):
+        overwrite = input("🎤 A template with that name already exists. Overwrite? ")
+        if overwrite.lower() not in ("y", "yes"):
+            print("💥 Build aborted.")
+            return
 
     ignore_exts = [x for x in ignore_exts.split(",") if x]
     ignore_dirs = [x for x in ignore_dirs.split(",") if x]
