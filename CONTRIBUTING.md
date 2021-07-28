@@ -1,11 +1,11 @@
 # Contributing
 
-Thanks for considering contributing to startline! Before you begin, take a minute to read the below information.
+Thanks for considering contributing to nusex! Before you begin, take a minute to read the below information.
 
 ## Expectations
 
 - All code should follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) standards.
-- All code should support the Python versions startline already supported, unless there's a good reason otherwise.
+- All code should support the Python versions nusex already supported, unless there's a good reason otherwise.
 - Commit messages should be clear and easy to understand.
 - Issue and PR descriptions should be much the same.
 - New features and fixes should be properly tested before committing.
