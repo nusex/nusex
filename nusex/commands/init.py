@@ -35,7 +35,8 @@ def _find_templates():
 
 def _get_user_details():
     print(
-        "🔔 Welcome to nusex! Some info is needed in order to properly create templates."
+        "🔔 Welcome to nusex! Some info is needed in order to properly "
+        "create templates."
     )
     author = input("🎤 Author name: ")
     email = input("🎤 Author email: ")

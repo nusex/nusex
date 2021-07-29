@@ -28,12 +28,18 @@ def main():
     parser_new.add_argument("name", help="the name for the new template")
     parser_new.add_argument(
         "--ignore-exts",
-        help="a comma separated list of file types to ignore when scanning for files",
+        help=(
+            "a comma separated list of file types to ignore when scanning for "
+            "files (default: pyc,pyo,pyd,pyi)"
+        ),
         default="pyc,pyo,pyd,pyi",
     )
     parser_new.add_argument(
         "--ignore-dirs",
-        help="a comma separated list of directories to ignore when scanning for files",
+        help=(
+            "a comma separated list of directories to ignore when scanning "
+            "for files (default: .git,.venv,.egg-info,.nox,dist)"
+        ),
         default=".git,.venv,.egg-info,.nox,dist",
     )
 
@@ -45,10 +51,18 @@ def main():
 
     args = parser.parse_args()
 
+    if not args.subparser:
+        print(
+            "💥 You need to provide a subcommand. Use `nsx -h` for more "
+            "information."
+        )
+        return
+
     if args.subparser != "init":
         if not os.path.isdir(CONFIG_DIR):
             raise NotInitialised(
-                "that command cannot be run before nusex has been initialised. Run `nsx init` to resolve."
+                "that command cannot be run before nusex has been "
+                "initialised. Run `nsx init` to resolve."
             )
 
     CMD_MAP[args.subparser](
