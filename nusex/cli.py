@@ -9,6 +9,7 @@ CMD_MAP = {
     "build": commands.build,
     "deploy": commands.deploy,
     "config": commands.config,
+    "rename": commands.rename,
 }
 
 
@@ -24,18 +25,18 @@ def main():
     )
 
     # Build subcommand
-    parser_new = subparsers.add_parser(
+    parser_build = subparsers.add_parser(
         "build",
         description="Build a new template.",
     )
-    parser_new.add_argument("name", help="the name for the new template")
-    parser_new.add_argument(
+    parser_build.add_argument("name", help="the name for the new template")
+    parser_build.add_argument(
         "-o",
         "--overwrite",
         help="overwrite an existing template should it already exist",
         action="store_true",
     )
-    parser_new.add_argument(
+    parser_build.add_argument(
         "--ignore-exts",
         help=(
             "a comma separated list of file types to ignore when scanning for "
@@ -43,7 +44,7 @@ def main():
         ),
         default="pyc,pyo,pyd,pyi",
     )
-    parser_new.add_argument(
+    parser_build.add_argument(
         "--ignore-dirs",
         help=(
             "a comma separated list of directories to ignore when scanning "
@@ -53,56 +54,63 @@ def main():
     )
 
     # Deploy subcommand
-    parser_use = subparsers.add_parser(
+    parser_deploy = subparsers.add_parser(
         "deploy",
         description="Deploy an already existing template.",
     )
-    parser_use.add_argument("name", help="the name of the template to use")
+    parser_deploy.add_argument("name", help="the name of the template to deploy")
 
     # Config subcommand
-    parser_use = subparsers.add_parser(
+    parser_config = subparsers.add_parser(
         "config",
         description=(
             "Change your user configuration. All optional arguments default "
             "to their previous values.",
-        )
+        ),
     )
-    parser_use.add_argument(
+    parser_config.add_argument(
         "-v",
         "--default-version",
         help="the version nusex initialises projects with",
         default="",
     )
-    parser_use.add_argument(
+    parser_config.add_argument(
         "-d",
         "--default-description",
         help="the description nusex initialises projects with",
         default="",
     )
-    parser_use.add_argument(
+    parser_config.add_argument(
         "-r",
         "--repo-user-url",
         help="your repository user URL (for example, your GitHub profile URL)",
         default="",
     )
-    parser_use.add_argument(
+    parser_config.add_argument(
         "-a",
         "--author",
         help="your name, or the name you want to use for your projects",
         default="",
     )
-    parser_use.add_argument(
+    parser_config.add_argument(
         "-e",
         "--author-email",
         help="your email, or the email of your company/organisation",
         default="",
     )
-    parser_use.add_argument(
+    parser_config.add_argument(
         "-l",
         "--default-license",
         help="the license nusex initialises projects with",
         default="",
     )
+
+    # Rename subcommand
+    parser_rename = subparsers.add_parser(
+        "rename", description="Rename a template."
+    )
+    parser_rename.add_argument("old_name", help="the name of the template you want to rename")
+    parser_rename.add_argument("new_name", help="the new name for the template")
 
     # Parse
     args = parser.parse_args()

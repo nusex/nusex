@@ -28,7 +28,7 @@ Deploy an already existing template.
 
 Required:
 
-- :code:`name` (str): the name of the template to use
+- :code:`name` (str): the name of the template to deploy
 
 config
 ======
@@ -43,3 +43,13 @@ Optional:
 - :code:`-a`, :code:`--author` (str): your name, or the name you want to use for your projects
 - :code:`-e`, :code:`--author-email` (str): your email, or the email of your company/organisation
 - :code:`-l`, :code:`--default-license` (str): the license nusex initialises projects with
+
+rename
+======
+
+Rename a template.
+
+Required:
+
+- :code:`old_name` (str): the name of the template you want to rename
+- :code:`new_name` (str): the new name for the template
