@@ -29,3 +29,17 @@ Deploy an already existing template.
 Required:
 
 - :code:`name` (str): the name of the template to use
+
+config
+======
+
+Change your user configuration. All optional arguments default to their previous values.
+
+Optional:
+
+- :code:`-v`, :code:`--default-version` (str): the version nusex initialises projects with
+- :code:`-d`, :code:`--default-description` (str): the description nusex initialises projects with
+- :code:`-r`, :code:`--repo-user-url` (str): your profile URL for your repository manager (for example, your GitHub profile URL)
+- :code:`-a`, :code:`--author` (str): your name, or the name you want to use for your projects
+- :code:`-e`, :code:`--author-email` (str): your email, or the email of your company/organisation
+- :code:`-l`, :code:`--default-license` (str): the license nusex initialises projects with

@@ -11,8 +11,8 @@ In order to initialise nusex, run the following command:
 
 You will be asked to provide some information to help nusex dynamically fill in information when deploying templates. You will need to provide:
 
-- Your name (or the name you wish to be credited using)
-- Your email (or a company/organisation email)
+- Your name, or the name you want to use for your projects
+- Your email, or the email of your company/organisation
 - Your GitHub/Gitlab/BitBucket (or other sevice) user profile link (for example: https://github.com/parafoxia)
 
 nusex does store more configuration information, but you cannot set this through the CLI right now -- a command to allow you to do this is planned for version 0.2. You can find the created configuration file in **/home/[username]/.config/nusex/user.nsc** (Linux & macOS) or **C:/Users/[username]/.nusex/user.nsc** (Windows). It is safe to edit the file manually, so long as you don't change any of the keys.

@@ -83,8 +83,14 @@ def _download_templates():
 
 
 def init():
-    details = _get_user_details()
-    _create_config_files(*details)
+    if not os.path.isdir(CONFIG_DIR):
+        details = _get_user_details()
+        _create_config_files(*details)
+    else:
+        print(
+            "🔔 Skipping user config. To find out how to update your config, run `nsx config -h`."
+        )
+
     _download_templates()
     print(
         "\n🎉 Initialisation complete! You can run this command any time to "
