@@ -8,8 +8,9 @@ CMD_MAP = {
     "init": commands.init,
     "build": commands.build,
     "deploy": commands.deploy,
-    "config": commands.config,
+    "delete": commands.delete,
     "rename": commands.rename,
+    "config": commands.config,
 }
 
 
@@ -58,7 +59,30 @@ def main():
         "deploy",
         description="Deploy an already existing template.",
     )
-    parser_deploy.add_argument("name", help="the name of the template to deploy")
+    parser_deploy.add_argument(
+        "name", help="the name of the template to deploy"
+    )
+
+    # Delete subcommand
+    parser_delete = subparsers.add_parser(
+        "delete", description="Delete one or more templates."
+    )
+    parser_delete.add_argument(
+        "names",
+        help="the name(s) of the template(s) to delete",
+        nargs="+",
+    )
+
+    # Rename subcommand
+    parser_rename = subparsers.add_parser(
+        "rename", description="Rename a template."
+    )
+    parser_rename.add_argument(
+        "old_name", help="the name of the template to rename"
+    )
+    parser_rename.add_argument(
+        "new_name", help="the new name for the template"
+    )
 
     # Config subcommand
     parser_config = subparsers.add_parser(
@@ -104,13 +128,6 @@ def main():
         help="the license nusex initialises projects with",
         default="",
     )
-
-    # Rename subcommand
-    parser_rename = subparsers.add_parser(
-        "rename", description="Rename a template."
-    )
-    parser_rename.add_argument("old_name", help="the name of the template you want to rename")
-    parser_rename.add_argument("new_name", help="the new name for the template")
 
     # Parse
     args = parser.parse_args()
