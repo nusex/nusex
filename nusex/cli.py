@@ -23,7 +23,7 @@ def main():
 
     parser_new = subparsers.add_parser(
         "build",
-        description="Create a new template.",
+        description="Build a new template.",
     )
     parser_new.add_argument("name", help="the name for the new template")
     parser_new.add_argument(
@@ -53,7 +53,7 @@ def main():
         "deploy",
         description="Deploy an already existing template.",
     )
-    parser_use.add_argument("name", help="the name of the template to use.")
+    parser_use.add_argument("name", help="the name of the template to use")
 
     args = parser.parse_args()
 
