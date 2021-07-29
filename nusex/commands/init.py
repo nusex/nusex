@@ -49,7 +49,7 @@ def _create_config_files(author, email, repo_user_url):
     os.makedirs(CONFIG_DIR, exist_ok=True)
 
     config = {
-        "default_version": "0.0.0",
+        "default_version": "0.1.0",
         "default_description": "My project, created using nusex",
         "repo_user_url": repo_user_url,
         "author": author,
