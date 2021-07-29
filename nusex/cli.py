@@ -27,6 +27,12 @@ def main():
     )
     parser_new.add_argument("name", help="the name for the new template")
     parser_new.add_argument(
+        "-o",
+        "--overwrite",
+        help="overwrite an existing template should it already exist",
+        action="store_true",
+    )
+    parser_new.add_argument(
         "--ignore-exts",
         help=(
             "a comma separated list of file types to ignore when scanning for "

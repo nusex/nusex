@@ -93,18 +93,19 @@ def _build_template(files):
     return template
 
 
-def build(name, ignore_exts, ignore_dirs):
+def build(name, overwrite, ignore_exts, ignore_dirs):
     if NAME_REGEX.search(name):
         raise TemplateBuildError(
             "template names can only contain lower case letters, numbers, and dashes"
         )
     if os.path.isfile(CONFIG_DIR / f"{name}.nsx"):
-        overwrite = input(
-            "🎤 A template with that name already exists. Overwrite? "
-        )
-        if overwrite.lower() not in ("y", "yes"):
-            print("💥 Build aborted.")
-            return
+        if not overwrite:
+            overwrite = input(
+                "🎤 A template with that name already exists. Overwrite? "
+            )
+            if overwrite.lower() not in ("y", "yes"):
+                print("💥 Build aborted.")
+                return
 
     ignore_exts = [x for x in ignore_exts.split(",") if x]
     ignore_dirs = [x for x in ignore_dirs.split(",") if x]
