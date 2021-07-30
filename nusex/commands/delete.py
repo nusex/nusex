@@ -15,6 +15,18 @@ def _delete_templates(names):
         print(f"⌛ Deleting templates... {step * (i + 1):.0f}%", end="\r")
 
 
-def delete(names):
+def run(names):
     _delete_templates(names)
     print("\n🎉 Template(s) deleted successfully!")
+
+
+def setup(subparsers):
+    s = subparsers.add_parser(
+        "delete", description="Delete one or more templates."
+    )
+    s.add_argument(
+        "names",
+        help="the name(s) of the template(s) to delete",
+        nargs="+",
+    )
+    return subparsers
