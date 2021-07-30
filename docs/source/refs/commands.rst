@@ -1,39 +1,67 @@
 Command reference
 #################
 
+.. tip::
+
+    You can use the :code:`-h` or :code:`--help` flags on any command to see help in the command line.
+
 init
 ====
 
 Initialise nusex.
+
+Usage:
+
+.. code-block:: bash
+
+    nsx init [-h]
 
 build
 =====
 
 Build a new template.
 
+Usage:
+
+.. code-block:: bash
+
+    nsx build [-h] [-o] [--ignore-exts IGNORE_EXTS] [--ignore-dirs IGNORE_DIRS] name
+
 Required:
 
-- :code:`name` (str): the name for the new template
+- :code:`name`: the name for the new template
 
 Optional:
 
 - :code:`-o`, :code:`--overwrite` (flag): overwrite an existing template should it already exist
-- :code:`--ignore-exts` (str): a comma separated list of file types to ignore when scanning for files (default: pyc,pyo,pyd,pyi)
-- :code:`--ignore-dirs` (str): a comma separated list of directories to ignore when scanning for files (default: .git,.venv,.egg-info,.nox,dist)
+- :code:`--ignore-exts`: a comma separated list of file types to ignore when scanning for files (default: pyc,pyo,pyd,pyi)
+- :code:`--ignore-dirs`: a comma separated list of directories to ignore when scanning for files (default: .git,.venv,.egg-info,.nox,dist)
 
 deploy
 ======
 
 Deploy an already existing template.
 
+Usage:
+
+.. code-block:: bash
+
+    nsx deploy [-h] name
+
 Required:
 
-- :code:`name` (str): the name of the template to deploy
+- :code:`name`: the name of the template to deploy
 
 delete
 ======
 
 Delete one or more templates.
+
+Usage:
+
+.. code-block:: bash
+
+    nsx delete [-h] names [names ...]
 
 Required:
 
@@ -44,21 +72,31 @@ rename
 
 Rename a template.
 
+.. code-block:: bash
+
+    nsx rename [-h] old_name new_name
+
 Required:
 
-- :code:`old_name` (str): the name of the template you want to rename
-- :code:`new_name` (str): the new name for the template
+- :code:`old_name`: the name of the template you want to rename
+- :code:`new_name`: the new name for the template
 
 config
 ======
 
 Change your user configuration. All optional arguments default to their previous values.
 
+Usage:
+
+.. code-block:: bash
+
+    nsx config [-h] [-v DEFAULT_VERSION] [-d DEFAULT_DESCRIPTION] [-r REPO_USER_URL] [-a AUTHOR] [-e AUTHOR_EMAIL] [-l DEFAULT_LICENSE]
+
 Optional:
 
-- :code:`-v`, :code:`--default-version` (str): the version nusex initialises projects with
-- :code:`-d`, :code:`--default-description` (str): the description nusex initialises projects with
-- :code:`-r`, :code:`--repo-user-url` (str): your profile URL for your repository manager (for example, your GitHub profile URL)
-- :code:`-a`, :code:`--author` (str): your name, or the name you want to use for your projects
-- :code:`-e`, :code:`--author-email` (str): your email, or the email of your company/organisation
-- :code:`-l`, :code:`--default-license` (str): the license nusex initialises projects with
+- :code:`-v`, :code:`--default-version`: the version nusex initialises projects with
+- :code:`-d`, :code:`--default-description`: the description nusex initialises projects with
+- :code:`-r`, :code:`--repo-user-url`: your profile URL for your repository manager (for example, your GitHub profile URL)
+- :code:`-a`, :code:`--author`: your name, or the name you want to use for your projects
+- :code:`-e`, :code:`--author-email`: your email, or the email of your company/organisation
+- :code:`-l`, :code:`--default-license`: the license nusex initialises projects with

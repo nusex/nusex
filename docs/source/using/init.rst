@@ -15,7 +15,7 @@ You will be asked to provide some information to help nusex dynamically fill in 
 - Your email, or the email of your company/organisation
 - Your GitHub/Gitlab/BitBucket (or other sevice) user profile link (for example: https://github.com/parafoxia)
 
-nusex does store more configuration information, but you cannot set this through the CLI right now -- a command to allow you to do this is planned for version 0.2. You can find the created configuration file in **/home/[username]/.config/nusex/user.nsc** (Linux & macOS) or **C:/Users/[username]/.nusex/user.nsc** (Windows). It is safe to edit the file manually, so long as you don't change any of the keys.
+nusex does store more configuration information, but you change that later using the :doc:`config command <../refs/commands>`. You can find the created configuration file in **/home/[username]/.config/nusex/user.nsc** (Linux & macOS) or **C:/Users/[username]/.nusex/user.nsc** (Windows). It is safe to edit the file manually, so long as you don't change any of the keys.
 
 After you've provided this information, nusex proceeds to download the latest premade templates from the `GitHub repository <https://github.com/parafoxia/nusex/tree/main/templates>`_. These templates are:
 
