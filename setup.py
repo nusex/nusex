@@ -11,12 +11,12 @@ import setuptools
 
 
 def parse_requirements(path):
-    with open(path, mode="r", encoding="utf-8") as f:
+    with open(path) as f:
         deps = (d.strip() for d in f.readlines())
         return [d for d in deps if not d.startswith(("#", "-r"))]
 
 
-with open("nusex/__init__.py", mode="r", encoding="utf-8") as f:
+with open("./nusex/__init__.py") as f:
     (
         productname,
         version,
@@ -29,7 +29,7 @@ with open("nusex/__init__.py", mode="r", encoding="utf-8") as f:
         bug_tracker,
     ) = [l.split('"')[1] for l in f.readlines()[:9]]
 
-with open("./README.md", mode="r", encoding="utf-8") as f:
+with open("./README.md") as f:
     long_description = f.read()
 
 setuptools.setup(

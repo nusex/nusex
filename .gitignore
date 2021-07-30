@@ -1,6 +1,7 @@
 ### Custom ###
 tempdeploy/
 tempsetup/
+tests/awesome_pkg/
 testrun.py
 
 ### Python ###
