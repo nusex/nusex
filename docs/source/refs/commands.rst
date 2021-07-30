@@ -37,6 +37,10 @@ Optional:
 - :code:`--ignore-exts`: a comma separated list of file types to ignore when scanning for files (default: pyc,pyo,pyd,pyi)
 - :code:`--ignore-dirs`: a comma separated list of directories to ignore when scanning for files (default: .git,.venv,.egg-info,.nox,dist)
 
+.. versionchanged:: 0.2.0
+
+    Added overwrite flag.
+
 deploy
 ======
 
@@ -67,10 +71,14 @@ Required:
 
 - :code:`names` (strs): the name(s) of the template(s) to delete
 
+.. versionadded:: 0.2.0
+
 rename
 ======
 
 Rename a template.
+
+Usage:
 
 .. code-block:: bash
 
@@ -81,10 +89,12 @@ Required:
 - :code:`old_name`: the name of the template you want to rename
 - :code:`new_name`: the new name for the template
 
+.. versionadded:: 0.2.0
+
 config
 ======
 
-Change your user configuration. All optional arguments default to their previous values.
+Change your user configuration.
 
 Usage:
 
@@ -100,3 +110,9 @@ Optional:
 - :code:`-a`, :code:`--author`: your name, or the name you want to use for your projects
 - :code:`-e`, :code:`--author-email`: your email, or the email of your company/organisation
 - :code:`-l`, :code:`--default-license`: the license nusex initialises projects with
+
+.. note::
+
+    All optional arguments default to their previous values.
+
+.. versionadded:: 0.2.0
