@@ -1,9 +1,3 @@
-### Custom ###
-tempdeploy/
-tempsetup/
-tests/awesome_pkg/
-testrun.py
-
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,5 +1,5 @@
 __productname__ = "nusex"
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __description__ = "A project templating utility for Python."
 __url__ = "https://github.com/parafoxia/nusex"
 __docs__ = "https://nusex.readthedocs.io/en/latest/"

@@ -50,10 +50,19 @@ def _deploy_template(template):
         print(f"⌛ Deploying template... {step * (i + 1):.0f}%", end="\r")
 
 
-def deploy(name):
+def run(name):
     if not os.path.isfile(CONFIG_DIR / f"{name}.nsx"):
         raise NoMatchingTemplates(f"no template named '{name}' exists")
 
     template = _construct_file_manifest(name)
     _deploy_template(template)
     print(f"\n🎉 Template '{name}' deployed successfully!")
+
+
+def setup(subparsers):
+    s = subparsers.add_parser(
+        "deploy",
+        description="Deploy an already existing template.",
+    )
+    s.add_argument("name", help="the name of the template to deploy")
+    return subparsers

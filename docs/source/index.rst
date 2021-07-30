@@ -67,6 +67,12 @@ Features
    using/deploy
 
 .. toctree::
+   :maxdepth: 1
+   :caption: References and guides
+
+   refs/commands
+
+.. toctree::
     :maxdepth: 1
     :caption: Information
 

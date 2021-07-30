@@ -1,3 +1,1 @@
-from .init import init
-from .build import build
-from .deploy import deploy
+from . import build, config, delete, deploy, init, rename

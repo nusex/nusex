@@ -2,7 +2,7 @@ import sys
 
 if sys.version_info < (3, 6, 0):
     print(
-        "nusex only supports Python versions 3.6.0 or greater.",
+        "example_test_pkg only supports Python versions 3.6.0 or greater.",
         file=sys.stderr,
     )
     sys.exit(1)
@@ -11,12 +11,12 @@ import setuptools
 
 
 def parse_requirements(path):
-    with open(path) as f:
+    with open(path, mode="r", encoding="utf-8") as f:
         deps = (d.strip() for d in f.readlines())
         return [d for d in deps if not d.startswith(("#", "-r"))]
 
 
-with open("./nusex/__init__.py") as f:
+with open("example_test_pkg/__init__.py", mode="r", encoding="utf-8") as f:
     (
         productname,
         version,
@@ -29,7 +29,7 @@ with open("./nusex/__init__.py") as f:
         bug_tracker,
     ) = [l.split('"')[1] for l in f.readlines()[:9]]
 
-with open("./README.md") as f:
+with open("./README.md", mode="r", encoding="utf-8") as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -42,12 +42,12 @@ setuptools.setup(
     author=author,
     author_email=email,
     license=license_,
-    classifiers=[
+    classifiers=[  # Find more classifiers at: https://pypi.org/classifiers/
         # "Development Status :: 1 - Planning",
         # "Development Status :: 2 - Pre-Alpha",
-        # "Development Status :: 3 - Alpha",
+        "Development Status :: 3 - Alpha",
         # "Development Status :: 4 - Beta",
-        "Development Status :: 5 - Production/Stable",
+        # "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
@@ -66,7 +66,6 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
-        "Topic :: Software Development :: Code Generators",
         "Topic :: Utilities",
     ],
     project_urls={
@@ -80,7 +79,4 @@ setuptools.setup(
     },
     python_requires=">=3.6.0",
     packages=setuptools.find_packages(exclude=["tests*"]),
-    entry_points={
-        "console_scripts": ["nsx = nusex.cli:main", "nusex = nusex.cli:main"]
-    },
 )

@@ -93,19 +93,20 @@ def _build_template(files):
     return template
 
 
-def build(name, ignore_exts, ignore_dirs):
+def run(name, overwrite, ignore_exts, ignore_dirs):
     if NAME_REGEX.search(name):
         raise TemplateBuildError(
             "template names can only contain lower case letters, numbers, "
             "and underscores"
         )
     if os.path.isfile(CONFIG_DIR / f"{name}.nsx"):
-        overwrite = input(
-            "🎤 A template with that name already exists. Overwrite? "
-        )
-        if overwrite.lower() not in ("y", "yes"):
-            print("💥 Build aborted.")
-            return
+        if not overwrite:
+            overwrite = input(
+                "🎤 A template with that name already exists. Overwrite? "
+            )
+            if overwrite.lower() not in ("y", "yes"):
+                print("💥 Build aborted.")
+                return
 
     ignore_exts = [x for x in ignore_exts.split(",") if x]
     ignore_dirs = [x for x in ignore_dirs.split(",") if x]
@@ -121,3 +122,34 @@ def build(name, ignore_exts, ignore_dirs):
         json.dump(template, f, ensure_ascii=False)
 
     print(f"🎉 Template '{name}' built successfully!")
+
+
+def setup(subparsers):
+    s = subparsers.add_parser(
+        "build",
+        description="Build a new template.",
+    )
+    s.add_argument("name", help="the name for the new template")
+    s.add_argument(
+        "-o",
+        "--overwrite",
+        help="overwrite an existing template should it already exist",
+        action="store_true",
+    )
+    s.add_argument(
+        "--ignore-exts",
+        help=(
+            "a comma separated list of file types to ignore when scanning for "
+            "files (default: pyc,pyo,pyd,pyi)"
+        ),
+        default="pyc,pyo,pyd,pyi",
+    )
+    s.add_argument(
+        "--ignore-dirs",
+        help=(
+            "a comma separated list of directories to ignore when scanning "
+            "for files (default: .git,.venv,.egg-info,.nox,dist)"
+        ),
+        default=".git,.venv,.egg-info,.nox,dist",
+    )
+    return subparsers
