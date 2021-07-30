@@ -88,7 +88,8 @@ def run():
         _create_config_files(*details)
     else:
         print(
-            "🔔 Skipping user config. To find out how to update your config, run `nsx config -h`."
+            "🔔 Skipping user config. To find out how to update your config, "
+            "run `nsx config -h`."
         )
 
     _download_templates()

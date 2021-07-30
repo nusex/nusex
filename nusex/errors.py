@@ -14,5 +14,9 @@ class TemplateBuildError(NusexError):
     pass
 
 
+class TemplateRenameError(NusexError):
+    pass
+
+
 class NoMatchingTemplates(NusexError):
     pass

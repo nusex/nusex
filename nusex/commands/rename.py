@@ -3,7 +3,7 @@ import re
 
 from nusex import CONFIG_DIR
 
-from ..errors import NoMatchingTemplates, TemplateBuildError
+from ..errors import NoMatchingTemplates, TemplateRenameError
 
 NAME_REGEX = re.compile("[^a-z0-9_]+")
 
@@ -12,7 +12,7 @@ def run(old_name, new_name):
     if not os.path.isfile(CONFIG_DIR / f"{old_name}.nsx"):
         raise NoMatchingTemplates(f"no template named '{old_name}' exists")
     if NAME_REGEX.search(new_name):
-        raise TemplateBuildError(
+        raise TemplateRenameError(
             "template names can only contain lower case letters, numbers, "
             "and underscores"
         )
