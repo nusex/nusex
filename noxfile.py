@@ -9,6 +9,8 @@ def parse_requirements(path):
 
 @nox.session(python=["3.6", "3.7", "3.8", "3.9", "3.10"], reuse_venv=True)
 def tests(session: nox.Session) -> None:
+    deps = parse_requirements("./requirements-test.txt")
+    session.install(*deps)
     session.run("pytest", "-s", "--verbose", "--log-level=INFO")
 
 
