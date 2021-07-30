@@ -32,8 +32,17 @@ def test_check_template_exists():
 def test_perfect_deployment():
     run("nsx deploy testing")
 
+    assert not os.path.isfile("./.venv/config.cfg")
+    assert not os.path.isfile("./.venv/help.me")
+    assert not os.path.isfile("./.venv/test.py")
     assert os.path.isfile("./awesome_pkg/__init__.py")
     assert os.path.isfile("./awesome_pkg/errors.py")
+    assert not os.path.isfile(
+        "./awesome_pkg/__pycache__/__init__.cpython-39.pyc"
+    )
+    assert not os.path.isfile(
+        "./awesome_pkg/__pycache__/errors.cpython-39.pyc"
+    )
     assert os.path.isfile("./.editorconfig")
     assert os.path.isfile("./.gitignore")
     assert os.path.isfile("./LICENSE")
