@@ -1,9 +1,10 @@
 import json
 import os
+import shutil
 import subprocess as sp
 import sys
 
-from nusex import CONFIG_DIR
+from nusex import CONFIG_DIR, TEMP_DIR
 
 
 def run(command):
@@ -106,3 +107,32 @@ def test_variables_implanted_correctly():
     assert init[6] == '__author_email__ = "PROJECTAUTHOREMAIL"'
     assert init[7] == '__license__ = "PROJECTLICENSE"'
     assert init[8] == '__bugtracker__ = "PROJECTURL/issues"'
+
+
+def test_from_repo():
+    # Same lock up issue as before.
+    try:
+        os.remove(CONFIG_DIR / "repo_test.nsx")
+        shutil.rmtree(TEMP_DIR / "nusex")
+    except FileNotFoundError:
+        # If they don't exist, no need to worry.
+        pass
+
+    run(f"nsx build repo_test -r https://github.com/parafoxia/nusex")
+
+    with open(CONFIG_DIR / "repo_test.nsx") as f:
+        data = json.load(f)
+
+    # The nusex repo has all of these, so it's fine to just test this.
+    files = data["files"].keys()
+    assert not any(f.endswith(".pyc") for f in files)
+    assert not any(".venv" in f for f in files)
+    assert ".editorconfig" in files
+    assert ".gitignore" in files
+    assert "CONTRIBUTING.md" in files
+    assert "LICENSE" in files
+    assert "pyproject.toml" in files
+    assert "README.md" in files
+    assert "requirements-dev.txt" in files
+    assert "requirements-test.txt" in files
+    assert "setup.py" in files

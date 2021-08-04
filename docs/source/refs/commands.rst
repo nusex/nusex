@@ -25,7 +25,7 @@ Usage:
 
 .. code-block:: bash
 
-    nsx build [-h] [-o] [--ignore-exts IGNORE_EXTS] [--ignore-dirs IGNORE_DIRS] name
+    nsx build [-h] [-o] [-r FROM_REPO] [--ignore-exts IGNORE_EXTS] [--ignore-dirs IGNORE_DIRS] name
 
 Required:
 
@@ -34,12 +34,17 @@ Required:
 Optional:
 
 - :code:`-o`, :code:`--overwrite` (flag): overwrite an existing template should it already exist
+- :code:`-r`, :code:`--from-repo`: a repo URL to build a template from
 - :code:`--ignore-exts`: a comma separated list of file types to ignore when scanning for files (default: pyc,pyo,pyd,pyi)
 - :code:`--ignore-dirs`: a comma separated list of directories to ignore when scanning for files (default: .git,.venv,.egg-info,.nox,dist)
 
 .. versionchanged:: 0.2.0
 
     Added overwrite flag.
+
+.. versionchanged:: 0.3.0
+
+    Added ability to build from repo.
 
 deploy
 ======

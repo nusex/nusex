@@ -22,7 +22,7 @@ def test_delete_singular():
 
 
 def test_delete_multiple():
-    templates = ("renamed_template", "test420")
+    templates = ("renamed_template", "test420", "repo_test")
     for tn in templates:
         run(f"nsx delete {tn}")
         assert not os.path.isfile(CONFIG_DIR / f"{tn}.nsx")

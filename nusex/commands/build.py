@@ -1,9 +1,11 @@
-import os
 import json
+import os
 import re
+import subprocess as sp
+import sys
 from pathlib import Path
 
-from nusex import CONFIG_DIR
+from nusex import CONFIG_DIR, TEMP_DIR
 
 from ..errors import TemplateBuildError
 
@@ -27,7 +29,18 @@ INIT_VAR_MAPPING = {
 }
 
 
-def _gather_files(path, ignore_exts, ignore_dirs):
+def run_cmd(command):
+    if sys.version_info >= (3, 7, 0):
+        return sp.run(command, shell=True, capture_output=True)
+
+    if os.name != "nt":
+        return sp.run(f"{command} > /dev/null 2>&1", shell=True)
+
+    # Windows users will have to put up with the output for 3.6.
+    return sp.run(command, shell=True)
+
+
+def _gather_files(ignore_exts, ignore_dirs):
     print("⌛ Gathering files...", end="")
 
     def _check(p):
@@ -37,9 +50,34 @@ def _gather_files(path, ignore_exts, ignore_dirs):
             and not any(d in f"{p}".split("/")[:-1] for d in ignore_dirs)
         )
 
-    files = filter(lambda p: _check(p), path.rglob("*"))
+    files = filter(lambda p: _check(p), Path(".").rglob("*"))
     print(" done")
     return list(files)
+
+
+def _gather_files_from_repo(url, ignore_exts, ignore_dirs):
+    print("⌛ Gathering files...", end="")
+
+    def _check(p):
+        return (
+            p.is_file()
+            and p.suffix[1:] not in ignore_exts
+            and not any(d in f"{p}".split("/")[:-1] for d in ignore_dirs)
+        )
+
+    if not url.endswith(".git"):
+        url += ".git"
+    os.makedirs("/tmp/nusex", exist_ok=True)
+    os.chdir(TEMP_DIR)
+
+    output = run_cmd(f"git clone {url}")
+    if output.returncode == 1:
+        raise TemplateBuildError(output.stderr.decode())
+    os.chdir(TEMP_DIR / url[:-4].split("/")[-1])
+
+    files = filter(lambda p: _check(p), Path(".").rglob("*"))
+    print(" done")
+    return files
 
 
 def _build_template(files):
@@ -93,7 +131,7 @@ def _build_template(files):
     return template
 
 
-def run(name, overwrite, ignore_exts, ignore_dirs):
+def run(name, overwrite, from_repo, ignore_exts, ignore_dirs):
     if NAME_REGEX.search(name):
         raise TemplateBuildError(
             "template names can only contain lower case letters, numbers, "
@@ -110,9 +148,11 @@ def run(name, overwrite, ignore_exts, ignore_dirs):
 
     ignore_exts = [x for x in ignore_exts.split(",") if x]
     ignore_dirs = [x for x in ignore_dirs.split(",") if x]
-    path = Path(".")
 
-    files = _gather_files(path, ignore_exts, ignore_dirs)
+    if from_repo:
+        files = _gather_files_from_repo(from_repo, ignore_exts, ignore_dirs)
+    else:
+        files = _gather_files(ignore_exts, ignore_dirs)
     if not files:
         raise TemplateBuildError("no usable files were found")
     template = _build_template(files)
@@ -135,6 +175,12 @@ def setup(subparsers):
         "--overwrite",
         help="overwrite an existing template should it already exist",
         action="store_true",
+    )
+    s.add_argument(
+        "-r",
+        "--from-repo",
+        help="a repo URL to build a template from",
+        default="",
     )
     s.add_argument(
         "--ignore-exts",
