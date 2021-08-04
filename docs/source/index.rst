@@ -46,7 +46,7 @@ A project templating utility for Python.
 Features
 ========
 
-- An easy-to-use CLI interface
+- An easy-to-use CLI (command-line interface)
 - Premade templates for applications and packages
 - The ability to use context clues to dynamically generate files
 - Options to ignore file extensions and directories when building templates
