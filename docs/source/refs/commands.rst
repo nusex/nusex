@@ -56,6 +56,23 @@ Required:
 
 - :code:`name`: the name of the template to deploy
 
+list
+====
+
+Display a list of your templates.
+
+Usage:
+
+.. code-block:: bash
+
+    nsx list [-h] [-f FILTER]
+
+Required:
+
+- :code:`-f`, :code:`--filter`: a term to filter your templates by
+
+.. versionadded:: 0.3.0
+
 delete
 ======
 

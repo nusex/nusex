@@ -1,1 +1,1 @@
-from . import build, config, delete, deploy, init, rename
+from . import build, config, delete, deploy, init, list, rename

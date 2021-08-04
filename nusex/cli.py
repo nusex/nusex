@@ -8,6 +8,7 @@ COMMAND_MAPPING = {
     "init": commands.init,
     "build": commands.build,
     "deploy": commands.deploy,
+    "list": commands.list,
     "delete": commands.delete,
     "rename": commands.rename,
     "config": commands.config,
