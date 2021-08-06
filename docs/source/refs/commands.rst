@@ -34,6 +34,7 @@ Required:
 Optional:
 
 - :code:`-o`, :code:`--overwrite` (flag): overwrite an existing template should it already exist
+- :code:`-c`, :code:`--check` (flag): check the build manifest before building the template
 - :code:`-r`, :code:`--from-repo`: a repo URL to build a template from
 - :code:`--ignore-exts`: a comma separated list of file types to ignore when scanning for files (default: pyc,pyo,pyd,pyi)
 - :code:`--ignore-dirs`: a comma separated list of directories to ignore when scanning for files (default: .git,.venv,.egg-info,.nox,dist)
@@ -45,6 +46,10 @@ Optional:
 .. versionchanged:: 0.3.0
 
     Added ability to build from repo.
+
+.. versionchanged:: 0.4.0
+
+    Added ability check the build manifest before building.
 
 deploy
 ======

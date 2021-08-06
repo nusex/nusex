@@ -131,7 +131,7 @@ def _build_template(files):
     return template
 
 
-def run(name, overwrite, from_repo, ignore_exts, ignore_dirs):
+def run(name, overwrite, check, from_repo, ignore_exts, ignore_dirs):
     if NAME_REGEX.search(name):
         raise TemplateBuildError(
             "template names can only contain lower case letters, numbers, "
@@ -155,6 +155,17 @@ def run(name, overwrite, from_repo, ignore_exts, ignore_dirs):
         files = _gather_files(ignore_exts, ignore_dirs)
     if not files:
         raise TemplateBuildError("no usable files were found")
+
+    if check:
+        check_ok = input(
+            "🔔 Template manifest:\n   "
+            + "\n   ".join(f"{f}" for f in files)
+            + f"\n\n🎤 {len(files):,} files are included. Does this look okay? "
+        )
+        if check_ok.lower() not in ("y", "yes"):
+            print("💥 Build aborted.")
+            return
+
     template = _build_template(files)
 
     name = name.lower()
@@ -174,6 +185,12 @@ def setup(subparsers):
         "-o",
         "--overwrite",
         help="overwrite an existing template should it already exist",
+        action="store_true",
+    )
+    s.add_argument(
+        "-c",
+        "--check",
+        help="check the build manifest before building the template",
         action="store_true",
     )
     s.add_argument(
