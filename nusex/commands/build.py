@@ -10,11 +10,13 @@ from nusex import CONFIG_DIR, TEMP_DIR
 from ..errors import TemplateBuildError
 
 NAME_REGEX = re.compile("[^a-z0-9_]+")
-PNAME_SPECIAL_FILES = (
+SPECIAL_FILES = (
     "MANIFEST.in",
     "pyproject.toml",
     "README.md",
     "setup.py",
+    "LICENSE",
+    "PROJECTNAME/__init__.py",
 )
 INIT_VAR_MAPPING = {
     "__productname__": '"PROJECTNAME"',
@@ -27,6 +29,15 @@ INIT_VAR_MAPPING = {
     "__license__": '"PROJECTLICENSE"',
     "__bugtracker__": '"PROJECTURL/issues"',
 }
+VARS = (
+    "PROJECTNAME",
+    "PROJECTVERSION",
+    "PROJECTDESCRIPTION",
+    "PROJECTURL",
+    "PROJECTAUTHOR",
+    "PROJECTAUTHOREMAIL",
+    "PROJECTLICENSE",
+)
 
 
 def run_cmd(command):
@@ -113,7 +124,7 @@ def _build_template(files):
         template["files"]["PROJECTNAME/__init__.py"] = init_text
 
     # Handle other files, if present
-    for fname in PNAME_SPECIAL_FILES:
+    for fname in SPECIAL_FILES[:4]:
         data = template["files"].get(fname, None)
         if data:
             template["files"][fname] = template["files"][fname].replace(
@@ -129,6 +140,26 @@ def _build_template(files):
 
     print(" done")
     return template
+
+
+def _check_manifest(template):
+    files = template["files"]
+    manifest = "🔔 Template manifest (showing modified lines):\n"
+    modifications = 0
+
+    for file, data in files.items():
+        manifest += f"   {file}\n"
+
+        for i, line in enumerate(data.split("\n")):
+            if any(v in line for v in VARS):
+                manifest += f"     {i + 1}: {line.strip()}\n"
+                modifications += 1
+
+    print(manifest)
+    return input(
+        f"🎤 This manifest contains {len(files.keys()):,} files and "
+        f"{modifications} modified lines. Does this look okay? "
+    )
 
 
 def run(name, overwrite, check, from_repo, ignore_exts, ignore_dirs):
@@ -156,17 +187,13 @@ def run(name, overwrite, check, from_repo, ignore_exts, ignore_dirs):
     if not files:
         raise TemplateBuildError("no usable files were found")
 
+    template = _build_template(files)
+
     if check:
-        check_ok = input(
-            "🔔 Template manifest:\n   "
-            + "\n   ".join(f"{f}" for f in files)
-            + f"\n\n🎤 {len(files):,} files are included. Does this look okay? "
-        )
+        check_ok = _check_manifest(template)
         if check_ok.lower() not in ("y", "yes"):
             print("💥 Build aborted.")
             return
-
-    template = _build_template(files)
 
     name = name.lower()
     with open(CONFIG_DIR / f"{name}.nsx", "w") as f:
