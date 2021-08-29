@@ -1,8 +1,6 @@
 ### Custom ###
-tempdeploy/
-tempsetup/
+dev/
 tests/awesome_pkg/
-testrun.py
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
