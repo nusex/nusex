@@ -28,16 +28,20 @@
 
 
 class NusexError(Exception):
-    pass
+    ...
 
 
 class DownloadFailure(NusexError):
-    pass
+    ...
 
 
 class NusexUserError(NusexError):
-    pass
+    ...
 
 
 class InvalidRequest(NusexUserError):
-    pass
+    ...
+
+
+class InvalidConfiguration(NusexUserError):
+    ...

@@ -26,6 +26,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from . import INVALID_NAME_PATTERN
+
 message_types = {
     "aok": ("🎉", "\33[92m"),
     "war": ("💣", "\33[93m"),
@@ -37,3 +39,8 @@ message_types = {
 def cprint(type, text, **kwargs):
     emoji, colour = message_types[type]
     print(f"{emoji} {colour}{text}\33[0m", **kwargs)
+
+
+def is_valid_name(name):
+    # Returns True if the name IS valid.
+    return not INVALID_NAME_PATTERN.search(name)

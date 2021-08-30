@@ -47,6 +47,7 @@ LICENSE_DIR = CONFIG_DIR / "licenses"
 PROFILE_DIR = CONFIG_DIR / "profiles"
 TEMPLATE_DIR = CONFIG_DIR / "templates"
 
+INVALID_NAME_PATTERN = re.compile("[^a-z0-9_]")
 # https://github.com/pypa/packaging/blob/16.7/packaging/version.py#L159
 VERSION_PATTERN = re.compile(
     r"""
