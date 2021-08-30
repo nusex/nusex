@@ -122,3 +122,17 @@ def test_create_from_nsc_file():
     assert profile.data["starting_version"] == "0.1.0"
     assert profile.data["default_description"] == "My project, created using nusex"
     assert profile.data["preferred_license"] == "0bsd"
+
+
+def test_validate_profile_names():
+    bad_templates = ("test-template", "TestTemplate", "folder/test")
+    good_templates = ("test", "test_template", "test69")
+
+    for t in bad_templates:
+        with pytest.raises(InvalidConfiguration) as exc:
+            Profile(t)
+        assert f"{exc.value}" == "Names can only contain lower case letters, numbers, and underscores"
+
+    for t in good_templates:
+        profile = Profile(t)
+        assert profile.name == t
