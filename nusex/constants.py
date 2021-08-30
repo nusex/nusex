@@ -32,15 +32,24 @@ from pathlib import Path
 
 from . import __version__
 
-# Prevent conflicts during development.
-_SUFFIX = f"nusex{'-dev' if 'dev' in __version__ else ''}"
+
+def _suffix():
+    # Determine whether this is a production copy or not. This
+    # prevents actual user configs from getting messed up.
+    parts = Path(__file__).parts
+    if ".nox" in parts:
+        return "nusex-test"
+    if "site-packages" not in parts:
+        return "nusex-dev"
+    return "nusex"
+
 
 if os.name == "nt":
-    CONFIG_DIR = Path.home() / f".{_SUFFIX}"
+    CONFIG_DIR = Path.home() / f".{_suffix()}"
     TEMP_DIR = CONFIG_DIR / "tmp"
 else:
-    CONFIG_DIR = Path.home() / f".config/{_SUFFIX}"
-    TEMP_DIR = Path(f"/tmp/{_SUFFIX}")
+    CONFIG_DIR = Path.home() / f".config/{_suffix()}"
+    TEMP_DIR = Path(f"/tmp/{_suffix()}")
 
 EXTENSION_DIR = CONFIG_DIR / "extensions"
 LICENSE_DIR = CONFIG_DIR / "licenses"
