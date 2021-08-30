@@ -26,6 +26,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
+import subprocess as sp
+import sys
+
 from . import INVALID_NAME_PATTERN
 
 message_types = {
@@ -44,3 +48,14 @@ def cprint(type, text, **kwargs):
 def is_valid_name(name):
     # Returns True if the name IS valid.
     return not INVALID_NAME_PATTERN.search(name)
+
+
+def run(command):
+    if sys.version_info >= (3, 7, 0):
+        return sp.run(command, shell=True, capture_output=True)
+
+    if os.name != "nt":
+        return sp.run(f"{command} > /dev/null 2>&1", shell=True)
+
+    # Windows users will have to put up with the output for 3.6 tests.
+    return sp.run(command, shell=True)
