@@ -40,7 +40,10 @@ def test_create_profile():
     profile = Profile("__test__")
     assert profile.name == "__test__"
     assert profile.data["starting_version"] == "0.1.0"
-    assert profile.data["default_description"] == "My project, created using nusex"
+    assert (
+        profile.data["default_description"]
+        == "My project, created using nusex"
+    )
     assert profile.data["preferred_license"] == "unlicense"
 
     profile.save()
@@ -69,14 +72,19 @@ def test_update_profile():
 
     with pytest.raises(InvalidConfiguration) as exc:
         profile.update(starting_version="test")
-    assert f"{exc.value}" == "That version number does not conform to PEP 440 standards, or is not 'DATE'"
+    assert f"{exc.value}" == (
+        "That version number does not conform to PEP 440 standards, or is "
+        "not 'DATE'"
+    )
 
     profile.update(preferred_license="BSD Zero Clause License")
     assert profile.data["preferred_license"] == "0bsd"
 
     with pytest.raises(InvalidConfiguration) as exc:
         profile.update(preferred_license="test")
-    assert f"{exc.value}" == "Your input could not be resolved to a valid license"
+    assert (
+        f"{exc.value}" == "Your input could not be resolved to a valid license"
+    )
 
 
 def test_rename_profile():
@@ -85,7 +93,9 @@ def test_rename_profile():
     assert os.path.isfile(PROFILE_DIR / "__test_profile__.nsp")
 
     # Before continue, copy the file for later tests.
-    shutil.copyfile(PROFILE_DIR / "__test_profile__.nsp", PROFILE_DIR / "__test__.nsp")
+    shutil.copyfile(
+        PROFILE_DIR / "__test_profile__.nsp", PROFILE_DIR / "__test__.nsp"
+    )
 
 
 def test_delete_profile():
@@ -103,7 +113,7 @@ def test_create_from_nsc_file():
             "repo_user_url": "https://github.com/faceytest",
             "author": "Facey McFacetest",
             "author_email": "facey@mctest.com",
-            "default_license": "BSD Zero Clause License"
+            "default_license": "BSD Zero Clause License",
         }
         json.dump(data, f)
 
@@ -114,13 +124,16 @@ def test_create_from_nsc_file():
         "git_profile_url",
         "starting_version",
         "default_description",
-        "preferred_license"
+        "preferred_license",
     )
     assert profile.data["author_name"] == "Facey McFacetest"
     assert profile.data["author_email"] == "facey@mctest.com"
     assert profile.data["git_profile_url"] == "https://github.com/faceytest"
     assert profile.data["starting_version"] == "0.1.0"
-    assert profile.data["default_description"] == "My project, created using nusex"
+    assert (
+        profile.data["default_description"]
+        == "My project, created using nusex"
+    )
     assert profile.data["preferred_license"] == "0bsd"
 
 
@@ -131,7 +144,10 @@ def test_validate_profile_names():
     for t in bad_templates:
         with pytest.raises(InvalidConfiguration) as exc:
             Profile(t)
-        assert f"{exc.value}" == "Names can only contain lower case letters, numbers, and underscores"
+        assert f"{exc.value}" == (
+            "Names can only contain lower case letters, numbers, and "
+            "underscores"
+        )
 
     for t in good_templates:
         profile = Profile(t)

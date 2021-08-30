@@ -46,7 +46,12 @@ COMMAND_MAPPING = {
 parser = argparse.ArgumentParser(
     description="A project templating utility for Python."
 )
-parser.add_argument("-v", "--version", help="show nusex's version and exit", action="store_true")
+parser.add_argument(
+    "-v",
+    "--version",
+    help="show nusex's version and exit",
+    action="store_true",
+)
 subparsers = parser.add_subparsers(dest="subparser")
 for module in COMMAND_MAPPING.values():
     subparsers = module.setup(subparsers)  # type: ignore
@@ -69,14 +74,18 @@ def main():
         )
         sys.exit(2)
     elif os.path.isfile(CONFIG_DIR / "user.nsc"):
-        ... # Migrate
+        ...  # Migrate
     else:
-        ... # Check for updates
+        ...  # Check for updates
 
     # Command runs.
     try:
         COMMAND_MAPPING[args.subparser].run(
-            **{k: v for k, v in args.__dict__.items() if k not in ("subparser", "version")}
+            **{
+                k: v
+                for k, v in args.__dict__.items()
+                if k not in ("subparser", "version")
+            }
         )
     except NusexUserError as exc:
         cprint("err", f"{exc}.")
@@ -87,7 +96,11 @@ def main():
     except KeyboardInterrupt as exc:
         sys.exit(130)
     except Exception as exc:
-        cprint("err", f"Oh no! Something went wrong.\n\n{traceback.format_exc()}", end="")
+        cprint(
+            "err",
+            f"Oh no! Something went wrong.\n\n{traceback.format_exc()}",
+            end="",
+        )
 
 
 if __name__ == "__main__":

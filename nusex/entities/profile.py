@@ -68,13 +68,19 @@ class Profile(Entity):
 
             if k == "starting_version":
                 if v != "DATE" and not VERSION_PATTERN.match(v):
-                    v = input(f"🎤 Starting version [0.1.0]: ").strip() or "0.1.0"
+                    v = (
+                        input(f"🎤 Starting version [0.1.0]: ").strip()
+                        or "0.1.0"
+                    )
                     v = c._validate_option(k, v)
 
             elif k == "preferred_license":
                 v = c._resolve_license(v)
                 if not v:
-                    v = input(f"🎤 Preferred license [unlicense]: ").strip() or "unlicense"
+                    v = (
+                        input(f"🎤 Preferred license [unlicense]: ").strip()
+                        or "unlicense"
+                    )
 
             c.data[k] = v
 

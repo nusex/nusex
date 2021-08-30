@@ -69,7 +69,7 @@ class Entity:
         self.data = {}
 
     def save(self):
-        with open(self.path, 'w') as f:
+        with open(self.path, "w") as f:
             json.dump(self.data, f)
 
     def delete(self):

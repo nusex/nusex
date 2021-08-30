@@ -33,6 +33,7 @@ from nusex import CONFIG_DIR
 
 TEST_DIR = CONFIG_DIR.parent / "nusex-test"
 
+
 def test_cleanup():
     # This isn't really a test -- it just makes sure the cleanup is
     # done at the correct time.

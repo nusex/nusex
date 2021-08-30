@@ -70,7 +70,7 @@ def run():
         cprint(
             "war",
             "Support for Python 3.6 is deprecated, and will be removed in a "
-            "future version."
+            "future version.",
         )
 
 

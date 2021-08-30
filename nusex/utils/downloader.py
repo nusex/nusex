@@ -48,7 +48,9 @@ class Downloader:
 
     def __init__(self, of_type):
         if of_type not in ("templates", "licenses"):
-            return InvalidRequest("You can only download templates or licenses")
+            return InvalidRequest(
+                "You can only download templates or licenses"
+            )
 
         self.of_type = of_type
         if of_type == "templates":
@@ -83,18 +85,26 @@ class Downloader:
         try:
             for f in self.files:
                 with request.urlopen(f"{RAW_URL}/{f}") as r:
-                    with open((CONFIG_DIR / self.of_type) / f.split("/")[-1], "w") as f:
+                    with open(
+                        (CONFIG_DIR / self.of_type) / f.split("/")[-1], "w"
+                    ) as f:
                         f.write(r.read().decode())
                         self.completed += 1
 
                 await asyncio.sleep(0)
 
         except HTTPError as exc:
-            raise DownloadFailure(f"Download failed (GitHub returned {exc.code})")
+            raise DownloadFailure(
+                f"Download failed (GitHub returned {exc.code})"
+            )
 
     async def _display_progress(self):
         while True:
-            cprint("prc", f"Downloading {self.of_type}... {self.progress:,.0f}%", end="\r")
+            cprint(
+                "prc",
+                f"Downloading {self.of_type}... {self.progress:,.0f}%",
+                end="\r",
+            )
             if self.progress == 100:
                 return
             await asyncio.sleep(0)
