@@ -36,15 +36,5 @@ __author_email__ = "ethan.henderson.1998@gmail.com"
 __license__ = "BSD-3-Clause"
 __bugtracker__ = "https://github.com/parafoxia/nusex/issues"
 
-import os
-from pathlib import Path
-
-# Prevent conflicts during development.
-SUFFIX = f"nusex{'-dev' if 'dev' in __version__ else ''}"
-
-if os.name == "nt":
-    CONFIG_DIR = Path.home() / f".{SUFFIX}"
-    TEMP_DIR = CONFIG_DIR / "tmp"
-else:
-    CONFIG_DIR = Path.home() / f".config/{SUFFIX}"
-    TEMP_DIR = Path(f"/tmp/{SUFFIX}")
+from .constants import *
+from .entities import Extension, Profile, Template
