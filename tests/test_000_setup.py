@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-from distutils.dir_util import copy_tree
+import shutil
 
 import pytest  # type: ignore
 
@@ -39,4 +39,4 @@ TEST_DIR = CONFIG_DIR.parent / "nusex-test"
 if not os.path.isdir(DEV_DIR):
     pytest.exit("No dev config directory detected -- tests aborted")
 
-copy_tree(f"{DEV_DIR}", f"{TEST_DIR}")
+shutil.copytree(f"{DEV_DIR}", f"{TEST_DIR}")

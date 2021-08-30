@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-from shutil import rmtree
+import shutil
 
 from nusex import CONFIG_DIR
 
@@ -37,4 +37,4 @@ def test_cleanup():
     # This isn't really a test -- it just makes sure the cleanup is
     # done at the correct time.
     if os.path.isdir(TEST_DIR):
-        rmtree(TEST_DIR)
+        shutil.rmtree(TEST_DIR)
