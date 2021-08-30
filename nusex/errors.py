@@ -45,3 +45,7 @@ class InvalidRequest(NusexUserError):
 
 class InvalidConfiguration(NusexUserError):
     ...
+
+
+class AlreadyExists(NusexUserError):
+    ...
