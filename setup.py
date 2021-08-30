@@ -27,7 +27,7 @@ with open("./nusex/__init__.py") as f:
         email,
         license_,
         bug_tracker,
-    ) = [l.split('"')[1] for l in f.readlines()[:9]]
+    ) = [l.split('"')[1] for l in f.readlines()[28:37]]
 
 with open("./README.md") as f:
     long_description = f.read()
@@ -75,9 +75,9 @@ setuptools.setup(
         "Bug Tracker": bug_tracker,
     },
     # install_requires=parse_requirements("./requirements.txt"),
-    extras_require={
-        "dev": parse_requirements("./requirements-dev.txt"),
-    },
+    # extras_require={
+    #     "dev": parse_requirements("./requirements-dev.txt"),
+    # },
     python_requires=">=3.6.0",
     packages=setuptools.find_packages(exclude=["tests*"]),
     entry_points={"console_scripts": ["nsx = nusex.cli.cli:main"]},
