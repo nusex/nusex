@@ -62,8 +62,8 @@ class Entity:
     def create_new(self, name):
         if not is_valid_name(name):
             raise InvalidConfiguration(
-                "Profile names can only contain lower case letters, "
-                "numbers, and underscores"
+                "Names can only contain lower case letters, numbers, "
+                "and underscores"
             )
 
         self.data = {}
