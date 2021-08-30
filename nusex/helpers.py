@@ -26,10 +26,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
-
-from nusex import CONFIG_DIR
-
 message_types = {
     "aok": ("🎉", "\33[92m"),
     "war": ("💣", "\33[93m"),
