@@ -59,9 +59,13 @@ class Profile(Entity):
         ...
 
     @property
+    def name(self):
+        return self.path.stem
+
+    @property
     def is_selected(self):
         with open(CONFIG_DIR / "config") as f:
-            return json.load(f)["profile"] == self.name
+            return json.load(f)["profile"] == self.path.stem
 
     def select(self):
         with open(CONFIG_DIR / "config", "r+") as f:
