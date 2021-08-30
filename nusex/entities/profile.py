@@ -50,13 +50,35 @@ class Profile(Entity):
             "author_email": "",
             "git_profile_url": "",
             "starting_version": "0.1.0",
-            "default_description": "My project, made using nusex",
+            "default_description": "My project, created using nusex",
             "preferred_license": "unlicense",
         }
 
     @classmethod
-    def from_nsc_file(cls):
-        ...
+    def from_nsc_file(cls, name="default"):
+        with open(CONFIG_DIR / "user.nsc") as f:
+            data = json.load(f)
+
+        c = cls(name)
+        values = list(data.values())
+        order = (3, 4, 2, 0, 1, 5)
+
+        for i, k in enumerate(c.data.keys()):
+            v = values[order[i]]
+
+            if k == "starting_version":
+                if v != "DATE" and not VERSION_PATTERN.match(v):
+                    v = input(f"🎤 Starting version [0.1.0]: ").strip() or "0.1.0"
+                    v = c._validate_option(k, v)
+
+            elif k == "preferred_license":
+                v = c._resolve_license(v)
+                if not v:
+                    v = input(f"🎤 Preferred license [unlicense]: ").strip() or "unlicense"
+
+            c.data[k] = v
+
+        return c
 
     @property
     def name(self):

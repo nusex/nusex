@@ -26,6 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
 import os
 import shutil
 
@@ -40,7 +41,7 @@ def test_create_profile():
     profile = Profile("__test__")
     assert profile.name == "__test__"
     assert profile.data["starting_version"] == "0.1.0"
-    assert profile.data["default_description"] == "My project, made using nusex"
+    assert profile.data["default_description"] == "My project, created using nusex"
     assert profile.data["preferred_license"] == "unlicense"
 
     profile.save()
@@ -92,3 +93,33 @@ def test_delete_profile():
     profile = Profile("__test_profile__")
     profile.delete()
     assert not os.path.isfile(PROFILE_DIR / "__test_profile__.nsp")
+
+
+def test_create_from_nsc_file():
+    # Write the nsc file.
+    with open(CONFIG_DIR / "user.nsc", "w") as f:
+        data = {
+            "default_version": "0.1.0",
+            "default_description": "My project, created using nusex",
+            "repo_user_url": "https://github.com/faceytest",
+            "author": "Facey McFacetest",
+            "author_email": "facey@mctest.com",
+            "default_license": "BSD Zero Clause License"
+        }
+        json.dump(data, f)
+
+    profile = Profile.from_nsc_file()
+    assert tuple(profile.data.keys()) == (
+        "author_name",
+        "author_email",
+        "git_profile_url",
+        "starting_version",
+        "default_description",
+        "preferred_license"
+    )
+    assert profile.data["author_name"] == "Facey McFacetest"
+    assert profile.data["author_email"] == "facey@mctest.com"
+    assert profile.data["git_profile_url"] == "https://github.com/faceytest"
+    assert profile.data["starting_version"] == "0.1.0"
+    assert profile.data["default_description"] == "My project, created using nusex"
+    assert profile.data["preferred_license"] == "0bsd"
