@@ -34,7 +34,6 @@ import pytest  # type: ignore
 
 from nusex import CONFIG_DIR, PROFILE_DIR, Profile
 from nusex.errors import *
-from nusex.helpers import run
 
 
 def test_create_profile():

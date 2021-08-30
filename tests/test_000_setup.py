@@ -27,7 +27,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import sys
 from distutils.dir_util import copy_tree
 
 import pytest  # type: ignore

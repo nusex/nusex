@@ -27,7 +27,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-from distutils.dir_util import copy_tree
 from shutil import rmtree
 
 from nusex import CONFIG_DIR
