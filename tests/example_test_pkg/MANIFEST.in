@@ -1,8 +1,0 @@
-graft example_test_pkg
-include LICENSE
-include pyproject.toml
-include README.md
-include requirements.txt
-include requirements-dev.txt
-include setup.py
-global-exclude *.py[cod]
