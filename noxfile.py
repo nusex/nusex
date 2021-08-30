@@ -29,32 +29,16 @@ def check_formatting(session: nox.Session) -> None:
 
 
 @nox.session(reuse_venv=True)
-def check_line_lengths(session: nox.Session) -> None:
-    errors = []
-    exclude = [Path("./nusex/__init__.py")]
-    files = [p for p in Path("./nusex").rglob("*.py") if p not in exclude]
+def check_licensing(session: nox.Session) -> None:
+    missing = []
 
-    in_docs = False
+    for p in (Path(__file__).parent / "nusex").rglob("*.py"):
+        with open(p) as f:
+            if not f.read().startswith("# Copyright (c)"):
+                missing.append(p)
 
-    for file in files:
-        with open(file, mode="r", encoding="utf-8") as f:
-            for i, l in enumerate(f):
-                if l.lstrip().startswith('"""'):
-                    in_docs = True
-
-                limit = 72 if in_docs or l.lstrip().startswith("#") else 79
-                chars = len(l.rstrip("\n"))
-                if chars > limit:
-                    errors.append((file, i + 1, chars, limit))
-
-                if l.rstrip().endswith('"""'):
-                    in_docs = False
-
-    if errors:
-        raise Exception(
-            f"{len(errors):,} line(s) are too long:\n"
-            + "\n".join(
-                f"- {file}, line {line:,} ({chars}/{limit})"
-                for file, line, chars, limit in errors
-            )
+    if missing:
+        session.error(
+            f"\n{len(missing):,} file(s) are missing their licenses:\n"
+            + "\n".join(f" - {file}" for file in missing)
         )
