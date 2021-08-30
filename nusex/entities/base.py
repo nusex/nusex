@@ -43,13 +43,13 @@ class Entity:
 
         return super().__new__(cls)
 
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, dir_, name, ext):
+        self.path = dir_ / f"{name}.{ext}"
 
-        if not os.path.isfile(path):
-            return self.create_new(path.stem)
+        if not os.path.isfile(self.path):
+            return self.create_new(name)
 
-        with open(path) as f:
+        with open(self.path) as f:
             self.data = json.load(f)
 
     def __str__(self):

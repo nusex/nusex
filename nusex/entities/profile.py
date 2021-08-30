@@ -38,7 +38,7 @@ class Profile(Entity):
     __slots__ = Entity.__slots__
 
     def __init__(self, name="default"):
-        super().__init__(PROFILE_DIR / f"{name}.nsp")
+        super().__init__(PROFILE_DIR, name, "nsp")
 
     def __repr__(self):
         return f"<Profile name={self.name}>"
