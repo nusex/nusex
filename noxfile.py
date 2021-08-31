@@ -2,6 +2,8 @@ from pathlib import Path
 
 import nox
 
+LIB_DIR = Path(__file__).parent / "nusex"
+
 
 def parse_requirements(path):
     with open(path, mode="r", encoding="utf-8") as f:
@@ -29,10 +31,59 @@ def check_formatting(session: nox.Session) -> None:
 
 
 @nox.session(reuse_venv=True)
+def check_line_lengths(session: nox.Session) -> None:
+    too_long = []
+    exclude = [LIB_DIR / "__init__.py"]
+    files = [p for p in LIB_DIR.rglob("*.py") if p not in exclude]
+
+    in_docs = False
+
+    for file in files:
+        in_license = True
+
+        with open(file) as f:
+            for i, l in enumerate(f):
+                if in_license:
+                    if l.lstrip().startswith("#"):
+                        continue
+
+                    in_license = False
+
+                if l.lstrip().startswith('"""') or l.lstrip().startswith(
+                    'r"""'
+                ):
+                    in_docs = True
+
+                limit = 72 if in_docs or l.lstrip().startswith("#") else 79
+                chars = len(l.rstrip("\n"))
+                if chars > limit:
+                    too_long.append(
+                        (
+                            f"{file}".replace(f"{LIB_DIR.parent}", "..."),
+                            i + 1,
+                            chars,
+                            limit,
+                        )
+                    )
+
+                if in_docs and '"""' in l:
+                    in_docs = False
+
+    if too_long:
+        session.error(
+            f"\n{len(too_long):,} line(s) are too long:\n"
+            + "\n".join(
+                f" - {file}, line {line:,} ({chars}/{limit})"
+                for file, line, chars, limit in too_long
+            )
+        )
+
+
+@nox.session(reuse_venv=True)
 def check_licensing(session: nox.Session) -> None:
     missing = []
 
-    for p in (Path(__file__).parent / "nusex").rglob("*.py"):
+    for p in LIB_DIR.rglob("*.py"):
         with open(p) as f:
             if not f.read().startswith("# Copyright (c)"):
                 missing.append(p)

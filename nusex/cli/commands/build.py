@@ -74,13 +74,19 @@ def setup(subparsers):
     s.add_argument(
         "-o",
         "--overwrite",
-        help="overwrite an existing template, profile, or extension should it already exist",
+        help=(
+            "overwrite an existing template, profile, or extension should it "
+            "already exist"
+        ),
         action="store_true",
     )
     s.add_argument(
         "-c",
         "--check",
-        help="check the build manifest before building the template or extension",
+        help=(
+            "check the build manifest before building the template "
+            "or extension"
+        ),
         action="store_true",
     )
     s.add_argument(
