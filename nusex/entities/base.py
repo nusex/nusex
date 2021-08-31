@@ -31,7 +31,7 @@ import os
 from pathlib import Path
 
 from nusex.errors import *
-from nusex.helpers import is_valid_name
+from nusex.helpers import is_valid_name, name_does_not_conflict
 
 
 class Entity:
@@ -72,6 +72,9 @@ class Entity:
                 "Names can only contain lower case letters, numbers, "
                 "and underscores"
             )
+
+        if not name_does_not_conflict(name, self.__class__.__name__):
+            raise AlreadyExists("That name is already in use elsewhere")
 
         self.data = {}
 

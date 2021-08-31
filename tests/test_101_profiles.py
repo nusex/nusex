@@ -153,3 +153,7 @@ def test_validate_profile_names():
     for t in good_templates:
         profile = Profile(t)
         assert profile.name == t
+
+    with pytest.raises(AlreadyExists) as exc:
+        Profile("simple_pkg")
+    assert f"{exc.value}" == "That name is already in use elsewhere"
