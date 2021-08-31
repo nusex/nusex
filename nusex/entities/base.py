@@ -55,6 +55,13 @@ class Entity:
     def __str__(self):
         return self.path.stem
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} name={self.name!r}>"
+
+    @property
+    def name(self):
+        return self.path.stem
+
     @property
     def exists(self):
         return os.path.isfile(self.path)

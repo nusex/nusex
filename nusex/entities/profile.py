@@ -40,9 +40,6 @@ class Profile(Entity):
     def __init__(self, name="default"):
         super().__init__(PROFILE_DIR, name, "nsp")
 
-    def __repr__(self):
-        return f"<Profile name={self.name}>"
-
     def create_new(self, name):
         super().create_new(name)
         self.data = {
@@ -85,10 +82,6 @@ class Profile(Entity):
             c.data[k] = v
 
         return c
-
-    @property
-    def name(self):
-        return self.path.stem
 
     @property
     def is_selected(self):
