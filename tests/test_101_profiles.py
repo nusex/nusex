@@ -47,7 +47,7 @@ def test_create_profile():
     assert profile.data["preferred_license"] == "unlicense"
 
     profile.save()
-    assert os.path.isfile(PROFILE_DIR / "__test__.nsp")
+    assert profile.exists
 
 
 def test_select_profile():
@@ -90,6 +90,7 @@ def test_update_profile():
 def test_rename_profile():
     profile = Profile("__test__")
     profile.rename("__test_profile__")
+    # Intentionally explicit.
     assert os.path.isfile(PROFILE_DIR / "__test_profile__.nsp")
 
     # Before continue, copy the file for later tests.
