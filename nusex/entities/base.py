@@ -58,12 +58,19 @@ class Entity:
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name!r}>"
 
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return self.name != other.name
+
     @property
     def name(self):
         return self.path.stem
 
     @property
     def exists(self):
+        # TODO: Change this and others to Path(...).is_file()
         return os.path.isfile(self.path)
 
     def create_new(self, name):

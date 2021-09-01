@@ -52,6 +52,11 @@ class Profile(Entity):
         }
 
     @classmethod
+    def current(cls):
+        with open(CONFIG_DIR / "config") as f:
+            return cls(json.load(f)["profile"])
+
+    @classmethod
     def from_nsc_file(cls, name="default"):
         with open(CONFIG_DIR / "user.nsc") as f:
             data = json.load(f)
