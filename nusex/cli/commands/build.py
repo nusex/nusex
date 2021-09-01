@@ -26,44 +26,18 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
 
-from nusex import PROFILE_DIR, Profile
-from nusex.errors import *
-from nusex.helpers import cprint
-
-
-def _build_profile(name, overwrite):
-    if os.path.isfile(PROFILE_DIR / f"{name}.nsp") and not overwrite:
-        raise AlreadyExists(
-            "A profile with that name already exists (use -o to ignore this)"
-        )
-
-    profile = Profile(name)
-    profile.setup()
-    profile.save()
-    profile.select()
-    cprint("aok", f"Profile '{profile.name}' successfully created!")
-
-
-def run(name, extension, profile, overwrite, check, from_repo):
-    if profile:
-        return _build_profile(name, overwrite)
+def run(name, extension, overwrite, check, from_repo):
+    ...
 
 
 def setup(subparsers):
     s = subparsers.add_parser(
         "build",
-        description="Build a new template, profile, or extension.",
+        description="Build a new template or extension.",
     )
     s.add_argument(
         "name", help="the name for the new template, profile, or extension"
-    )
-    s.add_argument(
-        "-p",
-        "--profile",
-        help="build an profile instead of a template (overrides -e)",
-        action="store_true",
     )
     s.add_argument(
         "-e",
