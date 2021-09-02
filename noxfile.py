@@ -3,6 +3,7 @@ from pathlib import Path
 import nox
 
 LIB_DIR = Path(__file__).parent / "nusex"
+TEST_DIR = Path(__file__).parent / "tests"
 
 
 def parse_requirements(path):
@@ -35,6 +36,7 @@ def check_line_lengths(session: nox.Session) -> None:
     too_long = []
     exclude = [LIB_DIR / "__init__.py"]
     files = [p for p in LIB_DIR.rglob("*.py") if p not in exclude]
+    files.extend([p for p in TEST_DIR.rglob("*.py")])
 
     in_docs = False
 
@@ -83,7 +85,7 @@ def check_line_lengths(session: nox.Session) -> None:
 def check_licensing(session: nox.Session) -> None:
     missing = []
 
-    for p in LIB_DIR.rglob("*.py"):
+    for p in [*LIB_DIR.rglob("*.py"), *TEST_DIR.rglob("*.py")]:
         with open(p) as f:
             if not f.read().startswith("# Copyright (c)"):
                 missing.append(p)
