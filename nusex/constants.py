@@ -51,7 +51,6 @@ else:
     CONFIG_DIR = Path.home() / f".config/{_suffix()}"
     TEMP_DIR = Path(f"/tmp/{_suffix()}")
 
-EXTENSION_DIR = CONFIG_DIR / "extensions"
 LICENSE_DIR = CONFIG_DIR / "licenses"
 PROFILE_DIR = CONFIG_DIR / "profiles"
 TEMPLATE_DIR = CONFIG_DIR / "templates"
