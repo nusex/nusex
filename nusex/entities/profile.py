@@ -30,6 +30,8 @@ import json
 
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
 from nusex.errors import *
+from nusex.helpers import validate_name
+from nusex.spec import NSPDecoder, NSPEncoder
 
 from .base import Entity
 
@@ -41,7 +43,7 @@ class Profile(Entity):
         super().__init__(PROFILE_DIR, name, "nsp")
 
     def create_new(self, name):
-        super().create_new(name)
+        validate_name(name, self.__class__.__name__)
         self.data = {
             "author_name": "",
             "author_email": "",
@@ -50,6 +52,12 @@ class Profile(Entity):
             "default_description": "My project, created using nusex",
             "preferred_license": "unlicense",
         }
+
+    def load(self):
+        self.data = NSPDecoder().read(self.path)
+
+    def save(self):
+        NSPEncoder().write(self.path, self.data)
 
     @classmethod
     def current(cls):

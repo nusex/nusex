@@ -33,6 +33,7 @@ import shutil
 import pytest  # type: ignore
 
 from nusex import CONFIG_DIR, PROFILE_DIR, Profile
+from nusex.spec import NSPDecoder, NSPEncoder
 from nusex.errors import *
 
 
@@ -139,21 +140,40 @@ def test_create_from_nsc_file():
 
 
 def test_validate_profile_names():
-    bad_templates = ("test-template", "TestTemplate", "folder/test")
-    good_templates = ("test", "test_template", "test69")
+    bad_profiles = ("test-profile", "TestProfile", "folder/test")
+    good_profiles = ("test", "test_profile", "test69")
 
-    for t in bad_templates:
-        with pytest.raises(InvalidConfiguration) as exc:
+    for t in bad_profiles:
+        with pytest.raises(InvalidName) as exc:
             Profile(t)
         assert f"{exc.value}" == (
             "Names can only contain lower case letters, numbers, and "
             "underscores"
         )
 
-    for t in good_templates:
+    for t in good_profiles:
         profile = Profile(t)
         assert profile.name == t
+
+    with pytest.raises(InvalidName) as exc:
+        Profile("this_is_a_really_long_profile_name")
+    assert f"{exc.value}" == "Names are limited to 24 characters"
 
     with pytest.raises(AlreadyExists) as exc:
         Profile("simple_pkg")
     assert f"{exc.value}" == "That name is already in use elsewhere"
+
+
+def test_profile_spec():
+    data = {
+        "author_name": "John Smith",
+        "author_email": "thedoctor@email.com",
+        "git_profile_url": "https://github.com/shakespearecode",
+        "starting_version": "0.1.0",
+        "default_description": "My project, made using nusex",
+        "preferred_license": "mit",
+    }
+    NSPEncoder().write(PROFILE_DIR / "__spec_test__.nsp", data)
+
+    data2 = NSPDecoder().read(PROFILE_DIR / "__spec_test__.nsp")
+    assert data == data2

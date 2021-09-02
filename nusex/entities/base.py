@@ -26,12 +26,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import json
 import os
-from pathlib import Path
 
 from nusex.errors import *
-from nusex.helpers import is_valid_name, name_does_not_conflict
 
 
 class Entity:
@@ -49,8 +46,7 @@ class Entity:
         if not os.path.isfile(self.path):
             return self.create_new(name)
 
-        with open(self.path) as f:
-            self.data = json.load(f)
+        self.load()
 
     def __str__(self):
         return self.path.stem
@@ -64,30 +60,25 @@ class Entity:
     def __ne__(self, other):
         return self.name != other.name
 
+    def __getitem__(self, key):
+        return self.data[key]
+
     @property
     def name(self):
         return self.path.stem
 
     @property
     def exists(self):
-        # TODO: Change this and others to Path(...).is_file()
-        return os.path.isfile(self.path)
+        return self.path.is_file()
 
     def create_new(self, name):
-        if not is_valid_name(name):
-            raise InvalidConfiguration(
-                "Names can only contain lower case letters, numbers, "
-                "and underscores"
-            )
+        raise NotImplementedError
 
-        if not name_does_not_conflict(name, self.__class__.__name__):
-            raise AlreadyExists("That name is already in use elsewhere")
-
-        self.data = {}
+    def load(self):
+        raise NotImplementedError
 
     def save(self):
-        with open(self.path, "w") as f:
-            json.dump(self.data, f)
+        raise NotImplementedError
 
     def delete(self):
         os.remove(self.path)
