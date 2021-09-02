@@ -54,15 +54,15 @@ class Profile(Entity):
         }
 
     def load(self):
-        self.data = NSPDecoder().read_data(self.path)
+        self.data = NSPDecoder().read(self.path)
 
     def save(self):
-        NSPEncoder().write_data(self.path, self.data)
+        NSPEncoder().write(self.path, self.data)
 
     @classmethod
     def current(cls):
         return cls(
-            NSCDecoder().read_data(CONFIG_DIR / "config.nsc")["profile"]
+            NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"]
         )
 
     @classmethod
@@ -100,14 +100,14 @@ class Profile(Entity):
     @property
     def is_selected(self):
         return (
-            NSCDecoder().read_data(CONFIG_DIR / "config.nsc")["profile"]
+            NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"]
             == self.path.stem
         )
 
     def select(self):
-        data = NSCDecoder().read_data(CONFIG_DIR / "config.nsc")
+        data = NSCDecoder().read(CONFIG_DIR / "config.nsc")
         data["profile"] = self.path.stem
-        NSCEncoder().write_data(CONFIG_DIR / "config.nsc", data)
+        NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
 
     def _resolve_license(self, value):
         for file in LICENSE_DIR.glob("*.txt"):

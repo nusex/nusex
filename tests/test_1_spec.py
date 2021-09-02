@@ -28,31 +28,21 @@
 
 from nusex import CONFIG_DIR, PROFILE_DIR
 from nusex.spec import *
-from nusex.spec.nsc import SPEC_VERSION as NSC_SPEC_VERSION
-from nusex.spec.nsp import SPEC_VERSION as NSP_SPEC_VERSION
 
 
-def test_nsc_data():
+def test_nsc_spec():
     data = {
         "profile": "default",
         "last_update": "1.2.5.dev420",
         "use_wildmatch_ignore": False,
     }
-    NSCEncoder().write_data(CONFIG_DIR / "config.nsc", data)
+    NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
 
-    data2 = NSCDecoder().read_data(CONFIG_DIR / "config.nsc")
+    data2 = NSCDecoder().read(CONFIG_DIR / "config.nsc")
     assert data == data2
 
 
-def test_nsc_metadata():
-    metadata = {
-        "spec_version": NSC_SPEC_VERSION,
-    }
-    metadata2 = NSCDecoder().read_metadata(CONFIG_DIR / "config.nsc")
-    assert metadata == metadata2
-
-
-def test_nsp_data():
+def test_nsp_spec():
     data = {
         "author_name": "John Smith",
         "author_email": "thedoctor@email.com",
@@ -61,15 +51,7 @@ def test_nsp_data():
         "default_description": "My project, made using nusex",
         "preferred_license": "mit",
     }
-    NSPEncoder().write_data(PROFILE_DIR / "__spec_test__.nsp", data)
+    NSPEncoder().write(PROFILE_DIR / "__spec_test__.nsp", data)
 
-    data2 = NSPDecoder().read_data(PROFILE_DIR / "__spec_test__.nsp")
+    data2 = NSPDecoder().read(PROFILE_DIR / "__spec_test__.nsp")
     assert data == data2
-
-
-def test_nsp_metadata():
-    metadata = {
-        "spec_version": NSP_SPEC_VERSION,
-    }
-    metadata2 = NSPDecoder().read_metadata(PROFILE_DIR / "__spec_test__.nsp")
-    assert metadata == metadata2

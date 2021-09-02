@@ -63,7 +63,7 @@ def run():
         "last_update": nusex.__version__,
         "use_wildmatch_ignore": False,
     }
-    NSCEncoder().write_data(CONFIG_DIR / "config.nsc", settings)
+    NSCEncoder().write(CONFIG_DIR / "config.nsc", settings)
     print("done")
 
     cprint("aok", "Initialisation complete!")

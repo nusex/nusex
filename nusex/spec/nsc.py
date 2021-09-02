@@ -28,16 +28,14 @@
 
 from nusex.errors import InvalidFormat
 
-SPEC_VERSION = "1.0"
 SPEC_ID = b"\x99\x63"
 
 
 class NSCEncoder:
-    def write_data(self, path, data):
+    def write(self, path, data):
         with open(path, "wb") as f:
-            # Write metadata.
+            # Identify format.
             f.write(SPEC_ID)
-            f.write(SPEC_VERSION.replace(".", "").ljust(4).encode())
 
             # Write data.
             f.write(data["profile"].ljust(24).encode())
@@ -61,26 +59,12 @@ class NSCDecoder:
             "use_wildmatch_ignore": False,
         }
 
-    def read_metadata(self, path):
-        with open(path, "rb") as f:
-            # Validate format.
-            if f.read(2) != SPEC_ID:
-                raise InvalidFormat("Not a valid NSC file")
-
-            spec_ver = f.read(4).decode()
-            metadata = {
-                "spec_version": f"{spec_ver[0]}.{spec_ver[1:].strip()}"
-            }
-
-        return metadata
-
-    def read_data(self, path):
+    def read(self, path):
         data = self.defaults.copy()
         with open(path, "rb") as f:
             # Validate format.
             if f.read(2) != SPEC_ID:
                 raise InvalidFormat("Not a valid NSC file")
-            f.read(4)
 
             # Load profile data.
             data["profile"] = f.read(24).decode().strip()
