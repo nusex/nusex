@@ -31,6 +31,7 @@ import subprocess as sp
 import sys
 
 from . import INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
+from .errors import *
 
 message_types = {
     "aok": ("🎉", "\33[92m"),
@@ -45,23 +46,23 @@ def cprint(type, text, **kwargs):
     print(f"{emoji} {colour}{text}\33[0m", **kwargs)
 
 
-def is_valid_name(name):
-    # Returns True if the name IS valid.
-    return not INVALID_NAME_PATTERN.search(name)
+def validate_name(name, for_type):
+    if len(name) > 24:
+        raise InvalidName("Names are limited to 24 characters")
 
+    if INVALID_NAME_PATTERN.search(name):
+        raise InvalidName(
+            "Names can only contain lower case letters, numbers, "
+            "and underscores"
+        )
 
-def name_does_not_conflict(name, for_type):
-    # Returns True if the name DOES NOT conflict.
-    in_dirs = {
-        "Profile": [TEMPLATE_DIR],
-        "Template": [PROFILE_DIR],
+    in_dir = {
+        "Profile": TEMPLATE_DIR,
+        "Template": PROFILE_DIR,
     }[for_type]
 
-    for d in in_dirs:
-        if name in (f.split(".")[0] for f in os.listdir(d)):
-            return False
-
-    return True
+    if name in (f.split(".")[0] for f in os.listdir(in_dir)):
+        raise InvalidName("That name is already in use elsewhere")
 
 
 def run(command):
