@@ -162,18 +162,3 @@ def test_validate_profile_names():
     with pytest.raises(AlreadyExists) as exc:
         Profile("simple_pkg")
     assert f"{exc.value}" == "That name is already in use elsewhere"
-
-
-def test_profile_spec():
-    data = {
-        "author_name": "John Smith",
-        "author_email": "thedoctor@email.com",
-        "git_profile_url": "https://github.com/shakespearecode",
-        "starting_version": "0.1.0",
-        "default_description": "My project, made using nusex",
-        "preferred_license": "mit",
-    }
-    NSPEncoder().write(PROFILE_DIR / "__spec_test__.nsp", data)
-
-    data2 = NSPDecoder().read(PROFILE_DIR / "__spec_test__.nsp")
-    assert data == data2

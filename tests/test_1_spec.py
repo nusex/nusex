@@ -26,17 +26,50 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex import CONFIG_DIR
-from nusex.spec import NSCDecoder, NSCEncoder
+from nusex import CONFIG_DIR, PROFILE_DIR
+from nusex.spec import *
+from nusex.spec.nsc import SPEC_VERSION as NSC_SPEC_VERSION
+from nusex.spec.nsp import SPEC_VERSION as NSP_SPEC_VERSION
 
 
-def test_config_spec():
+def test_nsc_data():
     data = {
         "profile": "default",
         "last_update": "1.2.5.dev420",
-        "use_wildmatching": False,
+        "use_wildmatch_ignore": False,
     }
-    NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
+    NSCEncoder().write_data(CONFIG_DIR / "config.nsc", data)
 
-    data2 = NSCDecoder().read(CONFIG_DIR / "config.nsc")
+    data2 = NSCDecoder().read_data(CONFIG_DIR / "config.nsc")
     assert data == data2
+
+
+def test_nsc_metadata():
+    metadata = {
+        "spec_version": NSC_SPEC_VERSION,
+    }
+    metadata2 = NSCDecoder().read_metadata(CONFIG_DIR / "config.nsc")
+    assert metadata == metadata2
+
+
+def test_nsp_data():
+    data = {
+        "author_name": "John Smith",
+        "author_email": "thedoctor@email.com",
+        "git_profile_url": "https://github.com/shakespearecode",
+        "starting_version": "0.1.0",
+        "default_description": "My project, made using nusex",
+        "preferred_license": "mit",
+    }
+    NSPEncoder().write_data(PROFILE_DIR / "__spec_test__.nsp", data)
+
+    data2 = NSPDecoder().read_data(PROFILE_DIR / "__spec_test__.nsp")
+    assert data == data2
+
+
+def test_nsp_metadata():
+    metadata = {
+        "spec_version": NSP_SPEC_VERSION,
+    }
+    metadata2 = NSPDecoder().read_metadata(PROFILE_DIR / "__spec_test__.nsp")
+    assert metadata == metadata2
