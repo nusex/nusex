@@ -61,10 +61,12 @@ class Profile(Entity):
 
     @classmethod
     def current(cls):
-        return cls(NSCDecoder().read_data(CONFIG_DIR / "config.nsc")["profile"])
+        return cls(
+            NSCDecoder().read_data(CONFIG_DIR / "config.nsc")["profile"]
+        )
 
     @classmethod
-    def from_nsc_file(cls, name="default"):
+    def from_legacy(cls, name="default"):
         with open(CONFIG_DIR / "user.nsc") as f:
             data = json.load(f)
 

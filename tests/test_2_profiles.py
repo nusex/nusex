@@ -106,7 +106,7 @@ def test_delete_profile():
     assert not os.path.isfile(PROFILE_DIR / "__test_profile__.nsp")
 
 
-def test_create_from_nsc_file():
+def test_create_from_legacy():
     # Write the nsc file.
     with open(CONFIG_DIR / "user.nsc", "w") as f:
         data = {
@@ -119,7 +119,7 @@ def test_create_from_nsc_file():
         }
         json.dump(data, f)
 
-    profile = Profile.from_nsc_file()
+    profile = Profile.from_legacy()
     assert tuple(profile.data.keys()) == (
         "author_name",
         "author_email",
