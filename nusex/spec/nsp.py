@@ -29,7 +29,7 @@
 from nusex.errors import InvalidFormat
 
 SPEC_VERSION = "1.0"
-ID = b"\x99\x70"
+SPEC_ID = b"\x99\x70"
 
 
 class NSPEncoder:
@@ -46,7 +46,7 @@ class NSPEncoder:
     def write_data(self, path, data):
         with open(path, "wb") as f:
             # Write metadata.
-            f.write(ID)
+            f.write(SPEC_ID)
             f.write(SPEC_VERSION.replace(".", "").ljust(4).encode())
 
             # Write data.
@@ -78,7 +78,7 @@ class NSPDecoder:
     def _scan(self, path):
         with open(path, "rb") as f:
             # Validate format.
-            if f.read(2) != ID:
+            if f.read(2) != SPEC_ID:
                 raise InvalidFormat("Not a valid NSP file")
             f.read(4)
 
@@ -96,7 +96,7 @@ class NSPDecoder:
     def read_metadata(self, path):
         with open(path, "rb") as f:
             # Validate format.
-            if f.read(2) != ID:
+            if f.read(2) != SPEC_ID:
                 raise InvalidFormat("Not a valid NSP file")
 
             spec_ver = f.read(4).decode()
