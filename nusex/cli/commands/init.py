@@ -34,6 +34,7 @@ import nusex
 from nusex import CONFIG_DIR, Profile
 from nusex.helpers import cprint
 from nusex.utils import Downloader
+from nusex.spec import NSCDecoder, NSCEncoder
 
 DIRS = ("licenses", "profiles", "templates")
 
@@ -57,11 +58,12 @@ def run():
     print("done")
 
     cprint("prc", "Creating config files...", end=" ")
-    with open(CONFIG_DIR / "config", "w") as f:
-        settings = {"profile": profile_name, "last_update": nusex.__version__}
-        json.dump(settings, f)
-    with open(CONFIG_DIR / "ignore", "w"):
-        ...
+    settings = {
+        "profile": profile_name,
+        "last_update": nusex.__version__,
+        "use_wildmatch_ignore": False,
+    }
+    NSCEncoder().write_data(CONFIG_DIR / "config.nsc", settings)
     print("done")
 
     cprint("aok", "Initialisation complete!")

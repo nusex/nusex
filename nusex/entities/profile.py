@@ -31,7 +31,7 @@ import json
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
 from nusex.errors import *
 from nusex.helpers import validate_name
-from nusex.spec import NSPDecoder, NSPEncoder
+from nusex.spec import NSCDecoder, NSCEncoder, NSPDecoder, NSPEncoder
 
 from .base import Entity
 
@@ -54,15 +54,14 @@ class Profile(Entity):
         }
 
     def load(self):
-        self.data = NSPDecoder().read(self.path)
+        self.data = NSPDecoder().read_data(self.path)
 
     def save(self):
-        NSPEncoder().write(self.path, self.data)
+        NSPEncoder().write_data(self.path, self.data)
 
     @classmethod
     def current(cls):
-        with open(CONFIG_DIR / "config") as f:
-            return cls(json.load(f)["profile"])
+        return cls(NSCDecoder().read_data(CONFIG_DIR / "config.nsc")["profile"])
 
     @classmethod
     def from_nsc_file(cls, name="default"):
@@ -98,16 +97,15 @@ class Profile(Entity):
 
     @property
     def is_selected(self):
-        with open(CONFIG_DIR / "config") as f:
-            return json.load(f)["profile"] == self.path.stem
+        return (
+            NSCDecoder().read_data(CONFIG_DIR / "config.nsc")["profile"]
+            == self.path.stem
+        )
 
     def select(self):
-        with open(CONFIG_DIR / "config", "r+") as f:
-            data = json.load(f)
-            data["profile"] = self.path.stem
-            f.seek(0)
-            json.dump(data, f)
-            f.truncate()
+        data = NSCDecoder().read_data(CONFIG_DIR / "config.nsc")
+        data["profile"] = self.path.stem
+        NSCEncoder().write_data(CONFIG_DIR / "config.nsc", data)
 
     def _resolve_license(self, value):
         for file in LICENSE_DIR.glob("*.txt"):
