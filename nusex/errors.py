@@ -39,6 +39,10 @@ class BuildError(NusexError):
     ...
 
 
+class InvalidFormat(NusexError):
+    ...
+
+
 class NusexUserError(NusexError):
     ...
 
