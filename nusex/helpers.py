@@ -62,7 +62,7 @@ def validate_name(name, for_type):
     }[for_type]
 
     if name in (f.split(".")[0] for f in os.listdir(in_dir)):
-        raise InvalidName("That name is already in use elsewhere")
+        raise AlreadyExists("That name is already in use elsewhere")
 
 
 def run(command):

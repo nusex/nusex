@@ -35,6 +35,10 @@ class DownloadFailure(NusexError):
     ...
 
 
+class BuildError(NusexError):
+    ...
+
+
 class NusexUserError(NusexError):
     ...
 
@@ -44,6 +48,10 @@ class InvalidRequest(NusexUserError):
 
 
 class InvalidConfiguration(NusexUserError):
+    ...
+
+
+class InvalidName(NusexUserError):
     ...
 
 
