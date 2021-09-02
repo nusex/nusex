@@ -26,44 +26,17 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SPEC_VERSION = "1.0"
+from nusex import CONFIG_DIR
+from nusex.spec import NSCDecoder, NSCEncoder
 
 
-class NSCEncoder:
-    def write(self, path, data):
-        with open(path, "wb") as f:
-            f.write(data["profile"].ljust(24).encode())
-            f.write(
-                data["last_update"]
-                .replace(".", "")
-                .replace("dev", "")
-                .ljust(6)
-                .encode()
-            )
-            f.write((b"\x00", b"\x01")[data["use_wildmatch_ignore"]])
+def test_config_spec():
+    data = {
+        "profile": "default",
+        "last_update": "1.2.5.dev420",
+        "use_wildmatching": False,
+    }
+    NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
 
-
-class NSCDecoder:
-    def __init__(self):
-        self.defaults = {
-            "profile": "default",
-            "last_update": "1.0.0",
-            "use_wildmatch_ignore": False,
-        }
-
-    def read(self, path):
-        data = self.defaults.copy()
-        with open(path, "rb") as f:
-            data["profile"] = f.read(24).decode().strip()
-
-            ver = "{}.{}.{}".format(*f.read(3).decode())
-            dev = f.read(3)
-            if dev != b"   ":
-                ver += f".dev{dev.decode().strip()}"
-            data["last_update"] = ver
-
-            # Not guaranteed from here.
-            if f.peek(1):
-                data["use_wildmatch_ignore"] = f.read(1) == b"\x01"
-
-        return data
+    data2 = NSCDecoder().read(CONFIG_DIR / "config.nsc")
+    assert data == data2
