@@ -37,4 +37,4 @@ __license__ = "BSD-3-Clause"
 __bugtracker__ = "https://github.com/parafoxia/nusex/issues"
 
 from .constants import *
-from .entities import Extension, Profile, Template
+from .entities import Profile, Template

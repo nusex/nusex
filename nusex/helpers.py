@@ -30,7 +30,7 @@ import os
 import subprocess as sp
 import sys
 
-from . import EXTENSION_DIR, INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
+from . import INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
 
 message_types = {
     "aok": ("🎉", "\33[92m"),
@@ -53,9 +53,8 @@ def is_valid_name(name):
 def name_does_not_conflict(name, for_type):
     # Returns True if the name DOES NOT conflict.
     in_dirs = {
-        "Extension": [PROFILE_DIR, TEMPLATE_DIR],
-        "Profile": [EXTENSION_DIR, TEMPLATE_DIR],
-        "Template": [PROFILE_DIR, EXTENSION_DIR],
+        "Profile": [TEMPLATE_DIR],
+        "Template": [PROFILE_DIR],
     }[for_type]
 
     for d in in_dirs:

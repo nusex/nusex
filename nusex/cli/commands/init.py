@@ -35,7 +35,7 @@ from nusex import CONFIG_DIR, Profile
 from nusex.helpers import cprint
 from nusex.utils import Downloader
 
-DIRS = ("extensions", "licenses", "profiles", "templates")
+DIRS = ("licenses", "profiles", "templates")
 
 
 def run():
