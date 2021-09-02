@@ -26,7 +26,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from nusex.errors import InvalidFormat
+
 SPEC_VERSION = "1.0"
+ID = b"\x99\x70"
 
 
 class NSPEncoder:
@@ -40,8 +43,13 @@ class NSPEncoder:
             "preferred_license": b"\x06",
         }
 
-    def write(self, path, data):
+    def write_data(self, path, data):
         with open(path, "wb") as f:
+            # Write metadata.
+            f.write(ID)
+            f.write(SPEC_VERSION.replace(".", "").ljust(4).encode())
+
+            # Write data.
             for k, v in data.items():
                 f.write(self.map[k])
                 f.write(v.encode())
@@ -69,6 +77,11 @@ class NSPDecoder:
 
     def _scan(self, path):
         with open(path, "rb") as f:
+            # Validate format.
+            if f.read(2) != ID:
+                raise InvalidFormat("Not a valid NSP file")
+            f.read(4)
+
             while f.peek(1):
                 key = self.map[f.read(1)]
                 value = b""
@@ -80,7 +93,20 @@ class NSPDecoder:
 
                 yield key, value.decode()
 
-    def read(self, path):
+    def read_metadata(self, path):
+        with open(path, "rb") as f:
+            # Validate format.
+            if f.read(2) != ID:
+                raise InvalidFormat("Not a valid NSP file")
+
+            spec_ver = f.read(4).decode()
+            metadata = {
+                "spec_version": f"{spec_ver[0]}.{spec_ver[1:].strip()}"
+            }
+
+        return metadata
+
+    def read_data(self, path):
         data = self.defaults.copy()
         data.update({k: v for k, v in self._scan(path)})
         return data

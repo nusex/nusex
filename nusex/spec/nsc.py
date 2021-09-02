@@ -26,12 +26,20 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from nusex.errors import InvalidFormat
+
 SPEC_VERSION = "1.0"
+ID = b"\x99\x63"
 
 
 class NSCEncoder:
-    def write(self, path, data):
+    def write_data(self, path, data):
         with open(path, "wb") as f:
+            # Write metadata.
+            f.write(ID)
+            f.write(SPEC_VERSION.replace(".", "").ljust(4).encode())
+
+            # Write data.
             f.write(data["profile"].ljust(24).encode())
             f.write(
                 data["last_update"]
@@ -40,7 +48,9 @@ class NSCEncoder:
                 .ljust(6)
                 .encode()
             )
-            f.write((b"\x00", b"\x01")[data["use_wildmatch_ignore"]])
+
+            # Not guaranteed, so write a default value if not present.
+            f.write((b"\x00", b"\x01")[data.get("use_wildmatch_ignore", 0)])
 
 
 class NSCDecoder:
@@ -51,9 +61,28 @@ class NSCDecoder:
             "use_wildmatch_ignore": False,
         }
 
-    def read(self, path):
+    def read_metadata(self, path):
+        with open(path, "rb") as f:
+            # Validate format.
+            if f.read(2) != ID:
+                raise InvalidFormat("Not a valid NSC file")
+
+            spec_ver = f.read(4).decode()
+            metadata = {
+                "spec_version": f"{spec_ver[0]}.{spec_ver[1:].strip()}"
+            }
+
+        return metadata
+
+    def read_data(self, path):
         data = self.defaults.copy()
         with open(path, "rb") as f:
+            # Validate format.
+            if f.read(2) != ID:
+                raise InvalidFormat("Not a valid NSC file")
+            f.read(4)
+
+            # Load profile data.
             data["profile"] = f.read(24).decode().strip()
 
             ver = "{}.{}.{}".format(*f.read(3).decode())
