@@ -61,9 +61,7 @@ class Profile(Entity):
 
     @classmethod
     def current(cls):
-        return cls(
-            NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"]
-        )
+        return cls(NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"])
 
     @classmethod
     def from_legacy(cls, name="default"):
