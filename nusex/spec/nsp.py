@@ -51,7 +51,7 @@ class NSPEncoder:
             for k, v in data.items():
                 f.write(self.map[k])
                 f.write(v.encode())
-                f.write(b"\x00")
+                f.write(b"\x97")
 
 
 class NSPDecoder:
@@ -84,7 +84,7 @@ class NSPDecoder:
                 value = b""
                 while True:
                     char = f.read(1)
-                    if char == b"\x00":
+                    if char == b"\x97":
                         break
                     value += char
 
