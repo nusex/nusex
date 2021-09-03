@@ -26,7 +26,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex import CONFIG_DIR, PROFILE_DIR
+from pathlib import Path
+
+from nusex import CONFIG_DIR, PROFILE_DIR, TEMPLATE_DIR
 from nusex.spec import *
 
 
@@ -51,7 +53,23 @@ def test_nsp_spec():
         "default_description": "My project, made using nusex",
         "preferred_license": "mit",
     }
-    NSPEncoder().write(PROFILE_DIR / "__spec_test__.nsp", data)
+    NSPEncoder().write(PROFILE_DIR / "__nsp_spec_test__.nsp", data)
 
-    data2 = NSPDecoder().read(PROFILE_DIR / "__spec_test__.nsp")
+    data2 = NSPDecoder().read(PROFILE_DIR / "__nsp_spec_test__.nsp")
+    assert data == data2
+
+
+def test_nsx_spec():
+    data = {
+        "files": {
+            p.stem: p.read_bytes()
+            for p in (Path(__file__).parent / "nsx_data").glob("*")
+        },
+        "installs": ["-r requirements.txt", "nusex"],
+        "extension_for": "template",
+        "lock": 0,
+    }
+    NSXEncoder().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
+
+    data2 = NSXDecoder().read(TEMPLATE_DIR / "__nsx_spec_test__.nsx")
     assert data == data2
