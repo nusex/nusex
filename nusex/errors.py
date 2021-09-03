@@ -43,6 +43,10 @@ class InvalidFormat(NusexError):
     ...
 
 
+class UnsupportedFile(NusexError):
+    ...
+
+
 class NusexUserError(NusexError):
     ...
 
