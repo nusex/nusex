@@ -21,13 +21,13 @@ def tests(session: nox.Session) -> None:
 
 @nox.session(reuse_venv=True)
 def check_formatting(session: nox.Session) -> None:
-    black_version = next(
+    black = next(
         filter(
             lambda d: d.startswith("black"),
             parse_requirements("./requirements-dev.txt"),
         )
-    ).split("==")[1]
-    session.install(f"black=={black_version}")
+    )
+    session.install(black)
     session.run("black", ".", "--check")
 
 
