@@ -26,7 +26,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import json
 import os
 import sys
 
@@ -34,13 +33,13 @@ import nusex
 from nusex import CONFIG_DIR, Profile
 from nusex.helpers import cprint
 from nusex.utils import Downloader
-from nusex.spec import NSCDecoder, NSCEncoder
+from nusex.spec import NSCEncoder
 
 DIRS = ("licenses", "profiles", "templates")
 
 
 def run():
-    if os.path.isfile(CONFIG_DIR / "config"):
+    if os.path.isfile(CONFIG_DIR / "config.nsc"):
         cprint("err", "You've already initialised nusex!")
         sys.exit(2)
 

@@ -33,8 +33,7 @@ import traceback
 from importlib import import_module
 from pathlib import Path
 
-import nusex
-from nusex import CONFIG_DIR
+from nusex import CONFIG_DIR, __version__
 from nusex.errors import *
 from nusex.helpers import cprint
 
@@ -61,16 +60,16 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        return print(nusex.__version__)
+        return print(__version__)
 
     if not args.subparser:
         return parser.parse_args(("-h",))
 
     # Setup checks.
-    if not os.path.isfile(CONFIG_DIR / "config") and args.subparser != "init":
+    if not os.path.isfile(CONFIG_DIR / "config.nsc") and args.subparser != "init":
         cprint(
-            "💥 That command cannot be run before nusex has been initialised.",
-            colour="red",
+            "err",
+            "That command cannot be run before nusex has been initialised.",
         )
         sys.exit(2)
     elif os.path.isfile(CONFIG_DIR / "user.nsc"):
