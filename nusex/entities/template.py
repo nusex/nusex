@@ -96,14 +96,16 @@ class Template(Entity):
     @classmethod
     def from_cwd(cls, name):
         c = cls(name)
-        project_name = Path(".").resolve().parts[-1]
-        c.build(project_name)
+        c.build(Path(".").resolve().parts[-1])
         return c
 
     @classmethod
     def from_dir(cls, name, path):
+        cur_path = Path(".").resolve()
         os.chdir(path)
-        return cls.from_cwd(name)
+        c = cls.from_cwd(name)
+        os.chdir(cur_path)
+        return c
 
     @classmethod
     def from_repo(cls, name, url):
