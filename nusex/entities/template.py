@@ -61,7 +61,10 @@ DOCS_ATTR_MAPPING = {
     "author": '"PROJECTAUTHOR"',
     "release": "PROJECTNAME.__version__",
 }
-DEFAULT_EXCLUDE_DIRS = r"(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist)"
+DEFAULT_EXCLUDE_DIRS = (
+    r"(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn"
+    r"|_build|buck-out|build|dist)"
+)
 DEFAULT_EXCLUDE_EXTS = r"(py[cod])"
 
 
