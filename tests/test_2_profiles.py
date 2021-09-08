@@ -92,7 +92,7 @@ def test_rename_profile():
     profile = Profile("__test__")
     profile.rename("__test_profile__")
     # Intentionally explicit.
-    assert os.path.isfile(PROFILE_DIR / "__test_profile__.nsp")
+    assert (PROFILE_DIR / "__test_profile__.nsp").is_file()
 
     # Before continue, copy the file for later tests.
     shutil.copyfile(
@@ -103,7 +103,8 @@ def test_rename_profile():
 def test_delete_profile():
     profile = Profile("__test_profile__")
     profile.delete()
-    assert not os.path.isfile(PROFILE_DIR / "__test_profile__.nsp")
+    # Again, intentionally explicit.
+    assert not (PROFILE_DIR / "__test_profile__.nsp").is_file()
 
 
 def test_create_from_legacy():
@@ -159,6 +160,6 @@ def test_validate_profile_names():
         Profile("this_is_a_really_long_profile_name")
     assert f"{exc.value}" == "Names are limited to 24 characters"
 
-    with pytest.raises(AlreadyExists) as exc:
+    with pytest.raises(InvalidName) as exc:
         Profile("simple_pkg")
-    assert f"{exc.value}" == "That name is already in use elsewhere"
+    assert f"{exc.value}" == "That name is reserved"

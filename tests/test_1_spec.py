@@ -62,12 +62,11 @@ def test_nsp_spec():
 def test_nsx_spec():
     data = {
         "files": {
-            p.stem: p.read_bytes()
+            f"{p}".split("/")[-1]: p.read_bytes()
             for p in (Path(__file__).parent / "nsx_data").glob("*")
         },
         "installs": ["-r requirements.txt", "nusex"],
         "extension_for": "template",
-        "lock": 0,
     }
     NSXEncoder().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
 
