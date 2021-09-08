@@ -26,41 +26,42 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 
-def run(name, extension, overwrite, check, from_repo):
-    ...
+from nusex import TEMPLATE_DIR, Template
+from nusex.errors import *
+from nusex.helpers import cprint
+
+
+def run(name, overwrite, check, from_repo, as_extension_for):
+    if os.path.isfile(TEMPLATE_DIR / f"{name}.nsx") and not overwrite:
+        raise AlreadyExists(
+            "That template already exists (use -o to ignore this)"
+        )
+
+    # TODO: Make so when overwriting a template, it doesn't have to
+    # load the previous one first.
+    template = Template.from_cwd(name)
+    template.save()
+    cprint("aok", f"Template '{name}' built successfully!")
 
 
 def setup(subparsers):
     s = subparsers.add_parser(
         "build",
-        description="Build a new template or extension.",
+        description="Build a new template.",
     )
-    s.add_argument(
-        "name", help="the name for the new template, profile, or extension"
-    )
-    s.add_argument(
-        "-e",
-        "--extension",
-        help="build an extension instead of a template",
-        action="store_true",
-    )
+    s.add_argument("name", help="the name for the new template")
     s.add_argument(
         "-o",
         "--overwrite",
-        help=(
-            "overwrite an existing template, profile, or extension should it "
-            "already exist"
-        ),
+        help="overwrite an existing template should it already exist",
         action="store_true",
     )
     s.add_argument(
         "-c",
         "--check",
-        help=(
-            "check the build manifest before building the template "
-            "or extension"
-        ),
+        help="check the build manifest before building the template",
         action="store_true",
     )
     s.add_argument(
@@ -68,6 +69,13 @@ def setup(subparsers):
         "--from-repo",
         help="a repo URL to build a template from",
         metavar="REPO_URL",
+        default="",
+    )
+    s.add_argument(
+        "-e",
+        "--as-extension-for",
+        help="build this template as an extension for another template",
+        metavar="TEMPLATE_NAME",
         default="",
     )
     return subparsers
