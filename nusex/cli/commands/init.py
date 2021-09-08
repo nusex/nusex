@@ -52,18 +52,14 @@ def run():
     profile_name = input(f"🎤 Profile name [default]: ").strip() or "default"
     profile = Profile(profile_name)
     profile.setup()
-    cprint("prc", "Saving profile...", end=" ")
     profile.save()
-    print("done")
 
-    cprint("prc", "Creating config files...", end=" ")
     settings = {
         "profile": profile_name,
         "last_update": nusex.__version__,
         "use_wildmatch_ignore": False,
     }
     NSCEncoder().write(CONFIG_DIR / "config.nsc", settings)
-    print("done")
 
     cprint("aok", "Initialisation complete!")
 
