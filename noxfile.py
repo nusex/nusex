@@ -4,6 +4,7 @@ import nox
 
 LIB_DIR = Path(__file__).parent / "nusex"
 TEST_DIR = Path(__file__).parent / "tests"
+PY_VERSIONS = [f"3.{v}" for v in range(6, 11)]  # 3.6 - 3.10
 
 
 def parse_requirements(path):
@@ -12,7 +13,15 @@ def parse_requirements(path):
         return [d for d in deps if not d.startswith(("#", "-r"))]
 
 
-@nox.session(python=["3.6", "3.7", "3.8", "3.9", "3.10"], reuse_venv=True)
+DEPS = {
+    name: install
+    for name, install in (
+        r.split("~=") for r in parse_requirements("./requirements-dev.txt")
+    )
+}
+
+
+@nox.session(python=PY_VERSIONS, reuse_venv=True)
 def tests(session: nox.Session) -> None:
     deps = parse_requirements("./requirements-test.txt")
     session.install(*deps)
@@ -21,14 +30,26 @@ def tests(session: nox.Session) -> None:
 
 @nox.session(reuse_venv=True)
 def check_formatting(session: nox.Session) -> None:
-    black = next(
-        filter(
-            lambda d: d.startswith("black"),
-            parse_requirements("./requirements-dev.txt"),
-        )
-    )
-    session.install(black)
+    session.install(f"black~={DEPS['black']}")
     session.run("black", ".", "--check")
+
+
+@nox.session(reuse_venv=True)
+def check_imports(session: nox.Session) -> None:
+    session.install(f"flake8~={DEPS['flake8']}", f"isort~={DEPS['isort']}")
+    # flake8 doesn't use the gitignore so we have to be explicit.
+    session.run(
+        "flake8",
+        "nusex",
+        "tests",
+        "--select",
+        "F4",
+        "--extend-ignore",
+        "E,F",
+        "--extend-exclude",
+        "__init__.py",
+    )
+    session.run("isort", ".", "-cq", "--profile", "black")
 
 
 @nox.session(reuse_venv=True)
