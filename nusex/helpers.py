@@ -31,7 +31,7 @@ import subprocess as sp
 import sys
 
 from . import INVALID_NAME_PATTERN, PROFILE_DIR, RESERVED_NAMES, TEMPLATE_DIR
-from .errors import *
+from .errors import AlreadyExists, InvalidName
 
 MESSAGE_TYPES = {
     "aok": ("🎉", "\33[92m"),

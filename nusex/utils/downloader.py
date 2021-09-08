@@ -32,7 +32,7 @@ from urllib.error import HTTPError
 
 import nusex
 from nusex import CONFIG_DIR
-from nusex.errors import *
+from nusex.errors import DownloadFailure, InvalidRequest
 from nusex.helpers import cprint
 
 REPO_URL = nusex.__url__

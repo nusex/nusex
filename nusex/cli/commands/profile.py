@@ -29,7 +29,7 @@
 import os
 
 from nusex import PROFILE_DIR, Profile
-from nusex.errors import *
+from nusex.errors import AlreadyExists
 from nusex.helpers import cprint
 
 

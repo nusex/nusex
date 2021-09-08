@@ -29,7 +29,7 @@
 import json
 
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
-from nusex.errors import *
+from nusex.errors import InvalidConfiguration
 from nusex.helpers import validate_name
 from nusex.spec import NSCDecoder, NSCEncoder, NSPDecoder, NSPEncoder
 

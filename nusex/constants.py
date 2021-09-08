@@ -30,8 +30,6 @@ import os
 import re
 from pathlib import Path
 
-from . import __version__
-
 
 def _suffix():
     # Determine whether this is a production copy or not. This

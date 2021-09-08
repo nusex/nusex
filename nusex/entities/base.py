@@ -28,7 +28,7 @@
 
 import os
 
-from nusex.errors import *
+from nusex.errors import InvalidRequest
 
 
 class Entity:

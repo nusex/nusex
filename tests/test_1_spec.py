@@ -29,7 +29,14 @@
 from pathlib import Path
 
 from nusex import CONFIG_DIR, PROFILE_DIR, TEMPLATE_DIR
-from nusex.spec import *
+from nusex.spec import (
+    NSCDecoder,
+    NSCEncoder,
+    NSPDecoder,
+    NSPEncoder,
+    NSXDecoder,
+    NSXEncoder,
+)
 
 
 def test_nsc_spec():

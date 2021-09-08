@@ -27,14 +27,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
-import os
 import shutil
 
 import pytest  # type: ignore
 
 from nusex import CONFIG_DIR, PROFILE_DIR, Profile
-from nusex.spec import NSPDecoder, NSPEncoder
-from nusex.errors import *
+from nusex.errors import InvalidConfiguration, InvalidName
 
 
 def test_create_profile():

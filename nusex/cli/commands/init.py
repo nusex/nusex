@@ -32,8 +32,8 @@ import sys
 import nusex
 from nusex import CONFIG_DIR, Profile
 from nusex.helpers import cprint
-from nusex.utils import Downloader
 from nusex.spec import NSCEncoder
+from nusex.utils import Downloader
 
 DIRS = ("licenses", "profiles", "templates")
 
