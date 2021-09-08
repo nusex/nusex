@@ -61,6 +61,17 @@ DOCS_ATTR_MAPPING = {
     "author": '"PROJECTAUTHOR"',
     "release": "PROJECTNAME.__version__",
 }
+ATTRS = (
+    "PROJECTNAME",
+    "PROJECTAUTHOR",
+    "PROJECTAUTHOREMAIL",
+    "PROJECTURL",
+    "PROJECTVERSION",
+    "PROJECTDESCRIPTION",
+    "PROJECTLICENSE",
+    "PROJECTYEAR",
+    "LICENSEBODY",
+)
 DEFAULT_EXCLUDE_DIRS = (
     r"(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn"
     r"|_build|buck-out|build|dist)"
@@ -212,3 +223,20 @@ class Template(Entity):
 
         # LICENSE needs to be handles separately.
         set_file_text("LICENSE", "LICENSEBODY")
+
+    def check(self):
+        manifest = {}
+
+        for file, data in self.data["files"].items():
+            manifest.update({file: []})
+
+            try:
+                for i, line in enumerate(data.decode().split("\n")):
+                    if any(a in line for a in ATTRS):
+                        manifest[file].append((i + 1, line))
+            except UnicodeDecodeError:
+                # If it errors here, no modifications could have been
+                # made.
+                ...
+
+        return manifest

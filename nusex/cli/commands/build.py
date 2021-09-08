@@ -41,7 +41,24 @@ def run(name, overwrite, check, from_repo, as_extension_for):
 
     # TODO: Make so when overwriting a template, it doesn't have to
     # load the previous one first.
-    template = Template.from_cwd(name)
+    if from_repo:
+        template = Template.from_repo(name, from_repo)
+    else:
+        template = Template.from_cwd(name)
+
+    if check:
+        cprint("inf", "Showing template manifest (incl. changes):")
+        manifest = template.check()
+        for file, meta in manifest.items():
+            print(file)
+            max_meta = len(meta) - 1
+            for i, (ln, line) in enumerate(meta):
+                if i == max_meta:
+                    print(f"└── Line {ln}: {line}")
+                else:
+                    print(f"├── Line {ln}: {line}")
+        return
+
     template.save()
     cprint("aok", f"Template '{name}' built successfully!")
 
@@ -61,7 +78,7 @@ def setup(subparsers):
     s.add_argument(
         "-c",
         "--check",
-        help="check the build manifest before building the template",
+        help="check the build manifest without building the template",
         action="store_true",
     )
     s.add_argument(
