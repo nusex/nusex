@@ -30,7 +30,7 @@ import os
 import subprocess as sp
 import sys
 
-from . import INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
+from . import INVALID_NAME_PATTERN, PROFILE_DIR, RESERVED_NAMES, TEMPLATE_DIR
 from .errors import *
 
 MESSAGE_TYPES = {
@@ -39,11 +39,6 @@ MESSAGE_TYPES = {
     "err": ("💥", "\33[91m"),
     "prc": ("⌛", ""),
 }
-RESERVED_NAMES = (
-    "simple_app",
-    "simple_pkg",
-    "complex_pkg",
-)
 
 
 def cprint(type, text, **kwargs):
