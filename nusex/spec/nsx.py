@@ -45,8 +45,7 @@ class NSXEncoder:
             else:
                 f.write(b"\x00")
 
-            f.write((b"\x00", b"\x01", b"\x02")[data["lock"]])
-            f.write(b"\x00\x00\x00\x00\x00\x00\x00\x00")  # Reserved space.
+            f.write(b"\x00" * 9)  # Reserved space.
 
             # Files chunk starting byte.
             f.write(b"\x01")
@@ -76,7 +75,6 @@ class NSXDecoder:
             "files": {},
             "installs": [],
             "extension_for": "",
-            "lock": 0,
         }
 
     def _process_files(self, f, data):
@@ -129,8 +127,7 @@ class NSXDecoder:
             if ef == b"\x01":
                 data["extension_for"] = f.read(24).decode().strip()
 
-            data["lock"] = [b"\x00", b"\x01", b"\x02"].index(f.read(1))
-            f.read(8)  # Skip reserved.
+            f.read(9)  # Skip reserved.
 
             # Process chunks.
             while f.peek(1):
