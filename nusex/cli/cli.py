@@ -66,7 +66,10 @@ def main():
         return parser.parse_args(("-h",))
 
     # Setup checks.
-    if not os.path.isfile(CONFIG_DIR / "config.nsc") and args.subparser != "init":
+    if (
+        not os.path.isfile(CONFIG_DIR / "config.nsc")
+        and args.subparser != "init"
+    ):
         cprint(
             "err",
             "That command cannot be run before nusex has been initialised.",
