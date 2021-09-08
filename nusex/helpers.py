@@ -33,16 +33,21 @@ import sys
 from . import INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
 from .errors import *
 
-message_types = {
+MESSAGE_TYPES = {
     "aok": ("🎉", "\33[92m"),
     "war": ("💣", "\33[93m"),
     "err": ("💥", "\33[91m"),
     "prc": ("⌛", ""),
 }
+RESERVED_NAMES = (
+    "simple_app",
+    "simple_pkg",
+    "complex_pkg",
+)
 
 
 def cprint(type, text, **kwargs):
-    emoji, colour = message_types[type]
+    emoji, colour = MESSAGE_TYPES[type]
     print(f"{emoji} {colour}{text}\33[0m", **kwargs)
 
 
@@ -56,13 +61,19 @@ def validate_name(name, for_type):
             "and underscores"
         )
 
+    if name in RESERVED_NAMES:
+        raise InvalidName("That name is reserved")
+
     in_dir = {
         "Profile": TEMPLATE_DIR,
         "Template": PROFILE_DIR,
     }[for_type]
 
     if name in (f.split(".")[0] for f in os.listdir(in_dir)):
-        raise AlreadyExists("That name is already in use elsewhere")
+        raise AlreadyExists(
+            f"A {'profile' if for_type == 'Template' else 'template'} is "
+            "already using that name"
+        )
 
 
 def run(command):
