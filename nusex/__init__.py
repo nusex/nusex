@@ -1,12 +1,12 @@
 __productname__ = "nusex"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __description__ = "A project templating utility for Python."
-__url__ = "https://github.com/parafoxia/nusex"
+__url__ = "https://github.com/nusex/nusex"
 __docs__ = "https://nusex.readthedocs.io/en/latest/"
 __author__ = "Ethan Henderson"
 __author_email__ = "ethan.henderson.1998@gmail.com"
 __license__ = "BSD 3-Clause"
-__bugtracker__ = "https://github.com/parafoxia/nusex/issues"
+__bugtracker__ = "https://github.com/nusex/nusex/issues"
 
 import os
 from pathlib import Path

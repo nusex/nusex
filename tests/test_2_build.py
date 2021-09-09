@@ -118,7 +118,7 @@ def test_from_repo():
         # If they don't exist, no need to worry.
         pass
 
-    run(f"nsx build repo_test -r https://github.com/parafoxia/nusex")
+    run(f"nsx build repo_test -r https://github.com/nusex/nusex")
 
     with open(CONFIG_DIR / "repo_test.nsx") as f:
         data = json.load(f)

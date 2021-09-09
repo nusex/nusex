@@ -23,23 +23,23 @@ nusex
 
 .. image:: https://img.shields.io/maintenance/yes/2021
    :alt: Maintenance
-   :target: https://github.com/parafoxia/nusex
+   :target: https://github.com/nusex/nusex
 
-.. image:: https://img.shields.io/github/release-date/parafoxia/nusex
+.. image:: https://img.shields.io/github/release-date/nusex/nusex
    :alt: GitHub Release Date
-   :target: https://github.com/parafoxia/nusex
+   :target: https://github.com/nusex/nusex
 
-.. image:: https://img.shields.io/github/last-commit/parafoxia/nusex
+.. image:: https://img.shields.io/github/last-commit/nusex/nusex
    :alt: GitHub last commit
-   :target: https://github.com/parafoxia/nusex
+   :target: https://github.com/nusex/nusex
 
 .. image:: https://img.shields.io/readthedocs/nusex
    :alt: Read the Docs
    :target: https://nusex.readthedocs.io/en/latest/index.html
 
-.. image:: https://img.shields.io/github/license/parafoxia/nusex.svg
+.. image:: https://img.shields.io/github/license/nusex/nusex.svg
    :alt: License
-   :target: https://github.com/parafoxia/nusex/blob/main/LICENSE
+   :target: https://github.com/nusex/nusex/blob/main/LICENSE
 
 A project templating utility for Python.
 
