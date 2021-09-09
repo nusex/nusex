@@ -45,7 +45,7 @@ def check_imports(session: nox.Session) -> None:
         "--select",
         "F4",
         "--extend-ignore",
-        "E,F",
+        "E,F,W",
         "--extend-exclude",
         "__init__.py",
     )
