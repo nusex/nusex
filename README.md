@@ -6,11 +6,11 @@
 [![PyPI - Status](https://img.shields.io/pypi/status/nusex)](https://pypi.python.org/pypi/nusex/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/nusex)](https://pypistats.org/packages/nusex)
 
-[![Maintenance](https://img.shields.io/maintenance/yes/2021)](https://github.com/parafoxia/nusex)
-[![GitHub Release Date](https://img.shields.io/github/release-date/parafoxia/nusex)](https://github.com/parafoxia/nusex)
-[![GitHub last commit](https://img.shields.io/github/last-commit/parafoxia/nusex)](https://github.com/parafoxia/nusex)
+[![Maintenance](https://img.shields.io/maintenance/yes/2021)](https://github.com/nusex/nusex)
+[![GitHub Release Date](https://img.shields.io/github/release-date/nusex/nusex)](https://github.com/nusex/nusex)
+[![GitHub last commit](https://img.shields.io/github/last-commit/nusex/nusex)](https://github.com/nusex/nusex)
 [![Read the Docs](https://img.shields.io/readthedocs/nusex)](https://nusex.readthedocs.io/en/latest/index.html)
-[![License](https://img.shields.io/github/license/parafoxia/nusex.svg)](https://github.com/parafoxia/nusex/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/nusex/nusex.svg)](https://github.com/nusex/nusex/blob/main/LICENSE)
 
 A project templating utility for Python.
 
@@ -33,7 +33,7 @@ pip install nusex
 
 You can also install the latest development version using the following command:
 ```sh
-pip install git+https://github.com/parafoxia/nusex.git@develop
+pip install git+https://github.com/nusex/nusex@develop
 ```
 
 You may need to prefix these commands with a call to the Python interpreter depending on your OS and Python configuration.
@@ -59,8 +59,8 @@ To learn how to build templates of your own, [read the documentation](https://nu
 
 ## Contributing
 
-nusex is open to contributions. To find out where to get started, have a look at the [contributing guide](https://github.com/parafoxia/nusex/blob/main/CONTRIBUTING.md).
+nusex is open to contributions. To find out where to get started, have a look at the [contributing guide](https://github.com/nusex/nusex/blob/main/CONTRIBUTING.md).
 
 ## License
 
-The nusex module for Python is licensed under the [BSD 3-Clause License](https://github.com/parafoxia/nusex/blob/main/LICENSE).
+The nusex module for Python is licensed under the [BSD 3-Clause License](https://github.com/nusex/nusex/blob/main/LICENSE).

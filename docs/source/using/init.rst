@@ -17,7 +17,7 @@ You will be asked to provide some information to help nusex dynamically fill in 
 
 nusex does store more configuration information, but you change that later using the :doc:`config command <../refs/commands>`. You can find the created configuration file in **/home/[username]/.config/nusex/user.nsc** (Linux & macOS) or **C:/Users/[username]/.nusex/user.nsc** (Windows). It is safe to edit the file manually, so long as you don't change any of the keys.
 
-After you've provided this information, nusex proceeds to download the latest premade templates from the `GitHub repository <https://github.com/parafoxia/nusex/tree/main/templates>`_. These templates are:
+After you've provided this information, nusex proceeds to download the latest premade templates from the `GitHub repository <https://github.com/nusex/nusex/tree/main/templates>`_. These templates are:
 
 - **simple_app**, for general applications
 - **simple_pkg**, for PyPI packages
