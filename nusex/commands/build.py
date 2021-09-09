@@ -3,6 +3,7 @@ import os
 import re
 import subprocess as sp
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 from nusex import CONFIG_DIR, TEMP_DIR
@@ -94,12 +95,15 @@ def _gather_files_from_repo(url, ignore_exts, ignore_dirs):
 def _build_template(files):
     print("⌛ Building template...", end="")
     project_name = Path(".").resolve().parts[-1]
-    template = {
-        "files": {
-            f"{f}".replace(project_name, "PROJECTNAME"): f.read_text()
-            for f in files
-        },
-    }
+    template = {"files": defaultdict(str)}
+    for f in files:
+        try:
+            data = f.read_text()
+            template["files"][
+                f"{f}".replace(project_name, "PROJECTNAME")
+            ] = data
+        except UnicodeDecodeError:
+            print(f"🔔 Could not read '{f}' properly")
 
     with open(CONFIG_DIR / "user.nsc") as f:
         user_config = json.load(f)
