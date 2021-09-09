@@ -22,20 +22,20 @@ DEPS = {
 
 
 @nox.session(python=PY_VERSIONS, reuse_venv=True)
-def tests(session: nox.Session) -> None:
+def tests(session):
     deps = parse_requirements("./requirements-test.txt")
     session.install(*deps)
     session.run("pytest", "-s", "--verbose", "--log-level=INFO")
 
 
 @nox.session(reuse_venv=True)
-def check_formatting(session: nox.Session) -> None:
+def check_formatting(session):
     session.install(f"black~={DEPS['black']}")
     session.run("black", ".", "--check")
 
 
 @nox.session(reuse_venv=True)
-def check_imports(session: nox.Session) -> None:
+def check_imports(session):
     session.install(f"flake8~={DEPS['flake8']}", f"isort~={DEPS['isort']}")
     # flake8 doesn't use the gitignore so we have to be explicit.
     session.run(
@@ -53,57 +53,14 @@ def check_imports(session: nox.Session) -> None:
 
 
 @nox.session(reuse_venv=True)
-def check_line_lengths(session: nox.Session) -> None:
-    too_long = []
-    exclude = [LIB_DIR / "__init__.py"]
-    files = [p for p in LIB_DIR.rglob("*.py") if p not in exclude]
-    files.extend([p for p in TEST_DIR.rglob("*.py")])
-
-    in_docs = False
-
-    for file in files:
-        in_license = True
-
-        with open(file) as f:
-            for i, l in enumerate(f):
-                if in_license:
-                    if l.lstrip().startswith("#"):
-                        continue
-
-                    in_license = False
-
-                if l.lstrip().startswith('"""') or l.lstrip().startswith(
-                    'r"""'
-                ):
-                    in_docs = True
-
-                limit = 72 if in_docs or l.lstrip().startswith("#") else 79
-                chars = len(l.rstrip("\n"))
-                if chars > limit:
-                    too_long.append(
-                        (
-                            f"{file}".replace(f"{LIB_DIR.parent}", "..."),
-                            i + 1,
-                            chars,
-                            limit,
-                        )
-                    )
-
-                if in_docs and '"""' in l:
-                    in_docs = False
-
-    if too_long:
-        session.error(
-            f"\n{len(too_long):,} line(s) are too long:\n"
-            + "\n".join(
-                f" - {file}, line {line:,} ({chars}/{limit})"
-                for file, line, chars, limit in too_long
-            )
-        )
+def check_line_lengths(session):
+    session.install(f"len8~={DEPS['len8']}")
+    session.run("len8", "nusex")
+    session.run("len8", "tests")
 
 
 @nox.session(reuse_venv=True)
-def check_licensing(session: nox.Session) -> None:
+def check_licensing(session):
     missing = []
 
     for p in [*LIB_DIR.rglob("*.py"), *TEST_DIR.rglob("*.py")]:
