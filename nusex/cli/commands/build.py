@@ -59,6 +59,13 @@ def run(name, overwrite, check, from_repo, as_extension_for):
                     print(f"├── Line {ln}: {line}")
         return
 
+    if as_extension_for:
+        if not os.path.isfile(TEMPLATE_DIR / f"{as_extension_for}.nsx"):
+            raise AlreadyExists(
+                "You cannot create an extension for a non-existent template"
+            )
+        template.data["extension_for"] = as_extension_for
+
     template.save()
     cprint("aok", f"Template '{name}' built successfully!")
 
