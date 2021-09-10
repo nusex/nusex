@@ -30,14 +30,13 @@ import asyncio
 from urllib import request
 from urllib.error import HTTPError
 
-import nusex
 from nusex import CONFIG_DIR
 from nusex.errors import DownloadFailure, InvalidRequest
 from nusex.helpers import cprint
 
-REPO_URL = nusex.__url__
+REPO_URL = "https://github.com/nusex/downloads"
 RAW_URL = "https://raw.githubusercontent.com"
-TEMPLATE_SUFFIX = "tree/main/templates"
+TEMPLATE_SUFFIX = "tree/main/templates1x"
 LICENSE_URL = (
     "https://github.com/github/choosealicense.com/tree/gh-pages/_licenses"
 )
@@ -86,9 +85,9 @@ class Downloader:
             for f in self.files:
                 with request.urlopen(f"{RAW_URL}/{f}") as r:
                     with open(
-                        (CONFIG_DIR / self.of_type) / f.split("/")[-1], "w"
+                        (CONFIG_DIR / self.of_type) / f.split("/")[-1], "wb"
                     ) as f:
-                        f.write(r.read().decode())
+                        f.write(r.read())
                         self.completed += 1
 
                 await asyncio.sleep(0)
