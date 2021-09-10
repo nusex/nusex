@@ -8,9 +8,9 @@ from nusex import CONFIG_DIR, __url__
 
 from ..errors import *
 
-REPO_URL = __url__
+REPO_URL = "https://github.com/nusex/downloads"
 RAW_URL = "https://raw.githubusercontent.com"
-TEMPLATE_SUFFIX = "tree/main/templates"
+TEMPLATE_SUFFIX = "tree/main/templates0x"
 
 
 def _find_templates():
