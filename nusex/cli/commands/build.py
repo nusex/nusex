@@ -33,18 +33,40 @@ from nusex.errors import AlreadyExists
 from nusex.helpers import cprint
 
 
-def run(name, overwrite, check, from_repo, as_extension_for):
+def resolve_ignores(exts, extend_exts, dirs, extend_dirs):
+    if extend_exts != {""}:
+        exts = exts.union(extend_exts)
+    if extend_dirs != {""}:
+        dirs = dirs.union(extend_dirs)
+    return {"exts": exts, "dirs": dirs}
+
+
+def run(
+    name,
+    overwrite,
+    check,
+    from_repo,
+    as_extension_for,
+    ignore_exts,
+    extend_ignore_exts,
+    ignore_dirs,
+    extend_ignore_dirs,
+):
     if os.path.isfile(TEMPLATE_DIR / f"{name}.nsx") and not overwrite:
         raise AlreadyExists(
             "That template already exists (use -o to ignore this)"
         )
 
+    ignores = resolve_ignores(
+        ignore_exts, extend_ignore_exts, ignore_dirs, extend_ignore_dirs
+    )
+
     # TODO: Make so when overwriting a template, it doesn't have to
     # load the previous one first.
     if from_repo:
-        template = Template.from_repo(name, from_repo)
+        template = Template.from_repo(name, from_repo, ignores)
     else:
-        template = Template.from_cwd(name)
+        template = Template.from_cwd(name, ignores)
 
     if check:
         cprint("inf", "Showing template manifest (incl. changes):")
@@ -101,5 +123,51 @@ def setup(subparsers):
         help="build this template as an extension for another template",
         metavar="TEMPLATE_NAME",
         default="",
+    )
+    s.add_argument(
+        "--ignore-exts",
+        help=(
+            "a comma-separated list of extensions to ignore (default: pyc,pyd,"
+            "pyo)"
+        ),
+        metavar="EXTS",
+        default="pyc,pyd,pyo",
+        type=lambda x: set(x.split(",")),
+    )
+    s.add_argument(
+        "--extend-ignore-exts",
+        help=(
+            "a comma-separated list of extensions to ignore on top of the "
+            "defaults"
+        ),
+        metavar="EXTS",
+        default="",
+        type=lambda x: set(x.split(",")),
+    )
+    s.add_argument(
+        "--ignore-dirs",
+        help=(
+            "a comma-separated list of directories to ignore; prefix the "
+            "directory with an * to ignore the directory if any part contains "
+            "that value rather than matches it (default: .direnv,.eggs,.git,"
+            ".hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,_build,build,dist,"
+            "buck-out,*.egg-info)"
+        ),
+        metavar="DIRS",
+        default=(
+            ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,"
+            "_build,build,dist,buck-out,*.egg-info"
+        ),
+        type=lambda x: set(x.split(",")),
+    )
+    s.add_argument(
+        "--extend-ignore-dirs",
+        help=(
+            "a comma-separated list of directories to ignore on top of the "
+            "defaults"
+        ),
+        metavar="DIRS",
+        default="",
+        type=lambda x: set(x.split(",")),
     )
     return subparsers

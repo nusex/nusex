@@ -105,13 +105,13 @@ class Template(Entity):
         NSXEncoder().write(self.path, self.data)
 
     @classmethod
-    def from_cwd(cls, name):
+    def from_cwd(cls, name, ignores):
         c = cls(name)
-        c.build(Path(".").resolve().parts[-1])
+        c.build(Path(".").resolve().parts[-1], ignores=ignores)
         return c
 
     @classmethod
-    def from_dir(cls, name, path):
+    def from_dir(cls, name, path, ignores):
         cur_path = Path(".").resolve()
         os.chdir(path)
         c = cls.from_cwd(name)
@@ -119,7 +119,7 @@ class Template(Entity):
         return c
 
     @classmethod
-    def from_repo(cls, name, url):
+    def from_repo(cls, name, url, ignores):
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
 
@@ -133,13 +133,23 @@ class Template(Entity):
         os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
         return cls.from_cwd(name)
 
-    def get_file_listing(self):
-        # TODO: Do ignore stuff.
-        # Look up pathspec wildmatch.
-        files = filter(lambda p: p.is_file(), Path(".").rglob("*"))
+    def get_file_listing(self, ignores):
+        def is_valid(path):
+            return (
+                path.is_file()
+                and all(i not in path.parts for i in true_dir_ignores)
+                and all(i[1:] not in f"{path}" for i in wild_dir_ignores)
+                and all(i != path.suffix[1:] for i in ignores["exts"])
+            )
+
+        wild_dir_ignores = set(
+            filter(lambda x: x.startswith("*"), ignores["dirs"])
+        )
+        true_dir_ignores = ignores["dirs"] - wild_dir_ignores
+        files = filter(lambda p: is_valid(p), Path(".").rglob("*"))
         return list(files)
 
-    def build(self, project_name, files=[]):
+    def build(self, project_name, files=[], **kwargs):
         def get_file_text(key):
             b = self.data["files"].get(key, None)
 
@@ -152,7 +162,8 @@ class Template(Entity):
             self.data["files"][key] = value.encode()
 
         if not files:
-            files = self.get_file_listing()
+            ignores = kwargs.pop("ignores", {"exts": set(), "dirs": set()})
+            files = self.get_file_listing(ignores)
 
         self.data = {
             "files": {
