@@ -29,7 +29,7 @@
 import os
 from pathlib import Path
 
-from nusex import TEMP_DIR, TEMPLATE_DIR
+from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
 from nusex.errors import BuildError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXDecoder, NSXEncoder
@@ -149,12 +149,7 @@ class Template(Entity):
             return b.decode()
 
         def set_file_text(key, value):
-            # Return True is key was written to (if it exists).
-            if not self.data["files"].get(key, None):
-                return False
-
             self.data["files"][key] = value.encode()
-            return True
 
         if not files:
             files = self.get_file_listing()
@@ -187,10 +182,10 @@ class Template(Entity):
         # Handle sphinx conf file if present.
         for sf in ("docs/conf.py", "docs/source/conf.py"):
             docs_text = get_file_text(sf)
-            in_project_info = False
 
             if docs_text:
                 lines = docs_text.split("\n")
+                in_project_info = False
 
                 for i, line in enumerate(lines[:]):
                     # Modify data variables.
@@ -216,13 +211,47 @@ class Template(Entity):
                 set_file_text(sf, "\n".join(lines))
 
         # These four files need the same changes.
-        for sf in ("MANIFEST.in", "pyproject.toml", "README.md", "setup.py"):
+        for sf in ("MANIFEST.in", "pyproject.toml", "setup.py"):
             text = get_file_text(sf)
             if text:
                 set_file_text(sf, text.replace(project_name, "PROJECTNAME"))
 
-        # LICENSE needs to be handles separately.
-        set_file_text("LICENSE", "LICENSEBODY")
+        # README needs to be handled separately.
+        readme_text = get_file_text("README.md")
+
+        if readme_text:
+            lines = readme_text.split("\n")
+            last_line = len(lines) - 1
+            found_acks = False
+            ack = (
+                "This project was created in part by the [nusex project "
+                f"templating utility]({__url__})."
+            )
+
+            for i, line in enumerate(lines[:]):
+                if line.startswith("#"):
+                    if found_acks:
+                        lines.insert(i, ack)
+                        lines.insert(i + 1, "")
+                        break
+
+                    if "acknowledgements" in line.lower():
+                        found_acks = True
+
+                elif i == last_line and found_acks:
+                    lines.extend([ack, ""])
+
+            if not found_acks:
+                lines.extend(["## Acknowledgements", "", ack, ""])
+
+            set_file_text(
+                "README.md",
+                "\n".join(lines).replace(project_name, "PROJECTNAME"),
+            )
+
+        # LICENSE also needs to be handles separately.
+        if "LICENSE" in self.data["files"].keys():
+            set_file_text("LICENSE", "LICENSEBODY")
 
     def check(self):
         manifest = {}
