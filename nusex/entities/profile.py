@@ -30,10 +30,19 @@ import json
 
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
 from nusex.errors import InvalidConfiguration
-from nusex.helpers import validate_name
+from nusex.helpers import cprint, validate_name
 from nusex.spec import NSCDecoder, NSCEncoder, NSPDecoder, NSPEncoder
 
 from .base import Entity
+
+VALID_CONFIG_KEYS = (
+    "author_name",
+    "author_email",
+    "git_profile_url",
+    "starting_version",
+    "default_description",
+    "preferred_license",
+)
 
 
 class Profile(Entity):
@@ -237,6 +246,10 @@ class Profile(Entity):
             preferred_license (str): Your preferred license.
         """
         for k, v in kwargs.items():
+            if k not in VALID_CONFIG_KEYS:
+                cprint("war", f"'{k}' is not a valid key, skipping...")
+                continue
+
             if v:
                 v = self._validate_option(k, v)
                 self.data[k] = v
