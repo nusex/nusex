@@ -32,6 +32,19 @@ from nusex.errors import InvalidRequest
 
 
 class Entity:
+    """A base entity class in containing shared methods and attributes.
+
+    Args:
+        dir_ (pathlib.Path): The directory the entity is or will be
+            contained in.
+        name (str): The name of the entity.
+        ext (str): The file extension of the entity.
+
+    Attributes:
+        path (pathlib.Path): The complete filepath to the entity.
+        data (dict[str, Any]): The data for the entity.
+    """
+
     __slots__ = ("path", "data")
 
     def __new__(cls, *args, **kwargs):
@@ -65,24 +78,38 @@ class Entity:
 
     @property
     def name(self):
+        """The name of the entity.
+
+        Returns:
+            str
+        """
         return self.path.stem
 
     @property
     def exists(self):
+        """Whether the entity exists on disk.
+
+        Returns:
+            bool
+        """
         return self.path.is_file()
 
-    def create_new(self, name):
-        raise NotImplementedError
-
-    def load(self):
-        raise NotImplementedError
-
-    def save(self):
-        raise NotImplementedError
-
     def delete(self):
+        """Delete this entity.
+
+        Raises:
+            FileNotFoundError: The entity does not exist on disk.
+        """
         os.remove(self.path)
 
     def rename(self, new_name):
+        """Rename this entity.
+
+        Args:
+            new_name (str): The new name for the entity.
+
+        Raises:
+            FileNotFoundError: The entity does not exist on disk.
+        """
         new_path = f"{self.path}".replace(self.path.stem, new_name)
         self.path = self.path.rename(new_path)

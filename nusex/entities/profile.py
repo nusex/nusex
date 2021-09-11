@@ -37,12 +37,29 @@ from .base import Entity
 
 
 class Profile(Entity):
+    """A class in which to create, load, modify, and save profiles.
+
+    Args:
+        name (str): The name of the profile. If the profile does not
+            exist, a new one is created, otherwise an existing one is
+            loaded. Defaults to "default".
+
+    Attributes:
+        path (pathlib.Path): The complete filepath to the profile.
+        data (dict[str, Any]): The data for the profile.
+    """
+
     __slots__ = Entity.__slots__
 
     def __init__(self, name="default"):
         super().__init__(PROFILE_DIR, name, "nsp")
 
     def create_new(self, name):
+        """Create a new profile.
+
+        Args:
+            name (str): The name of the profile.
+        """
         validate_name(name, self.__class__.__name__)
         self.data = {
             "author_name": "",
@@ -54,17 +71,43 @@ class Profile(Entity):
         }
 
     def load(self):
+        """Load an existing profile. This should never need to be called
+        as profiles are loaded automatically when necessary upon object
+        creation.
+
+        Raises:
+            FileNotFoundError: The template does not exist on disk.
+        """
         self.data = NSPDecoder().read(self.path)
 
     def save(self):
+        """Save this profile.
+
+        Raises:
+            KeyError: The profile data has been improperly modified.
+        """
         NSPEncoder().write(self.path, self.data)
 
     @classmethod
     def current(cls):
+        """Create an instance for the currently selected profile.
+
+        Returns:
+            Profile: The currently selected profile.
+        """
         return cls(NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"])
 
     @classmethod
     def from_legacy(cls, name="default"):
+        """Create a profile from a 0.x spec user.nsc file.
+
+        Returns:
+            Profile: The newly converted profile.
+
+        Raises:
+            FileNotFoundError: No user.nsc file exists in the config
+                directory.
+        """
         with open(CONFIG_DIR / "user.nsc") as f:
             data = json.load(f)
 
@@ -97,12 +140,18 @@ class Profile(Entity):
 
     @property
     def is_selected(self):
+        """Whether this profile is currently selected.
+
+        Returns:
+            bool
+        """
         return (
             NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"]
             == self.path.stem
         )
 
     def select(self):
+        """Select this profile."""
         data = NSCDecoder().read(CONFIG_DIR / "config.nsc")
         data["profile"] = self.path.stem
         NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
@@ -159,6 +208,13 @@ class Profile(Entity):
         return option
 
     def setup(self):
+        """Set up this profile. You will be prompted to input some
+        information.
+
+        Raises:
+            InvalidConfiguration: An invalid value was provided to one
+                of the inputs.
+        """
         for k, v in self.data.items():
             kq = (k[0].upper() + k[1:].replace("_", " ")).replace("url", "URL")
             option = input(f"🎤 {kq} [{v}]: ").strip() or v.strip()
@@ -166,6 +222,20 @@ class Profile(Entity):
             self.data[k] = option
 
     def update(self, **kwargs):
+        """Update this profile's configuration. All options must be
+        passed through as kwargs. Invalid configuration keys raise
+        warnings, not errors.
+
+        Args:
+            author_name (str): An author name.
+            author_email (str): An author email.
+            git_profile_url (str): Your GitHub/Gitlab/BitBucket/etc.
+                profile link.
+            starting_version (str): The version to initialise projects with.
+            default_description (str): The description to initialise projects
+                with.
+            preferred_license (str): Your preferred license.
+        """
         for k, v in kwargs.items():
             if v:
                 v = self._validate_option(k, v)
