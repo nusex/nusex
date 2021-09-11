@@ -71,6 +71,7 @@ ATTRS = (
     "PROJECTLICENSE",
     "PROJECTYEAR",
     "LICENSEBODY",
+    "PROJECTBASEEXC",
 )
 DEFAULT_EXCLUDE_DIRS = (
     r"(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn"
@@ -220,6 +221,21 @@ class Template(Entity):
                         lines[i] = "import PROJECTNAME"
 
                 set_file_text(sf, "\n".join(lines))
+
+        # Handle the errors file, if present.
+        for sf in ("PROJECTNAME/error.py", "PROJECTNAME/errors.py"):
+            err_text = get_file_text(sf)
+
+            if err_text:
+                lines = err_text.split("\n")
+
+                for i, line in enumerate(lines[:]):
+                    if line.startswith("class"):
+                        base_exc = line.split("(")[0][6:]
+                        break
+
+                set_file_text(sf, err_text.replace(base_exc, "PROJECTBASEEXC"))
+                print(err_text.replace(base_exc, "PROJECTBASEEXC"))
 
         # These four files need the same changes.
         for sf in ("MANIFEST.in", "pyproject.toml", "setup.py"):
