@@ -17,9 +17,11 @@ A project templating utility for Python.
 ## Features
 
 - An easy-to-use CLI (command-line interface)
+- Dynamic templating using placeholder variables
+- Template extensions for use during the whole development lifecycle
+- A profile system for those who maintain personal and organisation-owned projects
+- Automatic dependency installation
 - Premade templates for applications and packages
-- The ability to use context clues to dynamically generate files
-- Options to ignore file extensions and directories when building templates
 - No dependencies!
 
 ## Installation
