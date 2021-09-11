@@ -36,14 +36,6 @@ from nusex.spec import NSXDecoder, NSXEncoder
 
 from .base import Entity
 
-SPECIAL_FILES = (
-    "MANIFEST.in",
-    "pyproject.toml",
-    "README.md",
-    "setup.py",
-    "LICENSE",
-    "PROJECTNAME/__init__.py",
-)
 INIT_ATTR_MAPPING = {
     "__productname__": '"PROJECTNAME"',
     "__version__": '"PROJECTVERSION"',
@@ -235,10 +227,9 @@ class Template(Entity):
                         break
 
                 set_file_text(sf, err_text.replace(base_exc, "PROJECTBASEEXC"))
-                print(err_text.replace(base_exc, "PROJECTBASEEXC"))
 
         # These four files need the same changes.
-        for sf in ("MANIFEST.in", "pyproject.toml", "setup.py"):
+        for sf in ("MANIFEST.in", "pyproject.toml", "setup.py", "setup.cfg"):
             text = get_file_text(sf)
             if text:
                 set_file_text(sf, text.replace(project_name, "PROJECTNAME"))
