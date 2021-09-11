@@ -93,9 +93,15 @@ class Profile(Entity):
         """Save this profile.
 
         Raises:
-            KeyError: The profile data has been improperly modified.
+            InvalidConfiguration: The profile data has been improperly
+                modified.
         """
-        NSPEncoder().write(self.path, self.data)
+        try:
+            NSPEncoder().write(self.path, self.data)
+        except KeyError:
+            raise InvalidConfiguration(
+                "The profile data has been improperly modified"
+            ) from None
 
     @classmethod
     def current(cls):
