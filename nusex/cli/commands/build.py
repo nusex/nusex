@@ -164,7 +164,7 @@ def setup(subparsers):
         "--extend-ignore-dirs",
         help=(
             "a comma-separated list of directories to ignore on top of the "
-            "defaults"
+            "defaults; the same * syntax applies here"
         ),
         metavar="DIRS",
         default="",
