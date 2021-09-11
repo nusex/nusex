@@ -43,6 +43,21 @@ LICENSE_URL = (
 
 
 class Downloader:
+    """A util class for downloading assets.
+
+    Args:
+        of_type(str): The type of asset to download (must be either
+            "templates" or "licenses").
+
+    Attributes:
+        of_type(str): The type of asset to download (must be either
+            "templates" or "licenses").
+        extension (str): The file extension of the files to search for.
+        url (str): The repo to search for files in.
+        files (list[str]): A series of file URLs.
+        completed (int): The number of files that have been downloaded.
+    """
+
     __slots__ = ("of_type", "extension", "url", "files", "completed")
 
     def __init__(self, of_type):
@@ -63,9 +78,19 @@ class Downloader:
 
     @property
     def progress(self):
+        """The download progress as a percentage.
+
+        Returns:
+            float
+        """
         return (100 / len(self.files)) * self.completed
 
     def fetch(self):
+        """Fetch the files to download.
+
+        Raises:
+            DownloadFailure: There was a problem fetching the files.
+        """
         self.files = []
 
         try:
@@ -109,6 +134,16 @@ class Downloader:
             await asyncio.sleep(0)
 
     def download(self, display_progress=False):
+        """Download files. The files will be fetched automatically if
+        they have not already been.
+
+        Args:
+            display_progress (bool): Whether to display the download's
+                progress in the terminal. Defaults to False.
+
+        Raises:
+            DownloadFailure: There was a problem fetching the files.
+        """
         if not self.files:
             self.fetch()
 
