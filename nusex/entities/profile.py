@@ -85,7 +85,7 @@ class Profile(Entity):
         creation.
 
         Raises:
-            FileNotFoundError: The template does not exist on disk.
+            FileNotFoundError: The profile does not exist on disk.
         """
         self.data = NSPDecoder().read(self.path)
 

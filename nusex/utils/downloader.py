@@ -43,7 +43,7 @@ LICENSE_URL = (
 
 
 class Downloader:
-    """A util class for downloading assets.
+    """A utility class for downloading assets.
 
     Args:
         of_type(str): The type of asset to download (must be either

@@ -30,7 +30,7 @@ import os
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
-from nusex.errors import BuildError
+from nusex.errors import BuildError, InvalidConfiguration
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXDecoder, NSXEncoder
 
@@ -73,6 +73,23 @@ DEFAULT_EXCLUDE_EXTS = r"(py[cod])"
 
 
 class Template(Entity):
+    """A class in which to create, load, modify, and save templates.
+
+    Args:
+        name (str): The name of the template. If the template does not
+            exist, a new one is created, otherwise an existing one is
+            loaded.
+
+    Attributes:
+        path (pathlib.Path): The complete filepath to the template.
+        data (dict[str, Any]): The data for the template.
+        installs (list[str]): A list of dependencies the template will
+            install when deployed.
+        as_extension_for (str): The template this template is an
+            extension for. If it is not an extension for any template,
+            this is an empty string.
+    """
+
     __slots__ = Entity.__slots__ + ("installs", "as_extension_for")
 
     def __init__(self, name, *, installs=[], as_extension_for=""):
@@ -84,6 +101,11 @@ class Template(Entity):
         return self.data["files"][key]
 
     def create_new(self, name):
+        """Create a new template.
+
+        Args:
+            name (str): The name of the template.
+        """
         validate_name(name, self.__class__.__name__)
         self.data = {
             "files": {},
@@ -92,27 +114,85 @@ class Template(Entity):
         }
 
     def load(self):
+        """Load an existing template. This should never need to be
+        called as templates are loaded automatically when necessary upon
+        object creation.
+
+        Raises:
+            FileNotFoundError: The template does not exist on disk.
+        """
         self.data = NSXDecoder().read(self.path)
 
     def save(self):
-        NSXEncoder().write(self.path, self.data)
+        """Save this profile.
+
+        Raises:
+            InvalidConfiguration: The profile data has been improperly
+                modified.
+        """
+        try:
+            NSXEncoder().write(self.path, self.data)
+        except KeyError:
+            raise InvalidConfiguration(
+                "The template data has been improperly modified"
+            ) from None
 
     @classmethod
     def from_cwd(cls, name, ignores):
+        """Create a template using files from the current working
+        directory.
+
+        Args:
+            name (str): The name of the template.
+            ignores (dict[str, set[str]]): A dict comprised of two
+                key-value pairs (the keys must be "exts" and "dirs")
+                containing extensions and directories to ignore.
+
+        Returns:
+            Template: The newly created template.
+        """
         c = cls(name)
         c.build(Path(".").resolve().parts[-1], ignores=ignores)
         return c
 
     @classmethod
     def from_dir(cls, name, path, ignores):
+        """Create a template using files from a specific directory.
+
+        Args:
+            name (str): The name of the template.
+            path (str | os.PathLike): The path to the files to build the
+                template with.
+            ignores (dict[str, set[str]]): A dict comprised of two
+                key-value pairs (the keys must be "exts" and "dirs")
+                containing extensions and directories to ignore.
+
+        Returns:
+            Template: The newly created template.
+        """
         cur_path = Path(".").resolve()
         os.chdir(path)
-        c = cls.from_cwd(name)
+        c = cls.from_cwd(name, ignores)
         os.chdir(cur_path)
         return c
 
     @classmethod
     def from_repo(cls, name, url, ignores):
+        """Create a template using files from a GitHub repository.
+
+        Args:
+            name (str): The name of the template.
+            url (str): The URL of the GitHub repository to clone.
+            ignores (dict[str, set[str]]): A dict comprised of two
+                key-value pairs (the keys must be "exts" and "dirs")
+                containing extensions and directories to ignore.
+
+        Returns:
+            Template: The newly created template.
+
+        Raises:
+            BuildError: Cloning the repository failed.
+        """
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
 
@@ -124,9 +204,20 @@ class Template(Entity):
             )
 
         os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
-        return cls.from_cwd(name)
+        return cls.from_cwd(name, ignores)
 
     def get_file_listing(self, ignores):
+        """Get a list of files to include in this template.
+
+        Args:
+            ignores (dict[str, set[str]]): A dict comprised of two
+                key-value pairs (the keys must be "exts" and "dirs")
+                containing extensions and directories to ignore.
+
+        Returns:
+            list[str]: A list of filepaths.
+        """
+
         def is_valid(path):
             return (
                 path.is_file()
@@ -143,6 +234,17 @@ class Template(Entity):
         return list(files)
 
     def build(self, project_name, files=[], **kwargs):
+        """Build this template.
+
+        Args:
+            project_name (str): The name of the project.
+            files (list[str]): The list of files to include in this
+                template. If no files are specified, the file listing
+                is automatically retrieved.
+            **kwargs (Any): Arguments for the :code:`get_file_listing`
+                method.
+        """
+
         def get_file_text(key):
             b = self.data["files"].get(key, None)
 
@@ -272,6 +374,14 @@ class Template(Entity):
             set_file_text("LICENSE", "LICENSEBODY")
 
     def check(self):
+        """Check the template manifest, including line changes.
+
+        Returns:
+            dict[str, list[tuple[int, str]]]: The template manifest. The
+            keys are always file names, and the values are tuples
+            of the line numbers and line values that have been changed.
+            This may not always be present.
+        """
         manifest = {}
 
         for file, data in self.data["files"].items():
