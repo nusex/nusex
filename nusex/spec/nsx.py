@@ -53,11 +53,11 @@ class NSXEncoder:
                 f.write(k.encode())
                 f.write(b"\x97")
                 size = len(v)
-                if size > 536_870_912:
+                if size > 999_999_999_999:
                     raise UnsupportedFile(
-                        "Files larger than 512 MiB are not supported"
+                        "Files larger than 1 TB (~931 GiB) are not supported"
                     )
-                f.write(f"{len(v)}".ljust(9).encode())
+                f.write(f"{len(v)}".ljust(12).encode())
                 f.write(v)
             f.write(b"\x98")
 
@@ -95,7 +95,7 @@ class NSXDecoder:
                 name += chunk
 
             else:
-                size = int(f.read(9).decode().strip())
+                size = int(f.read(12).decode().strip())
                 chunk = f.read(size)
                 data["files"].update({name.decode(): chunk})
                 name = b""
