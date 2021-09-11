@@ -1,5 +1,5 @@
 nusex
-########
+#####
 
 .. image:: https://img.shields.io/pypi/v/nusex.svg
    :alt: PyPI version
@@ -41,39 +41,58 @@ nusex
    :alt: License
    :target: https://github.com/nusex/nusex/blob/main/LICENSE
 
-A project templating utility for Python.
+What is nusex?
+==============
 
-Features
+nusex is a project templating utility build in Python. While it is designed to be used for Python projects, nusex can work with any files.
+
+Why use it?
+===========
+
+Unlike many alternatives, nusex has **no dependencies**. This means that when you install it, you won't be faced with a wall of installs cluttering your environment.
+
+A profile system is also included for those who maintain personal and organisation-owned projects. You can create as many profiles as you want, and switch between them at any time.
+
+Despite nusex primarily being for initialisating projects, that's not all it's useful for. In fact, it can be used throughout the whole development lifecycle of your project. This is possible through template extensions, which can be used to add new files when needed.
+
+nusex also has many other features which you can see on the `PyPI page <https://pypi.org/project/nusex/>`_, or the `GitHub repository <https://github.com/nusex/nusex>`_.
+
+Contents
 ========
 
-- An easy-to-use CLI (command-line interface)
-- Premade templates for applications and packages
-- The ability to use context clues to dynamically generate files
-- Options to ignore file extensions and directories when building templates
-- No dependencies!
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting started
+
+   starting/install
+   starting/init
 
 .. toctree::
    :maxdepth: 1
-   :caption: Quickstart
+   :caption: A guide to nusex
 
-   quickstart/install
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Using nusex
-
-   using/init
-   using/build
-   using/deploy
+   guide/profiles
+   guide/templates
 
 .. toctree::
    :maxdepth: 1
-   :caption: References and guides
+   :caption: CLI reference
 
-   refs/commands
+   cli/init
+   cli/profile
+   cli/build
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Scripting API reference
+
+   api/library
+   api/entities
+   api/utils
 
 .. toctree::
     :maxdepth: 1
     :caption: Information
 
     info/changelog
+    info/migrate
