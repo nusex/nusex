@@ -97,7 +97,9 @@ class Downloader:
             with request.urlopen(self.url) as r:
                 data = r.readlines()
         except HTTPError as exc:
-            raise DownloadFailure(f"Fetch failed (GitHub returned {exc.code})")
+            raise DownloadFailure(
+                f"Fetch failed (GitHub returned {exc.code})"
+            ) from None
 
         for i, line in enumerate(data):
             if b'role="rowheader"' in line:
@@ -120,7 +122,7 @@ class Downloader:
         except HTTPError as exc:
             raise DownloadFailure(
                 f"Download failed (GitHub returned {exc.code})"
-            )
+            ) from None
 
     async def _display_progress(self):
         while True:
