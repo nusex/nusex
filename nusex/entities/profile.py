@@ -246,9 +246,10 @@ class Profile(Entity):
             author_email (str): An author email.
             git_profile_url (str): Your GitHub/Gitlab/BitBucket/etc.
                 profile link.
-            starting_version (str): The version to initialise projects with.
-            default_description (str): The description to initialise projects
+            starting_version (str): The version to initialise project
                 with.
+            default_description (str): The description to initialise
+                projects with.
             preferred_license (str): Your preferred license.
         """
         for k, v in kwargs.items():

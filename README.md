@@ -14,6 +14,10 @@
 
 A project templating utility for Python.
 
+## Important note
+
+v1.0.0.dev0 is only available as a preview/evaluation build, and **CAN NOT** be used in development environments. It is recommended that you back up your current nusex config before experimenting with this version.
+
 ## Features
 
 - An easy-to-use CLI (command-line interface)

@@ -39,6 +39,8 @@ The latter of these two options is the default behaviour in versions 0.x, though
 Deploying templates
 ===================
 
+This feature isn't available in v1.x at the moment.
+
 Dynamic templating
 ==================
 
