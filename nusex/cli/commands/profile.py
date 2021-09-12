@@ -76,57 +76,63 @@ def setup(subparsers):
     s.add_argument(
         "-c",
         "--show-current",
-        help="show the currently selected profile",
+        help="show the currently selected profile and exit",
         action="store_true",
     )
     s.add_argument(
         "-n",
         "--create-new",
         help="create a new profile",
-        metavar="PROFILE_NAME",
+        metavar="NAME",
         default="",
     )
     s.add_argument(
         "-s",
         "--switch",
         help="switch to a different profile",
-        metavar="PROFILE_NAME",
+        metavar="NAME",
         default="",
     )
     s.add_argument(
         "-a",
         "--author-name",
-        help="change your author name",
+        help="change the author name for this profile",
+        metavar="NAME",
         default="",
     )
     s.add_argument(
         "-e",
         "--author-email",
-        help="change your author email",
+        help="change the author email for this profile",
+        metavar="EMAIL",
         default="",
     )
     s.add_argument(
         "-g",
         "--git-profile-url",
-        help="change your Git profile URL",
+        help="change the Git profile URL for this profile",
+        metavar="URL",
         default="",
     )
     s.add_argument(
         "-v",
         "--starting-version",
-        help="change your starting version",
+        help="change the starting version for this profile",
+        metavar="VERSION",
         default="",
     )
     s.add_argument(
         "-d",
         "--default-description",
-        help="change your default description",
+        help="change the default description for this profile",
+        metavar="DESCRIPTION",
         default="",
     )
     s.add_argument(
         "-l",
         "--preferred-license",
-        help="change your preferred license",
+        help="change the preferred license for this profile",
+        metavar="LICENSE",
         default="",
     )
     return subparsers

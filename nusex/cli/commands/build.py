@@ -113,22 +113,25 @@ def setup(subparsers):
     s.add_argument(
         "-r",
         "--from-repo",
-        help="a repo URL to build a template from",
-        metavar="REPO_URL",
+        help=(
+            "a repository URL to build a template from (Git must be "
+            "installed)"
+        ),
+        metavar="URL",
         default="",
     )
     s.add_argument(
         "-e",
         "--as-extension-for",
         help="build this template as an extension for another template",
-        metavar="TEMPLATE_NAME",
+        metavar="TEMPLATE",
         default="",
     )
     s.add_argument(
         "--ignore-exts",
         help=(
-            "a comma-separated list of extensions to ignore (default: pyc,pyd,"
-            "pyo)"
+            "a comma-separated list of file extensions to ignore (default: "
+            "pyc,pyd,pyo)"
         ),
         metavar="EXTS",
         default="pyc,pyd,pyo",
@@ -137,8 +140,8 @@ def setup(subparsers):
     s.add_argument(
         "--extend-ignore-exts",
         help=(
-            "a comma-separated list of extensions to ignore on top of the "
-            "defaults"
+            "a comma-separated list of file extensions to ignore on top of "
+            "the defaults"
         ),
         metavar="EXTS",
         default="",
@@ -147,11 +150,10 @@ def setup(subparsers):
     s.add_argument(
         "--ignore-dirs",
         help=(
-            "a comma-separated list of directories to ignore; prefix the "
-            "directory with an * to ignore the directory if any part contains "
-            "that value rather than matches it (default: .direnv,.eggs,.git,"
-            ".hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,_build,build,dist,"
-            "buck-out,*.egg-info)"
+            "a comma-separated list of directories to ignore; look at the "
+            "docs for more information about advanced ignoring syntaxes "
+            "(default: .direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,"
+            "venv,.svn,_build,build,dist,buck-out,*.egg-info)"
         ),
         metavar="DIRS",
         default=(
@@ -164,7 +166,7 @@ def setup(subparsers):
         "--extend-ignore-dirs",
         help=(
             "a comma-separated list of directories to ignore on top of the "
-            "defaults; the same * syntax applies here"
+            "defaults"
         ),
         metavar="DIRS",
         default="",
