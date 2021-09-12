@@ -43,6 +43,10 @@ nusex
 
 A project templating utility for Python.
 
+.. seealso::
+
+   Version 1 is currently in development! While there is no stable version available, you can get up to speed with the `version 1 docs <https://nusex.readthedocs.io/en/task-v1.0/>`_.
+
 Features
 ========
 
