@@ -81,7 +81,13 @@ Here is a rundown of what gets modified in each file:
 
     * - File
       - Changes
+    * - COPYING
+      - The entire file is replaced by "LICENSEBODY".
+    * - COPYING.txt
+      - The entire file is replaced by "LICENSEBODY".
     * - LICENSE
+      - The entire file is replaced by "LICENSEBODY".
+    * - LICENSE.txt
       - The entire file is replaced by "LICENSEBODY".
     * - MANIFEST.in
       - All mentions of the project's name are replaced by "PROJECTNAME".

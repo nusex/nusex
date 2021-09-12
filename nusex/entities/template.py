@@ -46,6 +46,7 @@ INIT_ATTR_MAPPING = {
     "__author_email__": '"PROJECTAUTHOREMAIL"',
     "__license__": '"PROJECTLICENSE"',
     "__bugtracker__": '"PROJECTURL/issues"',
+    "__ci__": '"PROJECTURL/actions"',
 }
 PYPROJECT_ATTR_MAPPING = {
     "name": '"PROJECTNAME"',
@@ -412,9 +413,11 @@ class Template(Entity):
                 "\n".join(lines).replace(project_name, "PROJECTNAME"),
             )
 
-        # LICENSE also needs to be handles separately.
-        if "LICENSE" in self.data["files"].keys():
-            set_file_text("LICENSE", "LICENSEBODY")
+        # LICENSE (and others) also needs to be handles separately.
+        for sf in ("LICENSE", "LICENSE.txt", "COPYING", "COPYING.txt"):
+            if sf in self.data["files"].keys():
+                set_file_text(sf, "LICENSEBODY")
+                break
 
     def check(self):
         """Check the template manifest, including line changes.
