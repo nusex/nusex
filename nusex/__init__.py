@@ -35,6 +35,7 @@ __author__ = "Ethan Henderson"
 __author_email__ = "ethan.henderson.1998@gmail.com"
 __license__ = "BSD-3-Clause"
 __bugtracker__ = "https://github.com/nusex/nusex/issues"
+__ci__ = "https://github.com/nusex/nusex/actions"
 
 from .constants import *
 from .entities import Profile, Template
