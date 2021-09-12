@@ -65,6 +65,11 @@ The following files are altered when building templates, if present:
 
 These files are referred to internally as "special files".
 
+Placeholder variable reference
+------------------------------
+
+This isn't available yet.
+
 File modification reference
 ---------------------------
 
@@ -81,7 +86,7 @@ Here is a rundown of what gets modified in each file:
     * - MANIFEST.in
       - All mentions of the project's name are replaced by "PROJECTNAME".
     * - pyproject.toml
-      - All mentions of the project's name are replaced by "PROJECTNAME".
+      - *Outlined below.*
     * - README.md
       - All mentions of the project's name are replaced by "PROJECTNAME", and an acknowledgement for nusex is added.
     * - setup.cfg
@@ -102,7 +107,9 @@ Here is a rundown of what gets modified in each file:
 Modifications to the [project_name]/\_\_init\_\_.py file
 --------------------------------------------------------
 
-This file is normally where project information is held, more typically in PyPI packages than general applications. Typically, this information is assigned to different `dunder variables <https://bic-berkeley.github.io/psych-214-fall-2016/two_dunders.html>`_. The following dunder variables are handled (any quotes are written to the file):
+This file is normally where project information is held, more commonly in PyPI packages than general applications. Typically, this information is assigned to different `dunder variables <https://bic-berkeley.github.io/psych-214-fall-2016/two_dunders.html>`_.
+
+The following dunder variables are handled (any quotes are also written to the file):
 
 .. list-table::
     :header-rows: 1
@@ -130,30 +137,56 @@ This file is normally where project information is held, more typically in PyPI 
 
 Any number of dunder variables can be present in the \_\_init\_\_.py file, and they do not need to be in the above order, or in the same code block.
 
-Modifications to the docs[/source]/conf.py file
------------------------------------------------
+Modifications to the pyproject.toml file
+----------------------------------------
 
-This file has the same kind of variable replacement as the \_\_init\_\_.py file, but does not have use dunder variables.
+This file is generally used to store settings for various tools, including black and mypy. It can also be used as a replacement for any requirements files, or the \_\_init\_\_.py file with the use of the Poetry tool.
 
-.. note::
-
-    nusex assumes you are using Sphinx.
+The following variables are handled (any quotes are also written to the file):
 
 .. list-table::
     :header-rows: 1
 
     * - Variable name
       - Value it is assigned by nusex
-    * - \_\_project\_\_
+    * - name
       - "PROJECTNAME"
-    * - \_\_copyright\_\_
+    * - version
+      - "PROJECTVERSION"
+    * - description
+      - "PROJECTDESCRIPTION"
+    * - license
+      - "PROJECTLICENSE"
+    * - authors
+      - ["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]
+    * - maintainers
+      - ["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]
+    * - homepage
+      - "PROJECTURL"
+    * - repository
+      - "PROJECTURL"
+    * - documentation
+      - "https://PROJECTNAME.readthedocs.io/en/latest"
+
+Modifications to the docs[/source]/conf.py file
+-----------------------------------------------
+
+This file stores settings for rendering documentation using Sphinx.
+
+The following variables are handled (any quotes are also written to the file):
+
+.. list-table::
+    :header-rows: 1
+
+    * - Variable name
+      - Value it is assigned by nusex
+    * - project
+      - "PROJECTNAME"
+    * - copyright
       - "PROJECTYEAR, PROJECTAUTHOR"
-    * - \_\_author\_\_
+    * - author
       - "PROJECTAUTHOR"
-    * - \_\_release\_\_
+    * - release
       - "PROJECTNAME.\_\_version\_\_"
 
 nusex also changes one of the import statements to "import PROJECTNAME".
-
-Replacements made when deploying templates
-------------------------------------------

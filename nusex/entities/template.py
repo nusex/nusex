@@ -47,6 +47,17 @@ INIT_ATTR_MAPPING = {
     "__license__": '"PROJECTLICENSE"',
     "__bugtracker__": '"PROJECTURL/issues"',
 }
+PYPROJECT_ATTR_MAPPING = {
+    "name": '"PROJECTNAME"',
+    "version": '"PROJECTVERSION"',
+    "description": '"PROJECTDESCRIPTION"',
+    "license": '"PROJECTLICENSE"',
+    "authors": '["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]',
+    "maintainers": '["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]',
+    "homepage": '"PROJECTURL"',
+    "repository": '"PROJECTURL"',
+    "documentation": '"https://PROJECTNAME.readthedocs.io/en/latest"',
+}
 DOCS_ATTR_MAPPING = {
     "project": '"PROJECTNAME"',
     "copyright": '"PROJECTYEAR, PROJECTAUTHOR"',
@@ -234,7 +245,9 @@ class Template(Entity):
         return list(files)
 
     def build(self, project_name, files=[], **kwargs):
-        """Build this template.
+        """Build this template. View the
+        :doc:`template guide <../guide/templates>` to see what this
+        command does in more detail.
 
         Args:
             project_name (str): The name of the project.
@@ -270,10 +283,10 @@ class Template(Entity):
         }
 
         # Handle __init__ file if present.
-        init_text = get_file_text("PROJECTNAME/__init__.py")
+        text = get_file_text("PROJECTNAME/__init__.py")
 
-        if init_text:
-            lines = init_text.split("\n")
+        if text:
+            lines = text.split("\n")
 
             for i, line in enumerate(lines[:]):
                 # Modify dunder variables.
@@ -285,12 +298,42 @@ class Template(Entity):
 
             set_file_text("PROJECTNAME/__init__.py", "\n".join(lines))
 
+        # Handle pyproject.toml file if present.
+        text = get_file_text("pyproject.toml")
+
+        if text:
+            lines = text.split("\n")
+            in_tool_poetry = False
+
+            for i, line in enumerate(lines[:]):
+                # Modify data variables.
+                if in_tool_poetry:
+                    if line.startswith("["):
+                        in_tool_poetry = False
+                        continue
+
+                    try:
+                        k, v = line.split(" = ")
+                        v = v.strip('"').strip("'")
+                        new_v = PYPROJECT_ATTR_MAPPING.get(k, v)
+                        lines[i] = f"{k} = {new_v}"
+                    except ValueError:
+                        ...
+
+                elif line.strip() == "[tool.poetry]":
+                    in_tool_poetry = True
+
+            set_file_text(
+                "pyproject.toml",
+                "\n".join(lines).replace(project_name, "PROJECTNAME"),
+            )
+
         # Handle sphinx conf file if present.
         for sf in ("docs/conf.py", "docs/source/conf.py"):
-            docs_text = get_file_text(sf)
+            text = get_file_text(sf)
 
-            if docs_text:
-                lines = docs_text.split("\n")
+            if text:
+                lines = text.split("\n")
                 in_project_info = False
 
                 for i, line in enumerate(lines[:]):
@@ -300,13 +343,13 @@ class Template(Entity):
                             in_project_info = False
                             continue
 
-                        if not line or line.startswith("#"):
-                            continue
-
-                        k, v = line.split(" = ")
-                        v = v.strip('"').strip("'")
-                        new_v = DOCS_ATTR_MAPPING.get(k, v)
-                        lines[i] = f"{k} = {new_v}"
+                        try:
+                            k, v = line.split(" = ")
+                            v = v.strip('"').strip("'")
+                            new_v = DOCS_ATTR_MAPPING.get(k, v)
+                            lines[i] = f"{k} = {new_v}"
+                        except ValueError:
+                            ...
 
                     elif line.startswith("# -- Project information"):
                         in_project_info = True
@@ -318,29 +361,29 @@ class Template(Entity):
 
         # Handle the errors file, if present.
         for sf in ("PROJECTNAME/error.py", "PROJECTNAME/errors.py"):
-            err_text = get_file_text(sf)
+            text = get_file_text(sf)
 
-            if err_text:
-                lines = err_text.split("\n")
+            if text:
+                lines = text.split("\n")
 
                 for i, line in enumerate(lines[:]):
                     if line.startswith("class"):
                         base_exc = line.split("(")[0][6:]
                         break
 
-                set_file_text(sf, err_text.replace(base_exc, "PROJECTBASEEXC"))
+                set_file_text(sf, text.replace(base_exc, "PROJECTBASEEXC"))
 
         # These four files need the same changes.
-        for sf in ("MANIFEST.in", "pyproject.toml", "setup.py", "setup.cfg"):
+        for sf in ("MANIFEST.in", "setup.cfg", "setup.py"):
             text = get_file_text(sf)
             if text:
                 set_file_text(sf, text.replace(project_name, "PROJECTNAME"))
 
         # README needs to be handled separately.
-        readme_text = get_file_text("README.md")
+        text = get_file_text("README.md")
 
-        if readme_text:
-            lines = readme_text.split("\n")
+        if text:
+            lines = text.split("\n")
             last_line = len(lines) - 1
             found_acks = False
             ack = (
