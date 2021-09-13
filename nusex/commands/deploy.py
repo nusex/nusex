@@ -21,7 +21,14 @@ def _deploy_template(template):
         return text
 
     print("⌛ Deploying template... 0%", end="\r")
-    project_name = Path(".").resolve().parts[-1]
+    project_name = (
+        Path(".")
+        .resolve()
+        .parts[-1]
+        .lower()
+        .replace(" ", "_")
+        .replace("-", "_")
+    )
     step = 100 / len(template["files"])
 
     with open(CONFIG_DIR / "user.nsc") as f:
