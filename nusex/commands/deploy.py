@@ -15,20 +15,19 @@ def _construct_file_manifest(name):
 
 
 def _deploy_template(template):
+    def _replace_filename(text):
+        return text.replace(
+            "PROJECTNAME",
+            project_name.lower().replace(" ", "_").replace("-", "_"),
+        )
+
     def _replace_vars(text):
         for k, v in var_mapping.items():
             text = text.replace(k, v)
         return text
 
     print("⌛ Deploying template... 0%", end="\r")
-    project_name = (
-        Path(".")
-        .resolve()
-        .parts[-1]
-        .lower()
-        .replace(" ", "_")
-        .replace("-", "_")
-    )
+    project_name = Path(".").resolve().parts[-1]
     step = 100 / len(template["files"])
 
     with open(CONFIG_DIR / "user.nsc") as f:
@@ -44,7 +43,7 @@ def _deploy_template(template):
     }
 
     for i, (file, data) in enumerate(template["files"].items()):
-        file = _replace_vars(file)
+        file = _replace_filename(file)
         data = _replace_vars(data)
 
         dirs = file.split("/")[:-1]
