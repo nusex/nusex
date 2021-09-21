@@ -46,7 +46,6 @@ def run(
     overwrite,
     check,
     from_repo,
-    as_extension_for,
     ignore_exts,
     extend_ignore_exts,
     ignore_dirs,
@@ -81,13 +80,6 @@ def run(
                     print(f"├── Line {ln}: {line}")
         return
 
-    if as_extension_for:
-        if not os.path.isfile(TEMPLATE_DIR / f"{as_extension_for}.nsx"):
-            raise AlreadyExists(
-                "You cannot create an extension for a non-existent template"
-            )
-        template.data["extension_for"] = as_extension_for
-
     template.save()
     cprint("aok", f"Template '{name}' built successfully!")
 
@@ -118,13 +110,6 @@ def setup(subparsers):
             "installed)"
         ),
         metavar="URL",
-        default="",
-    )
-    s.add_argument(
-        "-e",
-        "--as-extension-for",
-        help="build this template as an extension for another template",
-        metavar="TEMPLATE",
         default="",
     )
     s.add_argument(

@@ -77,11 +77,6 @@ ATTRS = (
     "LICENSEBODY",
     "PROJECTBASEEXC",
 )
-DEFAULT_EXCLUDE_DIRS = (
-    r"(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn"
-    r"|_build|buck-out|build|dist)"
-)
-DEFAULT_EXCLUDE_EXTS = r"(py[cod])"
 
 
 class Template(Entity):
@@ -97,17 +92,13 @@ class Template(Entity):
         data (dict[str, Any]): The data for the template.
         installs (list[str]): A list of dependencies the template will
             install when deployed.
-        as_extension_for (str): The template this template is an
-            extension for. If it is not an extension for any template,
-            this is an empty string.
     """
 
-    __slots__ = Entity.__slots__ + ("installs", "as_extension_for")
+    __slots__ = ("installs",)
 
-    def __init__(self, name, *, installs=[], as_extension_for=""):
+    def __init__(self, name, *, installs=[]):
         super().__init__(TEMPLATE_DIR, name, "nsx")
         self.installs = installs
-        self.as_extension_for = as_extension_for
 
     def __getitem__(self, key):
         return self.data["files"][key]
@@ -158,7 +149,7 @@ class Template(Entity):
             name (str): The name of the template.
             ignores (dict[str, set[str]]): A dict comprised of two
                 key-value pairs (the keys must be "exts" and "dirs")
-                containing extensions and directories to ignore.
+                containing file extensions and directories to ignore.
 
         Returns:
             Template: The newly created template.
@@ -177,7 +168,7 @@ class Template(Entity):
                 template with.
             ignores (dict[str, set[str]]): A dict comprised of two
                 key-value pairs (the keys must be "exts" and "dirs")
-                containing extensions and directories to ignore.
+                containing file extensions and directories to ignore.
 
         Returns:
             Template: The newly created template.
@@ -197,7 +188,7 @@ class Template(Entity):
             url (str): The URL of the GitHub repository to clone.
             ignores (dict[str, set[str]]): A dict comprised of two
                 key-value pairs (the keys must be "exts" and "dirs")
-                containing extensions and directories to ignore.
+                containing file extensions and directories to ignore.
 
         Returns:
             Template: The newly created template.
@@ -224,7 +215,7 @@ class Template(Entity):
         Args:
             ignores (dict[str, set[str]]): A dict comprised of two
                 key-value pairs (the keys must be "exts" and "dirs")
-                containing extensions and directories to ignore.
+                containing file extensions and directories to ignore.
 
         Returns:
             list[str]: A list of filepaths.
@@ -280,7 +271,7 @@ class Template(Entity):
                 for f in files
             },
             "installs": self.installs,
-            "extension_for": self.as_extension_for,
+            "extension_for": "",
         }
 
         # Handle __init__ file if present.
