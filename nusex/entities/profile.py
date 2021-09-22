@@ -29,7 +29,7 @@
 import json
 
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
-from nusex.errors import InvalidConfiguration
+from nusex.errors import EntityError
 from nusex.helpers import cprint, validate_name
 from nusex.spec import NSCDecoder, NSCEncoder, NSPDecoder, NSPEncoder
 
@@ -58,7 +58,7 @@ class Profile(Entity):
         data (dict[str, Any]): The data for the profile.
     """
 
-    __slots__ = Entity.__slots__
+    __slots__ = ()
 
     def __init__(self, name="default"):
         super().__init__(PROFILE_DIR, name, "nsp")
@@ -93,13 +93,12 @@ class Profile(Entity):
         """Save this profile.
 
         Raises:
-            InvalidConfiguration: The profile data has been improperly
-                modified.
+            EntityError: The profile data has been improperly modified.
         """
         try:
             NSPEncoder().write(self.path, self.data)
         except KeyError:
-            raise InvalidConfiguration(
+            raise EntityError(
                 "The profile data has been improperly modified"
             ) from None
 
@@ -208,7 +207,7 @@ class Profile(Entity):
 
         if key == "starting_version":
             if option != "DATE" and not VERSION_PATTERN.match(option):
-                raise InvalidConfiguration(
+                raise EntityError(
                     "That version number does not conform to PEP 440 "
                     "standards, or is not 'DATE'"
                 )
@@ -216,7 +215,7 @@ class Profile(Entity):
         if key == "preferred_license":
             option = self._resolve_license(option)
             if not option:
-                raise InvalidConfiguration(
+                raise EntityError(
                     "Your input could not be resolved to a valid license"
                 )
 
@@ -227,8 +226,8 @@ class Profile(Entity):
         information.
 
         Raises:
-            InvalidConfiguration: An invalid value was provided to one
-                of the inputs.
+            EntityError: An invalid value was provided to one of the
+                inputs.
         """
         for k, v in self.data.items():
             kq = (k[0].upper() + k[1:].replace("_", " ")).replace("url", "URL")

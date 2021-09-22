@@ -32,7 +32,7 @@ import shutil
 import pytest  # type: ignore
 
 from nusex import CONFIG_DIR, PROFILE_DIR, Profile
-from nusex.errors import InvalidConfiguration, InvalidName
+from nusex.errors import EntityError
 
 
 def test_create_profile():
@@ -69,7 +69,7 @@ def test_update_profile():
     profile.update(git_profile_url="https://github.com/testyface/")
     assert profile.data["git_profile_url"] == "https://github.com/testyface"
 
-    with pytest.raises(InvalidConfiguration) as exc:
+    with pytest.raises(EntityError) as exc:
         profile.update(starting_version="test")
     assert f"{exc.value}" == (
         "That version number does not conform to PEP 440 standards, or is "
@@ -79,7 +79,7 @@ def test_update_profile():
     profile.update(preferred_license="BSD Zero Clause License")
     assert profile.data["preferred_license"] == "0bsd"
 
-    with pytest.raises(InvalidConfiguration) as exc:
+    with pytest.raises(EntityError) as exc:
         profile.update(preferred_license="test")
     assert (
         f"{exc.value}" == "Your input could not be resolved to a valid license"
@@ -143,7 +143,7 @@ def test_validate_profile_names():
     good_profiles = ("test", "test_profile", "test69")
 
     for t in bad_profiles:
-        with pytest.raises(InvalidName) as exc:
+        with pytest.raises(EntityError) as exc:
             Profile(t)
         assert f"{exc.value}" == (
             "Names can only contain lower case letters, numbers, and "
@@ -154,10 +154,10 @@ def test_validate_profile_names():
         profile = Profile(t)
         assert profile.name == t
 
-    with pytest.raises(InvalidName) as exc:
+    with pytest.raises(EntityError) as exc:
         Profile("this_is_a_really_long_profile_name")
     assert f"{exc.value}" == "Names are limited to 24 characters"
 
-    with pytest.raises(InvalidName) as exc:
+    with pytest.raises(EntityError) as exc:
         Profile("simple_pkg")
     assert f"{exc.value}" == "That name is reserved"

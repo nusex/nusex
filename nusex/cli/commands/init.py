@@ -29,8 +29,7 @@
 import os
 import sys
 
-import nusex
-from nusex import CONFIG_DIR, Profile
+from nusex import CONFIG_DIR, Profile, __version__
 from nusex.helpers import cprint
 from nusex.spec import NSCEncoder
 from nusex.utils import Downloader
@@ -57,7 +56,7 @@ def run():
 
     settings = {
         "profile": profile_name,
-        "last_update": nusex.__version__,
+        "last_update": __version__,
         "use_wildmatch_ignore": False,
     }
     NSCEncoder().write(CONFIG_DIR / "config.nsc", settings)

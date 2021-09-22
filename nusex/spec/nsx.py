@@ -26,12 +26,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex.errors import InvalidFormat, UnsupportedFile
+from nusex.errors import UnsupportedFile
 
 SPEC_ID = b"\x99\x78"
 
 
 class NSXEncoder:
+    __slots__ = ()
+
     def write(self, path, data):
         with open(path, "wb") as f:
             # Identify format.
@@ -70,6 +72,8 @@ class NSXEncoder:
 
 
 class NSXDecoder:
+    __slots__ = ("defaults",)
+
     def __init__(self):
         self.defaults = {
             "files": {},
@@ -120,7 +124,7 @@ class NSXDecoder:
         with open(path, "rb") as f:
             # Validate format.
             if f.read(2) != SPEC_ID:
-                raise InvalidFormat("Not a valid NSX file")
+                raise UnsupportedFile("Not a valid NSX file")
 
             # Read headers.
             ef = f.read(1)

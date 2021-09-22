@@ -30,7 +30,7 @@ import os
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
-from nusex.errors import BuildError, InvalidConfiguration
+from nusex.errors import BuildError, EntityError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXDecoder, NSXEncoder
 
@@ -130,13 +130,12 @@ class Template(Entity):
         """Save this profile.
 
         Raises:
-            InvalidConfiguration: The profile data has been improperly
-                modified.
+            EntityError: The profile data has been improperly modified.
         """
         try:
             NSXEncoder().write(self.path, self.data)
         except KeyError:
-            raise InvalidConfiguration(
+            raise EntityError(
                 "The template data has been improperly modified"
             ) from None
 

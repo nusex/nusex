@@ -31,7 +31,7 @@ from urllib import request
 from urllib.error import HTTPError
 
 from nusex import CONFIG_DIR
-from nusex.errors import DownloadFailure, InvalidRequest
+from nusex.errors import DownloadError
 from nusex.helpers import cprint
 
 REPO_URL = "https://github.com/nusex/downloads"
@@ -62,9 +62,7 @@ class Downloader:
 
     def __init__(self, of_type):
         if of_type not in ("templates", "licenses"):
-            return InvalidRequest(
-                "You can only download templates or licenses"
-            )
+            return DownloadError("You can only download templates or licenses")
 
         self.of_type = of_type
         if of_type == "templates":
@@ -89,7 +87,7 @@ class Downloader:
         """Fetch the files to download.
 
         Raises:
-            DownloadFailure: There was a problem fetching the files.
+            DownloadError: There was a problem fetching the files.
         """
         self.files = []
 
@@ -97,7 +95,7 @@ class Downloader:
             with request.urlopen(self.url) as r:
                 data = r.readlines()
         except HTTPError as exc:
-            raise DownloadFailure(
+            raise DownloadError(
                 f"Fetch failed (GitHub returned {exc.code})"
             ) from None
 
@@ -120,7 +118,7 @@ class Downloader:
                 await asyncio.sleep(0)
 
         except HTTPError as exc:
-            raise DownloadFailure(
+            raise DownloadError(
                 f"Download failed (GitHub returned {exc.code})"
             ) from None
 
@@ -144,7 +142,7 @@ class Downloader:
                 progress in the terminal. Defaults to False.
 
         Raises:
-            DownloadFailure: There was a problem fetching the files.
+            DownloadError: There was a problem fetching the files.
         """
         if not self.files:
             self.fetch()

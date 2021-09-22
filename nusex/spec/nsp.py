@@ -26,12 +26,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex.errors import InvalidFormat
+from nusex.errors import UnsupportedFile
 
 SPEC_ID = b"\x99\x70"
 
 
 class NSPEncoder:
+    __slots__ = ("map",)
+
     def __init__(self):
         self.map = {
             "author_name": b"\x01",
@@ -55,6 +57,8 @@ class NSPEncoder:
 
 
 class NSPDecoder:
+    __slots__ = ("map", "defaults")
+
     def __init__(self):
         self.map = {
             b"\x01": "author_name",
@@ -77,7 +81,7 @@ class NSPDecoder:
         with open(path, "rb") as f:
             # Validate format.
             if f.read(2) != SPEC_ID:
-                raise InvalidFormat("Not a valid NSP file")
+                raise UnsupportedFile("Not a valid NSP file")
 
             while f.peek(1):
                 key = self.map[f.read(1)]

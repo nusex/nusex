@@ -31,47 +31,36 @@ class NusexError(Exception):
     """The base exception class for nusex."""
 
 
-class DownloadFailure(NusexError):
-    """A download failed."""
+class DownloadError(NusexError):
+    """A download failed to complete, or an invalid download request
+    was submitted."""
 
 
 class BuildError(NusexError):
-    """Building a template failed."""
+    """A template failed to build."""
 
 
-class InvalidFormat(NusexError):
-    """A invalid file has been passed to a decoder."""
+class DeploymentError(NusexError):
+    """A template failed to deploy."""
 
 
 class UnsupportedFile(NusexError):
-    """A file is not supported in templates (normally due to file size
-    restrictions)."""
+    """An invalid file has been passed to a decoder, or a file larger
+    than the file size limit has been included in a template."""
 
 
 class NusexUserError(NusexError):
     """An error occurred due to user error."""
 
 
-class InvalidRequest(NusexUserError):
-    """The user request is invalid."""
-
-
-class InvalidConfiguration(NusexUserError):
-    """An entity is incorrectly configured, or a problem has been caused
-    directly by an invalid configuration."""
-
-
-class InvalidName(NusexUserError):
-    """A entity name is invalid."""
+class EntityError(NusexUserError):
+    """An entity is incorrectly configured, is about to be incorrectly
+    configured, or a problem has been caused thereafter."""
 
 
 class AlreadyExists(NusexUserError):
-    """The entity already exists."""
+    """An entity already exists."""
 
 
-class DeploymentConflict(NusexUserError):
-    """The template has already been deployed."""
-
-
-class TemplateNotFound(NusexUserError):
-    """The requested template could not be found."""
+class DoesNotExist(NusexUserError):
+    """An entity does not exist."""

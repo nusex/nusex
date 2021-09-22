@@ -26,12 +26,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex.errors import InvalidFormat
+from nusex.errors import UnsupportedFile
 
 SPEC_ID = b"\x99\x63"
 
 
 class NSCEncoder:
+    __slots__ = ()
+
     def write(self, path, data):
         with open(path, "wb") as f:
             # Identify format.
@@ -52,6 +54,8 @@ class NSCEncoder:
 
 
 class NSCDecoder:
+    __slots__ = ("defaults",)
+
     def __init__(self):
         self.defaults = {
             "profile": "default",
@@ -64,7 +68,7 @@ class NSCDecoder:
         with open(path, "rb") as f:
             # Validate format.
             if f.read(2) != SPEC_ID:
-                raise InvalidFormat("Not a valid NSC file")
+                raise UnsupportedFile("Not a valid NSC file")
 
             # Load profile data.
             data["profile"] = f.read(24).decode().strip()

@@ -28,7 +28,7 @@
 
 import os
 
-from nusex.errors import InvalidRequest
+from nusex.errors import EntityError
 
 
 class Entity:
@@ -49,7 +49,7 @@ class Entity:
 
     def __new__(cls, *args, **kwargs):
         if not cls.__bases__[0].__bases__:
-            raise InvalidRequest("You cannot create a raw entity")
+            raise EntityError("You cannot create a raw entity")
 
         return super().__new__(cls)
 
