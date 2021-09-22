@@ -115,6 +115,9 @@ class Profile(Entity):
     def from_legacy(cls, name="default"):
         """Create a profile from a 0.x spec user.nsc file.
 
+        Keyword Args:
+            name (str): The name of the profile. Defaults to "default".
+
         Returns:
             Profile: The newly converted profile.
 
@@ -240,7 +243,7 @@ class Profile(Entity):
         passed through as kwargs. Invalid configuration keys raise
         warnings, not errors.
 
-        Args:
+        Keyword Args:
             author_name (str): An author name.
             author_email (str): An author email.
             git_profile_url (str): Your GitHub/Gitlab/BitBucket/etc.

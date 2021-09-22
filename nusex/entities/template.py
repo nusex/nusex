@@ -87,6 +87,10 @@ class Template(Entity):
             exist, a new one is created, otherwise an existing one is
             loaded.
 
+    Keyword Args:
+        installs (list[str]): A list of dependancies to be installed
+            when the template is deployed.
+
     Attributes:
         path (pathlib.Path): The complete filepath to the template.
         data (dict[str, Any]): The data for the template.
@@ -242,6 +246,8 @@ class Template(Entity):
 
         Args:
             project_name (str): The name of the project.
+
+        Keyword Args:
             files (list[str]): The list of files to include in this
                 template. If no files are specified, the file listing
                 is automatically retrieved.
