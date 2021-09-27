@@ -26,17 +26,56 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
-import shutil
+from pathlib import Path
 
-import pytest  # type: ignore
+from nusex import CONFIG_DIR, PROFILE_DIR, TEMPLATE_DIR, __version__
+from nusex.spec import (
+    NSCDecoder,
+    NSCEncoder,
+    NSPDecoder,
+    NSPEncoder,
+    NSXDecoder,
+    NSXEncoder,
+)
 
-from nusex import CONFIG_DIR
 
-DEV_DIR = CONFIG_DIR.parent / "nusex-dev"
-TEST_DIR = CONFIG_DIR.parent / "nusex-test"
+def test_nsc_spec():
+    data = {
+        "profile": "default",
+        "last_update": __version__,
+        "use_wildmatch_ignore": False,
+    }
+    NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
 
-if not os.path.isdir(DEV_DIR):
-    pytest.exit("No dev config directory detected -- tests aborted")
+    data2 = NSCDecoder().read(CONFIG_DIR / "config.nsc")
+    assert data == data2
 
-shutil.copytree(f"{DEV_DIR}", f"{TEST_DIR}")
+
+def test_nsp_spec():
+    data = {
+        "author_name": "John Smith",
+        "author_email": "thedoctor@email.com",
+        "git_profile_url": "https://github.com/shakespearecode",
+        "starting_version": "0.1.0",
+        "default_description": "My project, made using nusex",
+        "preferred_license": "mit",
+    }
+    NSPEncoder().write(PROFILE_DIR / "__nsp_spec_test__.nsp", data)
+
+    data2 = NSPDecoder().read(PROFILE_DIR / "__nsp_spec_test__.nsp")
+    assert data == data2
+
+
+def test_nsx_spec():
+    data = {
+        "files": {
+            f"{p}".split("/")[-1]: p.read_bytes()
+            for p in (Path(__file__).parent / "nsx_data").glob("*")
+        },
+        "installs": ["-r requirements.txt", "nusex"],
+        "extension_for": "template",
+    }
+    NSXEncoder().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
+
+    data2 = NSXDecoder().read(TEMPLATE_DIR / "__nsx_spec_test__.nsx")
+    assert data == data2

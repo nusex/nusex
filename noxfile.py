@@ -1,7 +1,11 @@
 import os
+import shutil
+import zipfile
 from pathlib import Path
 
 import nox
+
+from nusex import CONFIG_DIR
 
 if os.environ.get("CI", False):
     import sys
@@ -34,9 +38,17 @@ DEPS = {
 
 @nox.session(python=PY_VERSIONS, reuse_venv=True)
 def tests(session):
+    test_config_dir = CONFIG_DIR.parent / "nusex-test"
+
+    with zipfile.ZipFile(Path(__file__).parent / "tests/nusex-test.zip") as z:
+        z.extractall(test_config_dir)
+
     deps = parse_requirements("./requirements-test.txt")
     session.install(*deps)
-    session.run("pytest", "-s", "--verbose", "--log-level=INFO")
+    session.run("pytest", "--verbose", "--log-level=INFO")
+
+    if os.path.isdir(test_config_dir):
+        shutil.rmtree(test_config_dir)
 
 
 @nox.session(reuse_venv=True)
