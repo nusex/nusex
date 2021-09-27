@@ -22,23 +22,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Run checks (Ubuntu)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - name: Setup and run nox sessions (UNIX)
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
           python -m pip install -U pip nox .
           nox
 
-      - name: Run checks (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
-          python -m pip install -U pip nox .
-          nox
-
-      - name: Run checks (Windows)
+      - name: Setup and run nox sessions (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           python -m venv .venv
