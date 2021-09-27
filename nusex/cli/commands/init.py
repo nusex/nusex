@@ -46,7 +46,7 @@ def run():
         os.makedirs(CONFIG_DIR / d, exist_ok=True)
 
     for t in ("templates", "licenses"):
-        if not os.path.isdir(CONFIG_DIR / t):
+        if not os.listdir(CONFIG_DIR / t):
             Downloader(t).download(display_progress=True)
 
     profile_name = input(f"🎤 Profile name [default]: ").strip() or "default"
