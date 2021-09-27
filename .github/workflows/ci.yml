@@ -22,18 +22,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Setup and run nox sessions (UNIX)
+      - name: Set up UNIX systems
         if: ${{ matrix.os != 'windows-latest' }}
         run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
-          python -m pip install -U pip nox .
-          nox
+          alias python=python3
 
-      - name: Setup and run nox sessions (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
+      - name: Setup and run nox sessions
         run: |
-          python -m venv .venv
-          . .venv\Scripts\activate.bat
-          python -m pip install -U pip nox .
+          python -m pip install -U pip
+          python -m pip install nox .
           nox
