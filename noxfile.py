@@ -1,10 +1,19 @@
+import os
 from pathlib import Path
 
 import nox
 
-LIB_DIR = Path(__file__).parent / "nusex"
+if os.environ.get("CI", False):
+    import sys
+
+    PY_VERSIONS = [".".join(f"{v}" for v in sys.version_info[:2])]
+
+else:
+    PY_VERSIONS = [f"3.{v}" for v in range(6, 11)]  # 3.6 - 3.10
+
+PROJECT_NAME = "nusex"
+LIB_DIR = Path(__file__).parent / PROJECT_NAME
 TEST_DIR = Path(__file__).parent / "tests"
-PY_VERSIONS = [f"3.{v}" for v in range(6, 11)]  # 3.6 - 3.10
 
 
 def parse_requirements(path):
@@ -16,7 +25,9 @@ def parse_requirements(path):
 DEPS = {
     name: install
     for name, install in (
-        r.split("~=") for r in parse_requirements("./requirements-dev.txt")
+        r.split("~=")
+        for r in parse_requirements("./requirements-dev.txt")
+        if not r.startswith(("#", "-r"))
     )
 }
 
@@ -40,7 +51,7 @@ def check_imports(session):
     # flake8 doesn't use the gitignore so we have to be explicit.
     session.run(
         "flake8",
-        "nusex",
+        PROJECT_NAME,
         "tests",
         "--select",
         "F4",
@@ -55,8 +66,7 @@ def check_imports(session):
 @nox.session(reuse_venv=True)
 def check_line_lengths(session):
     session.install(f"len8~={DEPS['len8']}")
-    session.run("len8", "nusex")
-    session.run("len8", "tests")
+    session.run("len8", PROJECT_NAME, "tests")
 
 
 @nox.session(reuse_venv=True)
