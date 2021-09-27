@@ -179,7 +179,9 @@ class Profile(Entity):
                 return value
 
             attrs = {}
-            with open(LICENSE_DIR / file) as f:
+            with open(LICENSE_DIR / file, encoding="utf-8") as f:
+                # This needs to be explicitly encoded as UTF-8 otherwise
+                # it won't work on Windows.
                 for line in f:
                     if line == "---\n":
                         continue
