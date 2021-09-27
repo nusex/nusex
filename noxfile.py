@@ -38,7 +38,9 @@ DEPS = {
 
 @nox.session(python=PY_VERSIONS, reuse_venv=True)
 def tests(session):
-    test_config_dir = CONFIG_DIR.parent / "nusex-test"
+    test_config_dir = CONFIG_DIR.parent / (
+        "nusex-test" if os.name != "nt" else ".nusex-test"
+    )
 
     with zipfile.ZipFile(Path(__file__).parent / "tests/nusex-test.zip") as z:
         z.extractall(test_config_dir)

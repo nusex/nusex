@@ -27,7 +27,7 @@ jobs:
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
-          python -m pip install -U pip nox
+          python -m pip install -U pip nox .
           nox
 
       - name: Run checks (MacOS)
@@ -35,7 +35,7 @@ jobs:
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
-          python -m pip install -U pip nox
+          python -m pip install -U pip nox .
           nox
 
       - name: Run checks (Windows)
@@ -43,5 +43,5 @@ jobs:
         run: |
           python -m venv .venv
           . .venv\Scripts\activate.bat
-          python -m pip install -U pip nox
+          python -m pip install -U pip nox .
           nox
