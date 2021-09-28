@@ -7,14 +7,6 @@ import nox
 
 from nusex import CONFIG_DIR
 
-if os.environ.get("CI", False):
-    import sys
-
-    PY_VERSIONS = [".".join(f"{v}" for v in sys.version_info[:2])]
-
-else:
-    PY_VERSIONS = [f"3.{v}" for v in range(6, 11)]  # 3.6 - 3.10
-
 PROJECT_NAME = "nusex"
 LIB_DIR = Path(__file__).parent / PROJECT_NAME
 TEST_DIR = Path(__file__).parent / "tests"
@@ -36,7 +28,7 @@ DEPS = {
 }
 
 
-@nox.session(python=PY_VERSIONS, reuse_venv=True)
+@nox.session(reuse_venv=True)
 def tests(session):
     test_config_dir = CONFIG_DIR.parent / (
         "nusex-test" if os.name != "nt" else ".nusex-test"

@@ -3,14 +3,14 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  check:
+  test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9, 3.10-dev]
 
-    name: Run checks
+    name: Test
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -22,13 +22,41 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set up UNIX systems
+      - name: Create alias for Python (UNIX)
         if: ${{ matrix.os != 'windows-latest' }}
         run: |
           alias python=python3
 
-      - name: Setup and run nox sessions
+      - name: Install dependencies
         run: |
           python -m pip install -U pip
           python -m pip install nox . --use-feature=in-tree-build
-          nox
+
+      - name: Run tests
+        run: |
+          python -m nox -s tests
+
+  check_formatting:
+    strategy:
+      fail-fast: false
+
+    name: Check formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install -U pip
+          python3 -m pip install nox
+
+      - name: Run checks
+        run: |
+          python -m nox -k "not tests"
