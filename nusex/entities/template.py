@@ -276,7 +276,7 @@ class Template(Entity):
                 for f in files
             },
             "installs": self.installs,
-            "extension_for": "",
+            "as_extension_for": "",
         }
 
         # Handle __init__ file if present.
