@@ -73,7 +73,7 @@ def test_nsx_spec():
             for p in (Path(__file__).parent / "nsx_data").glob("*")
         },
         "installs": ["-r requirements.txt", "nusex"],
-        "extension_for": "template",
+        "as_extension_for": "template",
     }
     NSXEncoder().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
 

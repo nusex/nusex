@@ -40,7 +40,7 @@ class NSXEncoder:
             f.write(SPEC_ID)
 
             # Write headers.
-            ef = data["extension_for"]
+            ef = data["as_extension_for"]
             if ef:
                 f.write(b"\x01")
                 f.write(ef.ljust(24).encode())
@@ -78,7 +78,7 @@ class NSXDecoder:
         self.defaults = {
             "files": {},
             "installs": [],
-            "extension_for": "",
+            "as_extension_for": "",
         }
 
     def _process_files(self, f, data):
@@ -129,7 +129,7 @@ class NSXDecoder:
             # Read headers.
             ef = f.read(1)
             if ef == b"\x01":
-                data["extension_for"] = f.read(24).decode().strip()
+                data["as_extension_for"] = f.read(24).decode().strip()
 
             f.read(9)  # Skip reserved.
 
