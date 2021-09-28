@@ -32,12 +32,12 @@ import shutil
 import pytest  # type: ignore
 
 from nusex import CONFIG_DIR, PROFILE_DIR, Profile
-from nusex.errors import EntityError
+from nusex.errors import AlreadyExists, EntityError
 
 
 def test_create_profile():
-    profile = Profile("__test__")
-    assert profile.name == "__test__"
+    profile = Profile("__test_profile__")
+    assert profile.name == "__test_profile__"
     assert profile.data["starting_version"] == "0.1.0"
     assert (
         profile.data["default_description"]
@@ -49,25 +49,50 @@ def test_create_profile():
     assert profile.exists
 
 
+def test_load_profile():
+    profile = Profile("default")
+    assert profile.name == "default"
+    assert profile.data["author_name"] == "Andy Koffman"
+    assert profile.data["author_email"] == "wrestingbears@hotmail.com"
+    assert (
+        profile.data["git_profile_url"] == "https://github.com/wrestlingbears"
+    )
+    assert profile.data["starting_version"] == "0.1.0"
+    assert (
+        profile.data["default_description"]
+        == "My project, created using nusex"
+    )
+    assert profile.data["preferred_license"] == "mit"
+
+
 def test_select_profile():
-    profile = Profile("__test__")
+    profile = Profile("__test_profile__")
     assert not profile.is_selected
 
     profile.select()
     assert profile.is_selected
 
 
-def test_update_profile():
-    profile = Profile("__test__")
-
+def test_update_profile_author_info():
+    profile = Profile("__test_profile__")
     profile.update(
         author_name="Testy McTestface",
         author_email="testy@mcface.com",
     )
     assert profile.data["author_name"] == "Testy McTestface"
+    assert profile.data["author_email"] == "testy@mcface.com"
 
+
+def test_update_profile_git_profile_url():
+    profile = Profile("__test_profile__")
     profile.update(git_profile_url="https://github.com/testyface/")
     assert profile.data["git_profile_url"] == "https://github.com/testyface"
+
+
+def test_update_profile_starting_version():
+    profile = Profile("__test_profile__")
+    profile.update(starting_version="0.2.0")
+    assert profile.data["starting_version"] == "0.2.0"
 
     with pytest.raises(EntityError) as exc:
         profile.update(starting_version="test")
@@ -76,6 +101,15 @@ def test_update_profile():
         "not 'DATE'"
     )
 
+
+def test_update_profile_default_description():
+    profile = Profile("__test_profile__")
+    profile.update(default_description="I do be a testy boi tho")
+    assert profile.data["default_description"] == "I do be a testy boi tho"
+
+
+def test_update_profile_preferred_license():
+    profile = Profile("__test_profile__")
     profile.update(preferred_license="BSD Zero Clause License")
     assert profile.data["preferred_license"] == "0bsd"
 
@@ -87,15 +121,10 @@ def test_update_profile():
 
 
 def test_rename_profile():
-    profile = Profile("__test__")
+    profile = Profile("__test_profile__")
     profile.rename("__test_profile__")
     # Intentionally explicit.
     assert (PROFILE_DIR / "__test_profile__.nsp").is_file()
-
-    # Before continue, copy the file for later tests.
-    shutil.copyfile(
-        PROFILE_DIR / "__test_profile__.nsp", PROFILE_DIR / "__test__.nsp"
-    )
 
 
 def test_delete_profile():
@@ -161,3 +190,26 @@ def test_validate_profile_names():
     with pytest.raises(EntityError) as exc:
         Profile("simple_pkg")
     assert f"{exc.value}" == "That name is reserved"
+
+
+def test_reject_reserved_names():
+    bad_profiles = ("simple_app", "simple_pkg", "complex_pkg")
+
+    for t in bad_profiles:
+        with pytest.raises(EntityError) as exc:
+            Profile(t)
+        assert f"{exc.value}" == "That name is reserved"
+
+
+def test_reject_taken_names():
+    with pytest.raises(AlreadyExists) as exc:
+        Profile("another_app")
+    assert f"{exc.value}" == "A template is already using that name"
+
+
+def test_select_default_profile():
+    # Done to reset the config for other tests.
+    profile = Profile()
+    profile.select()
+    assert profile.is_selected
+    assert profile.name == "default"
