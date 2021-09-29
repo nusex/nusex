@@ -20,8 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python3 -m pip install -U pip
-        python3 -m pip install build
+        python -m pip install build
 
     - name: Build package
       run: python -m build
@@ -47,11 +46,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python3 -m pip install -U pip
-        python3 -m pip install build
+        python -m pip install build
 
     - name: Build artefacts
-      run: python3 -m build
+      run: python -m build
 
     - name: Attach artefacts to release
       uses: svenstaro/upload-release-action@v2

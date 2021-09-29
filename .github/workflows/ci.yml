@@ -22,14 +22,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Create alias for Python (UNIX)
-        if: ${{ matrix.os != 'windows-latest' }}
-        run: |
-          alias python=python3
-
       - name: Install dependencies
         run: |
-          python -m pip install -U pip
           python -m pip install nox . --use-feature=in-tree-build
 
       - name: Run tests
@@ -37,9 +31,6 @@ jobs:
           python -m nox -s tests
 
   check_formatting:
-    strategy:
-      fail-fast: false
-
     name: Check formatting
     runs-on: ubuntu-latest
 
@@ -54,8 +45,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install -U pip
-          python3 -m pip install nox
+          python -m pip install nox
 
       - name: Run checks
         run: |
