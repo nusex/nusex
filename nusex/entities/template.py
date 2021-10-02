@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
+import re
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
@@ -162,7 +163,6 @@ class Template(Entity):
         """
         c = cls(name)
         c.build(
-            Path(".").resolve().parts[-1],
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
         )
@@ -186,12 +186,12 @@ class Template(Entity):
         Returns:
             Template: The newly created template.
         """
-        cur_path = Path(".").resolve()
-        os.chdir(path)
-        c = cls.from_cwd(
-            name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+        c = cls(name)
+        c.build(
+            root_dir=path,
+            ignore_exts=ignore_exts,
+            ignore_dirs=ignore_dirs,
         )
-        os.chdir(cur_path)
         return c
 
     @classmethod
@@ -229,8 +229,14 @@ class Template(Entity):
             name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
         )
 
-    def get_file_listing(self, *, ignore_exts=set(), ignore_dirs=set()):
+    def get_file_listing(
+        self, root_dir, *, ignore_exts=set(), ignore_dirs=set()
+    ):
         """Get a list of files to include in this template.
+
+        Args:
+            root_dir (str): The root directory that nusex will search
+                from.
 
         Keyword Args:
             ignore_exts (set[str]): A set of file extensions to ignore.
@@ -239,7 +245,7 @@ class Template(Entity):
                 Defaults to an empty set.
 
         Returns:
-            list[str]: A list of filepaths.
+            list[Path]: A list of filepaths.
         """
 
         def is_valid(path):
@@ -254,21 +260,23 @@ class Template(Entity):
             filter(lambda x: x.startswith("*"), ignore_dirs)
         )
         true_dir_ignores = ignore_dirs - wild_dir_ignores
-        files = filter(lambda p: is_valid(p), Path(".").rglob("*"))
+        files = filter(lambda p: is_valid(p), Path(root_dir).rglob("*"))
         return list(files)
 
-    def build(self, project_name, files=[], **kwargs):
+    def build(self, project_name=None, files=[], root_dir=".", **kwargs):
         """Build this template. View the
         :doc:`template guide <../guide/templates>` to see what this
         command does in more detail.
 
-        Args:
-            project_name (str): The name of the project.
-
         Keyword Args:
+            project_name (str): The name of the project. If this is None
+                the project name is set to the name of the parent
+                folder. Defaults to None.
             files (list[str]): The list of files to include in this
                 template. If no files are specified, the file listing
                 is automatically retrieved.
+            root_dir (str): The root directory that nusex will search
+                from. Defaults to the current directory.
             **kwargs (Any): Arguments for the :code:`get_file_listing`
                 method.
         """
@@ -284,15 +292,21 @@ class Template(Entity):
         def set_file_text(key, value):
             self.data["files"][key] = value.encode()
 
+        if not project_name:
+            project_name = Path(root_dir).resolve().parts[-1]
+
         if not files:
             files = self.get_file_listing(
+                root_dir,
                 ignore_exts=kwargs.pop("ignore_exts", set()),
                 ignore_dirs=kwargs.pop("ignore_dirs", set()),
             )
 
         self.data = {
             "files": {
-                f"{f}".replace(project_name, "PROJECTNAME"): f.read_bytes()
+                re.sub(f"^{root_dir}/", "", f"{f}").replace(
+                    project_name, "PROJECTNAME"
+                ): f.read_bytes()
                 for f in files
             },
             "installs": self.installs,
