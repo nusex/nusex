@@ -33,12 +33,13 @@ from nusex.errors import AlreadyExists
 from nusex.helpers import cprint
 
 
-def resolve_ignores(exts, extend_exts, dirs, extend_dirs):
-    if extend_exts != {""}:
-        exts = exts.union(extend_exts)
-    if extend_dirs != {""}:
-        dirs = dirs.union(extend_dirs)
-    return {"exts": exts, "dirs": dirs}
+def _options_as_set(values):
+    s = set(values.split(","))
+
+    if s == {""}:
+        return {}
+
+    return s
 
 
 def run(
@@ -56,16 +57,19 @@ def run(
             "That template already exists (use -o to ignore this)"
         )
 
-    ignores = resolve_ignores(
-        ignore_exts, extend_ignore_exts, ignore_dirs, extend_ignore_dirs
-    )
+    ignore_exts = ignore_exts.union(extend_ignore_exts)
+    ignore_dirs = ignore_dirs.union(extend_ignore_dirs)
 
     # TODO: Make so when overwriting a template, it doesn't have to
     # load the previous one first.
     if from_repo:
-        template = Template.from_repo(name, from_repo, ignores)
+        template = Template.from_repo(
+            name, from_repo, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+        )
     else:
-        template = Template.from_cwd(name, ignores)
+        template = Template.from_cwd(
+            name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+        )
 
     if check:
         cprint("inf", "Showing template manifest (incl. changes):")
@@ -120,7 +124,7 @@ def setup(subparsers):
         ),
         metavar="EXTS",
         default="pyc,pyd,pyo",
-        type=lambda x: set(x.split(",")),
+        type=_options_as_set,
     )
     s.add_argument(
         "--extend-ignore-exts",
@@ -130,7 +134,7 @@ def setup(subparsers):
         ),
         metavar="EXTS",
         default="",
-        type=lambda x: set(x.split(",")),
+        type=_options_as_set,
     )
     s.add_argument(
         "--ignore-dirs",
@@ -145,7 +149,7 @@ def setup(subparsers):
             ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,"
             "_build,build,dist,buck-out,*.egg-info"
         ),
-        type=lambda x: set(x.split(",")),
+        type=_options_as_set,
     )
     s.add_argument(
         "--extend-ignore-dirs",
@@ -155,6 +159,6 @@ def setup(subparsers):
         ),
         metavar="DIRS",
         default="",
-        type=lambda x: set(x.split(",")),
+        type=_options_as_set,
     )
     return subparsers

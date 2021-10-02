@@ -144,54 +144,69 @@ class Template(Entity):
             ) from None
 
     @classmethod
-    def from_cwd(cls, name, ignores):
+    def from_cwd(cls, name, *, ignore_exts=set(), ignore_dirs=set()):
         """Create a template using files from the current working
         directory.
 
         Args:
             name (str): The name of the template.
-            ignores (dict[str, set[str]]): A dict comprised of two
-                key-value pairs (the keys must be "exts" and "dirs")
-                containing file extensions and directories to ignore.
+
+        Keyword Args:
+            ignore_exts (set[str]): A set of file extensions to ignore.
+                Defaults to an empty set.
+            ignore_dirs (set[str]): A set of directories to ignore.
+                Defaults to an empty set.
 
         Returns:
             Template: The newly created template.
         """
         c = cls(name)
-        c.build(Path(".").resolve().parts[-1], ignores=ignores)
+        c.build(
+            Path(".").resolve().parts[-1],
+            ignore_exts=ignore_exts,
+            ignore_dirs=ignore_dirs,
+        )
         return c
 
     @classmethod
-    def from_dir(cls, name, path, ignores):
+    def from_dir(cls, name, path, *, ignore_exts=set(), ignore_dirs=set()):
         """Create a template using files from a specific directory.
 
         Args:
             name (str): The name of the template.
             path (str | os.PathLike): The path to the files to build the
                 template with.
-            ignores (dict[str, set[str]]): A dict comprised of two
-                key-value pairs (the keys must be "exts" and "dirs")
-                containing file extensions and directories to ignore.
+
+        Keyword Args:
+            ignore_exts (set[str]): A set of file extensions to ignore.
+                Defaults to an empty set.
+            ignore_dirs (set[str]): A set of directories to ignore.
+                Defaults to an empty set.
 
         Returns:
             Template: The newly created template.
         """
         cur_path = Path(".").resolve()
         os.chdir(path)
-        c = cls.from_cwd(name, ignores)
+        c = cls.from_cwd(
+            name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+        )
         os.chdir(cur_path)
         return c
 
     @classmethod
-    def from_repo(cls, name, url, ignores):
+    def from_repo(cls, name, url, *, ignore_exts=set(), ignore_dirs=set()):
         """Create a template using files from a GitHub repository.
 
         Args:
             name (str): The name of the template.
             url (str): The URL of the GitHub repository to clone.
-            ignores (dict[str, set[str]]): A dict comprised of two
-                key-value pairs (the keys must be "exts" and "dirs")
-                containing file extensions and directories to ignore.
+
+        Keyword Args:n
+            ignore_exts (set[str]): A set of file extensions to ignore.
+                Defaults to an empty set.
+            ignore_dirs (set[str]): A set of directories to ignore.
+                Defaults to an empty set.
 
         Returns:
             Template: The newly created template.
@@ -210,15 +225,18 @@ class Template(Entity):
             )
 
         os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
-        return cls.from_cwd(name, ignores)
+        return cls.from_cwd(
+            name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+        )
 
-    def get_file_listing(self, ignores):
+    def get_file_listing(self, *, ignore_exts=set(), ignore_dirs=set()):
         """Get a list of files to include in this template.
 
-        Args:
-            ignores (dict[str, set[str]]): A dict comprised of two
-                key-value pairs (the keys must be "exts" and "dirs")
-                containing file extensions and directories to ignore.
+        Keyword Args:
+            ignore_exts (set[str]): A set of file extensions to ignore.
+                Defaults to an empty set.
+            ignore_dirs (set[str]): A set of directories to ignore.
+                Defaults to an empty set.
 
         Returns:
             list[str]: A list of filepaths.
@@ -229,13 +247,13 @@ class Template(Entity):
                 path.is_file()
                 and all(i not in path.parts for i in true_dir_ignores)
                 and all(i[1:] not in f"{path}" for i in wild_dir_ignores)
-                and all(i != path.suffix[1:] for i in ignores["exts"])
+                and all(i != path.suffix[1:] for i in ignore_exts)
             )
 
         wild_dir_ignores = set(
-            filter(lambda x: x.startswith("*"), ignores["dirs"])
+            filter(lambda x: x.startswith("*"), ignore_dirs)
         )
-        true_dir_ignores = ignores["dirs"] - wild_dir_ignores
+        true_dir_ignores = ignore_dirs - wild_dir_ignores
         files = filter(lambda p: is_valid(p), Path(".").rglob("*"))
         return list(files)
 
@@ -267,8 +285,10 @@ class Template(Entity):
             self.data["files"][key] = value.encode()
 
         if not files:
-            ignores = kwargs.pop("ignores", {"exts": set(), "dirs": set()})
-            files = self.get_file_listing(ignores)
+            files = self.get_file_listing(
+                ignore_exts=kwargs.pop("ignore_exts", set()),
+                ignore_dirs=kwargs.pop("ignore_dirs", set()),
+            )
 
         self.data = {
             "files": {
