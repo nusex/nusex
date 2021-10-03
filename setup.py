@@ -80,5 +80,10 @@ setuptools.setup(
     # },
     python_requires=">=3.6.0",
     packages=setuptools.find_packages(exclude=["tests*"]),
-    entry_points={"console_scripts": ["nsx = nusex.cli.cli:main"]},
+    entry_points={
+        "console_scripts": [
+            "nsx = nusex.cli.cli:main",
+            "nusex = nusex.cli.cli:main",
+        ]
+    },
 )
