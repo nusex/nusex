@@ -42,7 +42,7 @@ INIT_ATTR_MAPPING = {
     "__version__": '"PROJECTVERSION"',
     "__description__": '"PROJECTDESCRIPTION"',
     "__url__": '"PROJECTURL"',
-    "__docs__": '"https://PROJECTNAME.readthedocs.io/en/latest/"',
+    "__docs__": '"https://PROJECTNAME.readthedocs.io/en/latest"',
     "__author__": '"PROJECTAUTHOR"',
     "__author_email__": '"PROJECTAUTHOREMAIL"',
     "__license__": '"PROJECTLICENSE"',
@@ -292,6 +292,11 @@ class Template(Entity):
         def set_file_text(key, value):
             self.data["files"][key] = value.encode()
 
+        def resolve_key(path):
+            return re.sub(f"^{root_dir}/", "", f"{path}").replace(
+                project_name, "PROJECTNAME"
+            )
+
         if not project_name:
             project_name = Path(root_dir).resolve().parts[-1]
 
@@ -303,12 +308,7 @@ class Template(Entity):
             )
 
         self.data = {
-            "files": {
-                re.sub(f"^{root_dir}/", "", f"{f}").replace(
-                    project_name, "PROJECTNAME"
-                ): f.read_bytes()
-                for f in files
-            },
+            "files": {resolve_key(f): f.read_bytes() for f in files},
             "installs": self.installs,
             "as_extension_for": "",
         }
@@ -404,7 +404,7 @@ class Template(Entity):
 
                 set_file_text(sf, text.replace(base_exc, "PROJECTBASEEXC"))
 
-        # These four files need the same changes.
+        # These three files need the same changes.
         for sf in ("MANIFEST.in", "setup.cfg", "setup.py"):
             text = get_file_text(sf)
             if text:
