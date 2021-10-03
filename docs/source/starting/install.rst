@@ -37,4 +37,4 @@ If you're dying to try the newest features, you can install the latest developme
 Next steps
 ==========
 
-Once you've installed nusex, you need to perform a one-time initialisation. You can find out how to do this in the :doc:`initialisation guide <../using/init>`
+Once you've installed nusex, you need to perform a one-time initialisation. You can find out how to do this in the :doc:`initialisation guide <../starting/init>`

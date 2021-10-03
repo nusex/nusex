@@ -70,7 +70,7 @@ def test_nsx_spec():
     data = {
         "files": {
             f"{p}".split("/")[-1]: p.read_bytes()
-            for p in (Path(__file__).parent / "nsx_data").glob("*")
+            for p in (Path(__file__).parent / "data/nsx").glob("*")
         },
         "installs": ["-r requirements.txt", "nusex"],
         "as_extension_for": "template",
