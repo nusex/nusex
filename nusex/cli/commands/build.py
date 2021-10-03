@@ -142,12 +142,12 @@ def setup(subparsers):
             "a comma-separated list of directories to ignore; look at the "
             "docs for more information about advanced ignoring syntaxes "
             "(default: .direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,"
-            "venv,.svn,_build,build,dist,buck-out,*.egg-info)"
+            "venv,.svn,_build,build,dist,buck-out,.pytest-cache,*.egg-info)"
         ),
         metavar="DIRS",
         default=(
             ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,"
-            "_build,build,dist,buck-out,*.egg-info"
+            "_build,build,dist,buck-out,.pytest-cache,*.egg-info"
         ),
         type=_options_as_set,
     )
