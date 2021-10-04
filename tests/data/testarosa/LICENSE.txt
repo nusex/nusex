@@ -1,0 +1,3 @@
+Copyright (C) Barney The Dinosaur
+
+This license is purely for testing, and should not be enforced.

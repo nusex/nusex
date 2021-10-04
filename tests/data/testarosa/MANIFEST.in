@@ -1,0 +1,6 @@
+graft testarosa
+include LICENSE
+include pyproject.toml
+include README.md
+include setup.py
+global-exclude *.py[cod]
