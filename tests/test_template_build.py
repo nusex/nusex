@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+import re
 from pathlib import Path
 
 from nusex import Template
@@ -58,8 +59,9 @@ def test_init_file_okay():
     template = Template("__test_build__")
     assert "PROJECTNAME/__init__.py" in template.data["files"]
 
-    lines = (
-        template.data["files"]["PROJECTNAME/__init__.py"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]",
+        template.data["files"]["PROJECTNAME/__init__.py"].decode(),
     )
     assert lines[0] == '__productname__ = "PROJECTNAME"'
     assert lines[1] == '__version__ = "PROJECTVERSION"'
@@ -79,7 +81,9 @@ def test_pyproject_file_okay():
     template = Template("__test_build__")
     assert "pyproject.toml" in template.data["files"]
 
-    lines = template.data["files"]["pyproject.toml"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["pyproject.toml"].decode()
+    )
     assert lines[1] == 'name = "PROJECTNAME"'
     assert lines[2] == 'version = "PROJECTVERSION"'
     assert lines[3] == 'description = "PROJECTDESCRIPTION"'
@@ -102,7 +106,7 @@ def test_sphinx_conf_files_okay():
         logging.info(f"File: {file}")
         assert file in template.data["files"]
 
-        lines = template.data["files"][file].decode().split("\n")
+        lines = re.split("\r\n|[\r\n]", template.data["files"][file].decode())
         assert lines[15] == "import PROJECTNAME"
         assert lines[22] == 'project = "PROJECTNAME"'
         assert lines[23] == 'copyright = "PROJECTYEAR, PROJECTAUTHOR"'
@@ -117,7 +121,7 @@ def test_error_files_okay():
         logging.info(f"File: {file}")
         assert file in template.data["files"]
 
-        lines = template.data["files"][file].decode().split("\n")
+        lines = re.split("\r\n|[\r\n]", template.data["files"][file].decode())
         assert lines[0] == "class PROJECTBASEEXC(Exception):"
         assert lines[4] == "class AnotherError(PROJECTBASEEXC):"
 
@@ -126,7 +130,9 @@ def test_manifest_file_okay():
     template = Template("__test_build__")
     assert "MANIFEST.in" in template.data["files"]
 
-    lines = template.data["files"]["MANIFEST.in"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["MANIFEST.in"].decode()
+    )
     assert lines[0] == "graft PROJECTNAME"
 
 
@@ -134,7 +140,9 @@ def test_setup_cfg_file_okay():
     template = Template("__test_build__")
     assert "setup.cfg" in template.data["files"]
 
-    lines = template.data["files"]["setup.cfg"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["setup.cfg"].decode()
+    )
     assert lines[1] == "name = PROJECTNAME"
 
 
@@ -142,7 +150,9 @@ def test_setup_py_file_okay():
     template = Template("__test_build__")
     assert "setup.py" in template.data["files"]
 
-    lines = template.data["files"]["setup.py"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["setup.py"].decode()
+    )
     assert lines[3] == '    name="PROJECTNAME",'
 
 
@@ -150,7 +160,9 @@ def test_readme_md_file_okay():
     template = Template("__test_build__")
     assert "README.md" in template.data["files"]
 
-    lines = template.data["files"]["README.md"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["README.md"].decode()
+    )
     assert lines[0] == "# PROJECTNAME"
     assert lines[4] == "## Acknowledgements"
     assert lines[6] == (
@@ -163,7 +175,9 @@ def test_readme_txt_file_okay():
     template = Template("__test_build__")
     assert "README.txt" in template.data["files"]
 
-    lines = template.data["files"]["README.txt"].decode().split("\n")
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["README.txt"].decode()
+    )
     assert lines[0] == "# PROJECTNAME"
     assert lines[10] == "### Acknowledgements"
     assert lines[14] == (
@@ -176,7 +190,7 @@ def test_license_file_okay():
     template = Template("__test_build__")
     assert "LICENSE" in template.data["files"]
 
-    lines = template.data["files"]["LICENSE"].decode().split("\n")
+    lines = re.split("\r\n|[\r\n]", template.data["files"]["LICENSE"].decode())
     assert lines[0] == "LICENSEBODY"
 
 
