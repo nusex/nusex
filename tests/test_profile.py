@@ -186,10 +186,6 @@ def test_validate_profile_names():
         Profile("this_is_a_really_long_profile_name")
     assert f"{exc.value}" == "Names are limited to 24 characters"
 
-    with pytest.raises(EntityError) as exc:
-        Profile("simple_pkg")
-    assert f"{exc.value}" == "That name is reserved"
-
 
 def test_reject_reserved_names():
     bad_profiles = ("simple_app", "simple_pkg", "complex_pkg")

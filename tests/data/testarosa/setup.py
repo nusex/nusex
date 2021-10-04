@@ -1,5 +1,3 @@
-import sys
-
 import setuptools
 
 setuptools.setup(

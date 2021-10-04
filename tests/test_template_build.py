@@ -29,10 +29,7 @@
 import logging
 from pathlib import Path
 
-import pytest  # type: ignore
-
-from nusex import CONFIG_DIR, TEMPLATE_DIR, Template
-from nusex.errors import AlreadyExists, EntityError
+from nusex import Template
 
 
 def test_create_template():
@@ -146,7 +143,7 @@ def test_setup_py_file_okay():
     assert "setup.py" in template.data["files"]
 
     lines = template.data["files"]["setup.py"].decode().split("\n")
-    assert lines[5] == '    name="PROJECTNAME",'
+    assert lines[3] == '    name="PROJECTNAME",'
 
 
 def test_readme_md_file_okay():
@@ -156,9 +153,9 @@ def test_readme_md_file_okay():
     lines = template.data["files"]["README.md"].decode().split("\n")
     assert lines[0] == "# PROJECTNAME"
     assert lines[4] == "## Acknowledgements"
-    assert (
-        lines[6]
-        == "This project was created in part by the [nusex project templating utility](https://github.com/nusex/nusex)."
+    assert lines[6] == (
+        "This project was created in part by the [nusex project templating "
+        "utility](https://github.com/nusex/nusex)."
     )
 
 
@@ -169,9 +166,9 @@ def test_readme_txt_file_okay():
     lines = template.data["files"]["README.txt"].decode().split("\n")
     assert lines[0] == "# PROJECTNAME"
     assert lines[10] == "### Acknowledgements"
-    assert (
-        lines[14]
-        == "This project was created in part by the [nusex project templating utility](https://github.com/nusex/nusex)."
+    assert lines[14] == (
+        "This project was created in part by the [nusex project templating "
+        "utility](https://github.com/nusex/nusex)."
     )
 
 
