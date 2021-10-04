@@ -406,42 +406,45 @@ class Template(Entity):
 
         # These three files need the same changes.
         for sf in ("MANIFEST.in", "setup.cfg", "setup.py"):
+            # TODO: Make the setup files more complete:
+            # https://docs.python.org/3/distutils/setupscript.html
             text = get_file_text(sf)
             if text:
                 set_file_text(sf, text.replace(project_name, "PROJECTNAME"))
 
         # README needs to be handled separately.
-        text = get_file_text("README.md")
+        for sf in ("README.md", "README.txt"):
+            text = get_file_text(sf)
 
-        if text:
-            lines = text.split("\n")
-            last_line = len(lines) - 1
-            found_acks = False
-            ack = (
-                "This project was created in part by the [nusex project "
-                f"templating utility]({__url__})."
-            )
+            if text:
+                lines = text.split("\n")
+                last_line = len(lines) - 1
+                found_acks = False
+                ack = (
+                    "This project was created in part by the [nusex project "
+                    f"templating utility]({__url__})."
+                )
 
-            for i, line in enumerate(lines[:]):
-                if line.startswith("#"):
-                    if found_acks:
-                        lines.insert(i, ack)
-                        lines.insert(i + 1, "")
-                        break
+                for i, line in enumerate(lines[:]):
+                    if line.startswith("#"):
+                        if found_acks:
+                            lines.insert(i, ack)
+                            lines.insert(i + 1, "")
+                            break
 
-                    if "acknowledgements" in line.lower():
-                        found_acks = True
+                        if "acknowledgements" in line.lower():
+                            found_acks = True
 
-                elif i == last_line and found_acks:
-                    lines.extend([ack, ""])
+                    elif i == last_line and found_acks:
+                        lines.extend([ack, ""])
 
-            if not found_acks:
-                lines.extend(["## Acknowledgements", "", ack, ""])
+                if not found_acks:
+                    lines.extend(["## Acknowledgements", "", ack, ""])
 
-            set_file_text(
-                "README.md",
-                "\n".join(lines).replace(project_name, "PROJECTNAME"),
-            )
+                set_file_text(
+                    sf,
+                    "\n".join(lines).replace(project_name, "PROJECTNAME"),
+                )
 
         # LICENSE (and others) also needs to be handles separately.
         for sf in ("LICENSE", "LICENSE.txt", "COPYING", "COPYING.txt"):
