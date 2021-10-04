@@ -27,7 +27,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import re
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
@@ -293,9 +292,8 @@ class Template(Entity):
             self.data["files"][key] = value.encode()
 
         def resolve_key(path):
-            return re.sub(f"^{root_dir}/", "", f"{path}").replace(
-                project_name, "PROJECTNAME"
-            )
+            path = "/".join(f"{path.resolve()}".split(os.sep)[nparts:])
+            return path.replace(project_name, "PROJECTNAME")
 
         if not project_name:
             project_name = Path(root_dir).resolve().parts[-1]
@@ -307,6 +305,7 @@ class Template(Entity):
                 ignore_dirs=kwargs.pop("ignore_dirs", set()),
             )
 
+        nparts = len(Path(root_dir).resolve().parts)
         self.data = {
             "files": {resolve_key(f): f.read_bytes() for f in files},
             "installs": self.installs,
