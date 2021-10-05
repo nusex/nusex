@@ -40,6 +40,7 @@ from nusex.helpers import cprint
 COMMAND_MAPPING = {
     p.stem: import_module(f".cli.commands.{p.stem}", package="nusex")
     for p in Path(__file__).parent.glob("commands/*.py")
+    if p.stem != "__init__"
 }
 
 parser = argparse.ArgumentParser(
