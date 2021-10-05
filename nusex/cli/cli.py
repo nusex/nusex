@@ -60,6 +60,16 @@ for module in COMMAND_MAPPING.values():
 def main():
     args = parser.parse_args()
 
+    # NOTE: Remove in v1.1.
+    if parser.prog == "nsx":
+        cprint(
+            "war",
+            (
+                "The 'nsx' command is deprecated, and will be removed in v1.1 "
+                "(use 'nusex' instead)."
+            ),
+        )
+
     if args.version:
         return print(__version__)
 
