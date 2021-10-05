@@ -15,7 +15,7 @@ To build a template, run the following command:
 
 .. code-block:: bash
 
-    nsx build <template_name>
+    nusex build <template_name>
 
 Ignoring files and directories
 ------------------------------

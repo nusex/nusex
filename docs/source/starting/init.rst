@@ -7,7 +7,7 @@ In order to initialise nusex, run the following command:
 
 .. code-block:: bash
 
-    nsx init
+    nusex init
 
 You will be asked to provide some information to help nusex dynamically fill in information when deploying templates. You can find out what information is asked of you in the :doc:`profile guide <../guide/profiles>`.
 
