@@ -67,6 +67,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
         # "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development",
         "Topic :: Software Development :: Code Generators",
         "Topic :: Utilities",
