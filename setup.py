@@ -64,6 +64,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: Software Development :: Code Generators",
@@ -82,8 +83,8 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests*"]),
     entry_points={
         "console_scripts": [
-            "nsx = nusex.cli.cli:main",
             "nusex = nusex.cli.cli:main",
+            "nsx = nusex.cli.cli:main",
         ]
     },
 )

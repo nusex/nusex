@@ -14,9 +14,7 @@
 
 A project templating utility for Python.
 
-## Important note
-
-v1.0.0.dev0 is only available as a preview/evaluation build, and **CAN NOT** be used in development environments. It is recommended that you back up your current nusex config before experimenting with this version.
+CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported. PyPy 3.8 support is unknown.
 
 ## Features
 
