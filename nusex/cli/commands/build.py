@@ -54,7 +54,7 @@ def run(
 ):
     if os.path.isfile(TEMPLATE_DIR / f"{name}.nsx") and not overwrite:
         raise AlreadyExists(
-            "That template already exists (use -o to ignore this)"
+            "That template already exists (use -o to overwrite)"
         )
 
     ignore_exts = ignore_exts.union(extend_ignore_exts)
