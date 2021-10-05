@@ -1,0 +1,22 @@
+name: Synchronise Latest Branch
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  sync:
+    name: Synchronise
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Merge into stable/latest
+      uses: devmasx/merge-branch@v1.4.0
+      with:
+        type: now
+        from_branch: main
+        target_branch: stable/latest
+        github_token: ${{ github.token }}
