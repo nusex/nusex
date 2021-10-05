@@ -13,18 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install package
-      run: |
-        python -m pip install . --use-feature=in-tree-build
-
     - name: Check version
       run: |
-        [[ v$(nusex -v) == ${{ github.event.release.tag_name }} ]]
+        [[ $(sed -rn 's/__version__ = "(.*)"/v\1/p' nusex/__init__.py) == ${{ github.event.release.tag_name }} ]]
 
   package:
     name: Publish package
