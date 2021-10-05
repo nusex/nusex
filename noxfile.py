@@ -68,8 +68,8 @@ def tests(session):
         z.extractall(test_config_dir)
 
     deps = parse_requirements("./requirements-test.txt")
-    session.install(*deps)
-    session.run("pytest", "--verbose", "--log-level=INFO")
+    session.install("-U", *deps)
+    session.run("pytest", "--testdox", "--log-level=INFO")
 
     if os.path.isdir(test_config_dir):
         shutil.rmtree(test_config_dir)
@@ -77,20 +77,24 @@ def tests(session):
 
 @nox.session(reuse_venv=True)
 def check_docs_build(session):
-    session.install(f"sphinx~={DEPS['sphinx']}", f"furo~={DEPS['furo']}", ".")
+    session.install(
+        "-U", f"sphinx~={DEPS['sphinx']}", f"furo~={DEPS['furo']}", "."
+    )
     session.cd("./docs")
     session.run("make", "html")
 
 
 @nox.session(reuse_venv=True)
 def check_formatting(session):
-    session.install(f"black~={DEPS['black']}")
+    session.install("-U", f"black~={DEPS['black']}")
     session.run("black", ".", "--check")
 
 
 @nox.session(reuse_venv=True)
 def check_imports(session):
-    session.install(f"flake8~={DEPS['flake8']}", f"isort~={DEPS['isort']}")
+    session.install(
+        "-U", f"flake8~={DEPS['flake8']}", f"isort~={DEPS['isort']}"
+    )
     # flake8 doesn't use the gitignore so we have to be explicit.
     session.run(
         "flake8",
@@ -108,7 +112,7 @@ def check_imports(session):
 
 @nox.session(reuse_venv=True)
 def check_line_lengths(session):
-    session.install(f"len8~={DEPS['len8']}")
+    session.install("-U", f"len8~={DEPS['len8']}")
     session.run("len8", PROJECT_NAME, "tests", "-x", "testarosa")
 
 
