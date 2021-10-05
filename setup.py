@@ -27,7 +27,8 @@ with open("./nusex/__init__.py") as f:
         email,
         license_,
         bug_tracker,
-    ) = [l.split('"')[1] for l in f.readlines()[28:37]]
+        ci,
+    ) = [l.split('"')[1] for l in f.readlines()[28:38]]
 
 with open("./README.md") as f:
     long_description = f.read()
@@ -64,7 +65,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
+        # "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: Software Development :: Code Generators",
@@ -74,12 +75,13 @@ setuptools.setup(
         "Documentation": docs,
         "Source": url,
         "Bug Tracker": bug_tracker,
+        "CI": ci,
     },
     # install_requires=parse_requirements("./requirements.txt"),
     # extras_require={
     #     "dev": parse_requirements("./requirements-dev.txt"),
     # },
-    python_requires=">=3.6.0",
+    python_requires=">=3.6.0,<3.12",
     packages=setuptools.find_packages(exclude=["tests*"]),
     entry_points={
         "console_scripts": [
