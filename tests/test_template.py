@@ -54,7 +54,7 @@ def test_validate_template_names():
 
 
 def test_reject_reserved_names():
-    bad_templates = ("complex_pkg", "simple_ext")
+    bad_templates = ("nsx_complex_pkg", "nsx_simple_ext")
 
     for t in bad_templates:
         with pytest.raises(EntityError) as exc:

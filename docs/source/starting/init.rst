@@ -14,11 +14,11 @@ You will be asked to provide some information to help nusex dynamically fill in 
 You will find the created configuration file in a different directory depending on your OS:
 
 - **Windows**: C:/Users/[username]/.nusex/config.nsc
-- **Anything else**: /home/[username]/.config/nusex/config.nsc
+- **UNIX**: /home/[username]/.config/nusex/config.nsc
 
 After you've provided this information, nusex proceeds to download the latest premade templates from the `downloads repository <https://github.com/nusex/downloads/tree/main/templates1x>`_ and the latest selection of open source licenses from an `external repository <https://github.com/github/choosealicense.com/tree/gh-pages/_licenses>`_. The templates that are downloaded are:
 
-- **simple_app**, for general applications
-- **simple_pkg**, for PyPI packages
+- **nsx_simple_app**, for general applications
+- **nsx_simple_pkg**, for PyPI packages
 
 You can deploy these templates by using the :doc:`deploy command <../understanding/deploy>`. They are stored as .nsx files in a "templates" subdirectory.

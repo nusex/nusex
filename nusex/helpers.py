@@ -30,7 +30,7 @@ import os
 import subprocess as sp
 import sys
 
-from . import INVALID_NAME_PATTERN, PROFILE_DIR, RESERVED_NAMES, TEMPLATE_DIR
+from . import INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
 from .errors import AlreadyExists, EntityError
 
 MESSAGE_TYPES = {
@@ -57,7 +57,7 @@ def validate_name(name, for_type):
             "and underscores"
         )
 
-    if name in RESERVED_NAMES:
+    if name.startswith("nsx"):
         raise EntityError("That name is reserved")
 
     in_dir = {

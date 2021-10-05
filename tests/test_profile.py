@@ -188,7 +188,7 @@ def test_validate_profile_names():
 
 
 def test_reject_reserved_names():
-    bad_profiles = ("simple_app", "simple_pkg", "complex_pkg")
+    bad_profiles = ("nsx_simple_app", "nsx_simple_pkg", "nsx_complex_pkg")
 
     for t in bad_profiles:
         with pytest.raises(EntityError) as exc:
