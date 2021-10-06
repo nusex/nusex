@@ -37,7 +37,7 @@ pip install nusex
 
 You can also install the latest development version using the following command:
 ```sh
-pip install git+https://github.com/nusex/nusex@develop
+pip install git+https://github.com/nusex/nusex
 ```
 
 You may need to prefix these commands with a call to the Python interpreter depending on your OS and Python configuration.
@@ -47,16 +47,16 @@ You may need to prefix these commands with a call to the Python interpreter depe
 Before you can build and deploy templates with nusex, you need to initialise it. You only need to do this once, and not for every new project. To initialise nusex, use the following command:
 
 ```sh
-nsx init
+nusex init
 ```
 
 Some premade templates will be downloaded for you to experiment with. You can deploy these templates with the following command(s):
 ```sh
 # For general applications
-nsx deploy simple_app
+nusex deploy nsx_simple_app
 
 # For PyPI packages
-nsx deploy simple_pkg
+nusex deploy nsx_simple_pkg
 ```
 
 To learn how to build templates of your own, [read the documentation](https://nusex.readthedocs.io/en/latest/).
