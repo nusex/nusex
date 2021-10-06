@@ -3,6 +3,7 @@ name: Synchronise Latest Branch
 on:
   release:
     types: [released]
+    branches: [main]
 
 jobs:
   sync:
@@ -14,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Merge into stable/latest
-      uses: devmasx/merge-branch@v1.4.0
+      uses: devmasx/merge-branch@1.4.0
       with:
         type: now
         from_branch: main
