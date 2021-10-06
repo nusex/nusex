@@ -1,5 +1,5 @@
 nusex
-########
+#####
 
 .. image:: https://img.shields.io/pypi/v/nusex.svg
    :alt: PyPI version
@@ -45,7 +45,7 @@ A project templating utility for Python.
 
 .. seealso::
 
-   Version 1 is currently in development! While there is no stable version available, you can get up to speed with the `version 1 docs <https://nusex.readthedocs.io/en/task-v1.0/>`_.
+   Version 1 is currently in development! While there is no stable version available, you can get up to speed with the `version 1 docs <https://nusex.readthedocs.io/en/main/>`_.
 
 Features
 ========
@@ -77,7 +77,7 @@ Features
    refs/commands
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Information
+   :maxdepth: 1
+   :caption: Information
 
-    info/changelog
+   info/changelog
