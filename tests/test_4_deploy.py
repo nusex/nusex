@@ -23,9 +23,9 @@ def test_check_template_exists():
         assert output.returncode == 1
     else:
         error = output.stderr.decode().split("\n")[-2].strip()
-        assert (
-            error
-            == "nusex.errors.NoMatchingTemplates: no template named 'this_template_doesnt_exist' exists"
+        assert error == (
+            "nusex.errors.NoMatchingTemplates: no template named "
+            "'this_template_doesnt_exist' exists"
         )
 
 
@@ -71,13 +71,13 @@ def test_perfect_deployment():
 
     with open("./setup.py") as f:
         data = f.read().split("\n")
-        assert (
-            data[4]
-            == '        "awesome_pkg only supports Python versions 3.6.0 or greater.",'
+        assert data[4] == (
+            '        "awesome_pkg only supports Python versions 3.6.0 or '
+            'greater.",'
         )
-        assert (
-            data[18]
-            == 'with open("awesome_pkg/__init__.py", mode="r", encoding="utf-8") as f:'
+        assert data[18] == (
+            'with open("awesome_pkg/__init__.py", mode="r", '
+            'encoding="utf-8") as f:'
         )
 
     with open("./awesome_pkg/__init__.py") as f:

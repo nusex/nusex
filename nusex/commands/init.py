@@ -4,9 +4,9 @@ import os
 from urllib import request
 from urllib.error import HTTPError
 
-from nusex import CONFIG_DIR, __url__
+from nusex import CONFIG_DIR
 
-from ..errors import *
+from ..errors import InitFailure
 
 REPO_URL = "https://github.com/nusex/downloads"
 RAW_URL = "https://raw.githubusercontent.com"

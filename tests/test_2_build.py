@@ -39,9 +39,9 @@ def test_validate_template_names():
             assert output.returncode == 1
         else:
             error = output.stderr.decode().split("\n")[-2].strip()
-            assert (
-                error
-                == "nusex.errors.TemplateBuildError: template names can only contain lower case letters, numbers, and underscores"
+            assert error == (
+                "nusex.errors.TemplateBuildError: template names can "
+                "only contain lower case letters, numbers, and underscores"
             )
 
     for tn in good_templates:
@@ -87,13 +87,13 @@ def test_variables_implanted_correctly():
     )
     assert data["files"]["README.md"].split("\n")[0] == "# PROJECTNAME"
     setup = data["files"]["setup.py"].split("\n")
-    assert (
-        setup[4]
-        == '        "PROJECTNAME only supports Python versions 3.6.0 or greater.",'
+    assert setup[4] == (
+        '        "PROJECTNAME only supports Python versions 3.6.0 or '
+        'greater.",'
     )
-    assert (
-        setup[18]
-        == 'with open("PROJECTNAME/__init__.py", mode="r", encoding="utf-8") as f:'
+    assert setup[18] == (
+        'with open("PROJECTNAME/__init__.py", mode="r", encoding="utf-8") '
+        "as f:"
     )
     init = data["files"]["PROJECTNAME/__init__.py"].split("\n")
     assert init[0] == '__productname__ = "PROJECTNAME"'

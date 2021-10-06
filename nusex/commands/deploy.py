@@ -1,8 +1,9 @@
-import os
 import json
+import os
 from pathlib import Path
 
 from nusex import CONFIG_DIR
+
 from ..errors import NoMatchingTemplates
 
 

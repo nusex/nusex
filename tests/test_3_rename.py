@@ -22,9 +22,9 @@ def test_check_template_exists():
         assert output.returncode == 1
     else:
         error = output.stderr.decode().split("\n")[-2].strip()
-        assert (
-            error
-            == "nusex.errors.NoMatchingTemplates: no template named 'this_template_doesnt_exist' exists"
+        assert error == (
+            "nusex.errors.NoMatchingTemplates: no template named "
+            "'this_template_doesnt_exist' exists"
         )
 
 
@@ -39,9 +39,9 @@ def test_validate_template_names():
             assert output.returncode == 1
         else:
             error = output.stderr.decode().split("\n")[-2].strip()
-            assert (
-                error
-                == "nusex.errors.TemplateRenameError: template names can only contain lower case letters, numbers, and underscores"
+            assert error == (
+                "nusex.errors.TemplateRenameError: template names can only "
+                "contain lower case letters, numbers, and underscores"
             )
 
     for ton, tnn in zip(good_templates, new_good_templates):

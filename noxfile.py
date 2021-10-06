@@ -1,6 +1,15 @@
+import os
+import shutil
+import zipfile
 from pathlib import Path
 
 import nox
+
+from nusex import CONFIG_DIR
+
+PROJECT_NAME = "nusex"
+LIB_DIR = Path(__file__).parent / PROJECT_NAME
+TEST_DIR = Path(__file__).parent / "tests"
 
 
 def parse_requirements(path):
@@ -9,52 +18,78 @@ def parse_requirements(path):
         return [d for d in deps if not d.startswith(("#", "-r"))]
 
 
-@nox.session(python=["3.6", "3.7", "3.8", "3.9", "3.10"], reuse_venv=True)
-def tests(session: nox.Session) -> None:
-    deps = parse_requirements("./requirements-test.txt")
-    session.install(*deps)
-    session.run("pytest", "-s", "--verbose", "--log-level=INFO")
+DEPS = {
+    name: install
+    for name, install in (
+        r.split("~=")
+        for r in parse_requirements("./requirements-dev.txt")
+        if not r.startswith(("#", "-r"))
+    )
+}
 
 
 @nox.session(reuse_venv=True)
-def check_formatting(session: nox.Session) -> None:
-    black_version = next(
-        filter(
-            lambda d: d.startswith("black"),
-            parse_requirements("./requirements-dev.txt"),
-        )
-    ).split("==")[1]
-    session.install(f"black=={black_version}")
+def tests(session):
+    deps = parse_requirements("./requirements-test.txt")
+    session.install("-U", *deps)
+    session.run("pytest", "--testdox", "--log-level=INFO")
+
+
+@nox.session(reuse_venv=True)
+def check_docs_build(session):
+    session.install(
+        "-U",
+        f"sphinx~={DEPS['sphinx']}",
+        f"karma-sphinx-theme~={DEPS['karma-sphinx-theme']}",
+        ".",
+    )
+    session.cd("./docs")
+    session.run("make", "html")
+
+
+@nox.session(reuse_venv=True)
+def check_formatting(session):
+    session.install("-U", f"black~={DEPS['black']}")
     session.run("black", ".", "--check")
 
 
 @nox.session(reuse_venv=True)
-def check_line_lengths(session: nox.Session) -> None:
-    errors = []
-    exclude = [Path("./nusex/__init__.py")]
-    files = [p for p in Path("./nusex").rglob("*.py") if p not in exclude]
+def check_imports(session):
+    session.install(
+        "-U", f"flake8~={DEPS['flake8']}", f"isort~={DEPS['isort']}"
+    )
+    # flake8 doesn't use the gitignore so we have to be explicit.
+    session.run(
+        "flake8",
+        PROJECT_NAME,
+        "tests",
+        "--select",
+        "F4",
+        "--extend-ignore",
+        "E,F,W",
+        "--extend-exclude",
+        "__init__.py",
+    )
+    session.run("isort", ".", "-cq", "--profile", "black")
 
-    in_docs = False
 
-    for file in files:
-        with open(file, mode="r", encoding="utf-8") as f:
-            for i, l in enumerate(f):
-                if l.lstrip().startswith('"""'):
-                    in_docs = True
+@nox.session(reuse_venv=True)
+def check_line_lengths(session):
+    session.install("-U", f"len8~={DEPS['len8']}")
+    session.run("len8", PROJECT_NAME, "tests", "-x", "testarosa")
 
-                limit = 72 if in_docs or l.lstrip().startswith("#") else 79
-                chars = len(l.rstrip("\n"))
-                if chars > limit:
-                    errors.append((file, i + 1, chars, limit))
 
-                if l.rstrip().endswith('"""'):
-                    in_docs = False
+@nox.session(reuse_venv=True)
+def check_licensing(session):
+    missing = []
 
-    if errors:
-        raise Exception(
-            f"{len(errors):,} line(s) are too long:\n"
-            + "\n".join(
-                f"- {file}, line {line:,} ({chars}/{limit})"
-                for file, line, chars, limit in errors
-            )
+    for p in [*LIB_DIR.rglob("*.py"), *TEST_DIR.glob("*.py"), Path(__file__)]:
+        with open(p) as f:
+            if not f.read().startswith("# Copyright (c)"):
+                missing.append(p)
+
+    if missing:
+        session.error(
+            f"\n{len(missing):,} file(s) are missing their licenses:\n"
+            + "\n".join(f" - {file}" for file in missing)
         )
