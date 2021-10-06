@@ -27,7 +27,7 @@ If you're dying to try the newest features, you can install the latest developme
 
 .. code-block:: bash
 
-    pip install git+https://github.com/nusex/nusex@develop
+    pip install git+https://github.com/nusex/nusex
 
 
 .. warning::

@@ -33,7 +33,7 @@ pip install nusex
 
 You can also install the latest development version using the following command:
 ```sh
-pip install git+https://github.com/nusex/nusex@develop
+pip install git+https://github.com/nusex/nusex
 ```
 
 You may need to prefix these commands with a call to the Python interpreter depending on your OS and Python configuration.
