@@ -120,7 +120,12 @@ def check_line_lengths(session):
 def check_licensing(session):
     missing = []
 
-    for p in [*LIB_DIR.rglob("*.py"), *TEST_DIR.glob("*.py"), Path(__file__)]:
+    for p in [
+        *LIB_DIR.rglob("*.py"),
+        *TEST_DIR.glob("*.py"),
+        Path(__file__),
+        Path(__file__).parent / "setup.py",
+    ]:
         with open(p) as f:
             if not f.read().startswith("# Copyright (c)"):
                 missing.append(p)
