@@ -47,14 +47,18 @@ Dynamic templating
 The basics
 ----------
 
-Dynamic templating, when referring to nusex, is the process of dynamically altering templates to implant different information into generated files depending on context. For example, nusex can implant the project name into generated files without you needing to go and change it. When building templates, nusex is able to detect what information needs to be changed in the future, so you don't need to worry about making sure you've accounted for everything.
+Dynamic templating, when referring to nusex, is the process of dynamically altering template manifests to implant different information into generated files depending on context. For example, nusex can implant the project name into generated files without you needing to go and change it. When building templates, nusex is able to detect what information needs to be changed in the future, so you don't need to worry about making sure you've accounted for everything.
 
 The following files are altered when building templates, if present:
 
+- COPYING
+- COPYING.txt
 - LICENSE
+- LICENSE.txt
 - MANIFEST.in
 - pyproject.toml
 - README.md
+- README.txt
 - setup.cfg
 - setup.py
 - [project_name]/\_\_init\_\_.py
@@ -94,6 +98,8 @@ Here is a rundown of what gets modified in each file:
     * - pyproject.toml
       - *Outlined below.*
     * - README.md
+      - All mentions of the project's name are replaced by "PROJECTNAME", and an acknowledgement for nusex is added.
+    * - README.txt
       - All mentions of the project's name are replaced by "PROJECTNAME", and an acknowledgement for nusex is added.
     * - setup.cfg
       - All mentions of the project's name are replaced by "PROJECTNAME".
@@ -140,6 +146,8 @@ The following dunder variables are handled (any quotes are also written to the f
       - "PROJECTLICENSE"
     * - \_\_bug_tracker\_\_
       - "PROJECTURL/issues"
+    * - \_\_ci\_\_
+      - "PROJECTURL/actions
 
 Any number of dunder variables can be present in the \_\_init\_\_.py file, and they do not need to be in the above order, or in the same code block.
 
