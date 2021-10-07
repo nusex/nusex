@@ -16,6 +16,8 @@ A project templating utility for Python.
 
 CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported. PyPy 3.8 support is unknown.
 
+Windows, MacOS, and Linux are all supported.
+
 ## Features
 
 - An easy-to-use CLI (command-line interface)
