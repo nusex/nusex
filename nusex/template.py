@@ -32,7 +32,7 @@ from pathlib import Path
 from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
 from nusex.errors import BuildError, TemplateError
 from nusex.helpers import run, validate_name
-from nusex.spec import NSXDecoder, NSXEncoder
+from nusex.spec import NSXSpecIO
 
 INIT_ATTR_MAPPING = {
     "__productname__": '"PROJECTNAME"',
@@ -163,7 +163,7 @@ class Template:
         Raises:
             FileNotFoundError: The template does not exist on disk.
         """
-        self.data = NSXDecoder().read(self.path)
+        self.data = NSXSpecIO().read(self.path)
 
     def save(self):
         """Save this profile.
@@ -173,7 +173,7 @@ class Template:
                 modified.
         """
         try:
-            NSXEncoder().write(self.path, self.data)
+            NSXSpecIO().write(self.path, self.data)
         except KeyError:
             raise TemplateError(
                 "The template data has been improperly modified"

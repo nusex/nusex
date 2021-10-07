@@ -29,14 +29,7 @@
 from pathlib import Path
 
 from nusex import CONFIG_DIR, PROFILE_DIR, TEMPLATE_DIR, __version__
-from nusex.spec import (
-    NSCDecoder,
-    NSCEncoder,
-    NSPDecoder,
-    NSPEncoder,
-    NSXDecoder,
-    NSXEncoder,
-)
+from nusex.spec import NSCSpecIO, NSPSpecIO, NSXSpecIO
 
 
 def test_nsc_spec():
@@ -45,9 +38,9 @@ def test_nsc_spec():
         "last_update": __version__,
         "use_wildmatch_ignore": False,
     }
-    NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
+    NSCSpecIO().write(CONFIG_DIR / "config.nsc", data)
 
-    data2 = NSCDecoder().read(CONFIG_DIR / "config.nsc")
+    data2 = NSCSpecIO().read(CONFIG_DIR / "config.nsc")
     assert data == data2
 
 
@@ -60,9 +53,9 @@ def test_nsp_spec():
         "default_description": "My project, made using nusex",
         "preferred_license": "mit",
     }
-    NSPEncoder().write(PROFILE_DIR / "__nsp_spec_test__.nsp", data)
+    NSPSpecIO().write(PROFILE_DIR / "__nsp_spec_test__.nsp", data)
 
-    data2 = NSPDecoder().read(PROFILE_DIR / "__nsp_spec_test__.nsp")
+    data2 = NSPSpecIO().read(PROFILE_DIR / "__nsp_spec_test__.nsp")
     assert data == data2
 
 
@@ -75,7 +68,7 @@ def test_nsx_spec():
         "installs": ["-r requirements.txt", "nusex"],
         "as_extension_for": "template",
     }
-    NSXEncoder().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
+    NSXSpecIO().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
 
-    data2 = NSXDecoder().read(TEMPLATE_DIR / "__nsx_spec_test__.nsx")
+    data2 = NSXSpecIO().read(TEMPLATE_DIR / "__nsx_spec_test__.nsx")
     assert data == data2

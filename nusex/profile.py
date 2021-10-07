@@ -32,7 +32,7 @@ import os
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
 from nusex.errors import ProfileError
 from nusex.helpers import cprint, validate_name
-from nusex.spec import NSCDecoder, NSCEncoder, NSPDecoder, NSPEncoder
+from nusex.spec import NSCSpecIO, NSPSpecIO
 
 VALID_CONFIG_KEYS = (
     "author_name",
@@ -124,7 +124,7 @@ class Profile:
         Raises:
             FileNotFoundError: The profile does not exist on disk.
         """
-        self.data = NSPDecoder().read(self.path)
+        self.data = NSPSpecIO().read(self.path)
 
     def save(self):
         """Save this profile.
@@ -133,7 +133,7 @@ class Profile:
             ProfileError: The profile data has been improperly modified.
         """
         try:
-            NSPEncoder().write(self.path, self.data)
+            NSPSpecIO().write(self.path, self.data)
         except KeyError:
             raise ProfileError(
                 "The profile data has been improperly modified"
@@ -166,7 +166,7 @@ class Profile:
         Returns:
             Profile: The currently selected profile.
         """
-        return cls(NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"])
+        return cls(NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"])
 
     @classmethod
     def from_legacy(cls, name="default"):
@@ -220,15 +220,15 @@ class Profile:
             bool
         """
         return (
-            NSCDecoder().read(CONFIG_DIR / "config.nsc")["profile"]
+            NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"]
             == self.path.stem
         )
 
     def select(self):
         """Select this profile."""
-        data = NSCDecoder().read(CONFIG_DIR / "config.nsc")
+        data = NSCSpecIO().read(CONFIG_DIR / "config.nsc")
         data["profile"] = self.path.stem
-        NSCEncoder().write(CONFIG_DIR / "config.nsc", data)
+        NSCSpecIO().write(CONFIG_DIR / "config.nsc", data)
 
     def _resolve_license(self, value):
         for file in LICENSE_DIR.glob("*.txt"):

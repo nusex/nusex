@@ -26,6 +26,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from .nsc import NSCDecoder, NSCEncoder
-from .nsp import NSPDecoder, NSPEncoder
-from .nsx import NSXDecoder, NSXEncoder
+from .nsc import NSCSpecIO
+from .nsp import NSPSpecIO
+from .nsx import NSXSpecIO

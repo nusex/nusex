@@ -31,7 +31,7 @@ import sys
 
 from nusex import CONFIG_DIR, Profile, __version__
 from nusex.helpers import cprint
-from nusex.spec import NSCEncoder
+from nusex.spec import NSCSpecIO
 from nusex.utils import Downloader
 
 DIRS = ("licenses", "profiles", "templates")
@@ -59,15 +59,15 @@ def run():
         "last_update": __version__,
         "use_wildmatch_ignore": False,
     }
-    NSCEncoder().write(CONFIG_DIR / "config.nsc", settings)
+    NSCSpecIO().write(CONFIG_DIR / "config.nsc", settings)
 
     cprint("aok", "Initialisation complete!")
 
     if sys.version_info < (3, 7, 0):
         cprint(
             "war",
-            "Support for Python 3.6 is deprecated, and will be removed in a "
-            "future version.",
+            "Support for Python 3.6 is deprecated, and will be "
+            "removed in v1.2.",
         )
 
 

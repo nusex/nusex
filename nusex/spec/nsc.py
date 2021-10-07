@@ -31,29 +31,7 @@ from nusex.errors import UnsupportedFile
 SPEC_ID = b"\x99\x63"
 
 
-class NSCEncoder:
-    __slots__ = ()
-
-    def write(self, path, data):
-        with open(path, "wb") as f:
-            # Identify format.
-            f.write(SPEC_ID)
-
-            # Write data.
-            f.write(data["profile"].ljust(24).encode())
-            f.write(
-                data["last_update"]
-                .replace(".", "")
-                .replace("dev", "")
-                .ljust(6)
-                .encode()
-            )
-
-            # Not guaranteed, so write a default value if not present.
-            f.write((b"\x00", b"\x01")[data.get("use_wildmatch_ignore", 0)])
-
-
-class NSCDecoder:
+class NSCSpecIO:
     __slots__ = ("defaults",)
 
     def __init__(self):
@@ -84,3 +62,21 @@ class NSCDecoder:
                 data["use_wildmatch_ignore"] = f.read(1) == b"\x01"
 
         return data
+
+    def write(self, path, data):
+        with open(path, "wb") as f:
+            # Identify format.
+            f.write(SPEC_ID)
+
+            # Write data.
+            f.write(data["profile"].ljust(24).encode())
+            f.write(
+                data["last_update"]
+                .replace(".", "")
+                .replace("dev", "")
+                .ljust(6)
+                .encode()
+            )
+
+            # Not guaranteed, so write a default value if not present.
+            f.write((b"\x00", b"\x01")[data.get("use_wildmatch_ignore", 0)])

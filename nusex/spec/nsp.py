@@ -31,42 +31,25 @@ from nusex.errors import UnsupportedFile
 SPEC_ID = b"\x99\x70"
 
 
-class NSPEncoder:
-    __slots__ = ("map",)
+class NSPSpecIO:
+    __slots__ = ("rmap", "wmap", "defaults")
 
     def __init__(self):
-        self.map = {
-            "author_name": b"\x01",
-            "author_email": b"\x02",
-            "git_profile_url": b"\x03",
-            "starting_version": b"\x04",
-            "default_description": b"\x05",
-            "preferred_license": b"\x06",
-        }
-
-    def write(self, path, data):
-        with open(path, "wb") as f:
-            # Identify format.
-            f.write(SPEC_ID)
-
-            # Write data.
-            for k, v in data.items():
-                f.write(self.map[k])
-                f.write(v.encode())
-                f.write(b"\x97")
-
-
-class NSPDecoder:
-    __slots__ = ("map", "defaults")
-
-    def __init__(self):
-        self.map = {
+        self.rmap = {
             b"\x01": "author_name",
             b"\x02": "author_email",
             b"\x03": "git_profile_url",
             b"\x04": "starting_version",
             b"\x05": "default_description",
             b"\x06": "preferred_license",
+        }
+        self.wmap = {
+            "author_name": b"\x01",
+            "author_email": b"\x02",
+            "git_profile_url": b"\x03",
+            "starting_version": b"\x04",
+            "default_description": b"\x05",
+            "preferred_license": b"\x06",
         }
         self.defaults = {
             "author_name": "John Smith",
@@ -84,7 +67,7 @@ class NSPDecoder:
                 raise UnsupportedFile("Not a valid NSP file")
 
             while f.peek(1):
-                key = self.map[f.read(1)]
+                key = self.rmap[f.read(1)]
                 value = b""
                 while True:
                     char = f.read(1)
@@ -98,3 +81,14 @@ class NSPDecoder:
         data = self.defaults.copy()
         data.update({k: v for k, v in self._scan(path)})
         return data
+
+    def write(self, path, data):
+        with open(path, "wb") as f:
+            # Identify format.
+            f.write(SPEC_ID)
+
+            # Write data.
+            for k, v in data.items():
+                f.write(self.wmap[k])
+                f.write(v.encode())
+                f.write(b"\x97")
