@@ -38,4 +38,5 @@ __bugtracker__ = "https://github.com/nusex/nusex/issues"
 __ci__ = "https://github.com/nusex/nusex/actions"
 
 from .constants import *
-from .entities import Profile, Template
+from .profile import Profile
+from .template import Template

@@ -27,13 +27,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
+import os
 
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
-from nusex.errors import EntityError
+from nusex.errors import ProfileError
 from nusex.helpers import cprint, validate_name
 from nusex.spec import NSCDecoder, NSCEncoder, NSPDecoder, NSPEncoder
-
-from .base import Entity
 
 VALID_CONFIG_KEYS = (
     "author_name",
@@ -45,10 +44,10 @@ VALID_CONFIG_KEYS = (
 )
 
 
-class Profile(Entity):
+class Profile:
     """A class in which to create, load, modify, and save profiles.
 
-    Args:
+    Keyword Args:
         name (str): The name of the profile. If the profile does not
             exist, a new one is created, otherwise an existing one is
             loaded. Defaults to "default".
@@ -58,10 +57,48 @@ class Profile(Entity):
         data (dict[str, Any]): The data for the profile.
     """
 
-    __slots__ = ()
+    __slots__ = ("path", "data")
 
     def __init__(self, name="default"):
-        super().__init__(PROFILE_DIR, name, "nsp")
+        self.path = PROFILE_DIR / f"{name}.nsp"
+
+        if not os.path.isfile(self.path):
+            return self.create_new(name)
+
+        self.load()
+
+    def __str__(self):
+        return self.path.stem
+
+    def __repr__(self):
+        return f"<Profile name={self.name!r}>"
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return self.name != other.name
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    @property
+    def name(self):
+        """The name of this profile.
+
+        Returns:
+            str
+        """
+        return self.path.stem
+
+    @property
+    def exists(self):
+        """Whether this profile exists on disk.
+
+        Returns:
+            bool
+        """
+        return self.path.is_file()
 
     def create_new(self, name):
         """Create a new profile.
@@ -93,14 +130,34 @@ class Profile(Entity):
         """Save this profile.
 
         Raises:
-            EntityError: The profile data has been improperly modified.
+            ProfileError: The profile data has been improperly modified.
         """
         try:
             NSPEncoder().write(self.path, self.data)
         except KeyError:
-            raise EntityError(
+            raise ProfileError(
                 "The profile data has been improperly modified"
             ) from None
+
+    def delete(self):
+        """Delete this profile.
+
+        Raises:
+            FileNotFoundError: The profile does not exist on disk.
+        """
+        os.remove(self.path)
+
+    def rename(self, new_name):
+        """Rename this profile.
+
+        Args:
+            new_name (str): The new name for the profile.
+
+        Raises:
+            FileNotFoundError: The profile does not exist on disk.
+        """
+        new_path = f"{self.path}".replace(self.path.stem, new_name)
+        self.path = self.path.rename(new_path)
 
     @classmethod
     def current(cls):
@@ -119,7 +176,7 @@ class Profile(Entity):
             name (str): The name of the profile. Defaults to "default".
 
         Returns:
-            Profile: The newly converted profile.
+            Profile: The newly created profile.
 
         Raises:
             FileNotFoundError: No user.nsc file exists in the config
@@ -212,7 +269,7 @@ class Profile(Entity):
 
         if key == "starting_version":
             if option != "DATE" and not VERSION_PATTERN.match(option):
-                raise EntityError(
+                raise ProfileError(
                     "That version number does not conform to PEP 440 "
                     "standards, or is not 'DATE'"
                 )
@@ -220,7 +277,7 @@ class Profile(Entity):
         if key == "preferred_license":
             option = self._resolve_license(option)
             if not option:
-                raise EntityError(
+                raise ProfileError(
                     "Your input could not be resolved to a valid license"
                 )
 
@@ -231,7 +288,7 @@ class Profile(Entity):
         information.
 
         Raises:
-            EntityError: An invalid value was provided to one of the
+            ProfileError: An invalid value was provided to one of the
                 inputs.
         """
         for k, v in self.data.items():

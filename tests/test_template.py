@@ -29,7 +29,7 @@
 import pytest  # type: ignore
 
 from nusex import Template
-from nusex.errors import AlreadyExists, EntityError
+from nusex.errors import AlreadyExists, TemplateError
 
 
 def test_validate_template_names():
@@ -37,7 +37,7 @@ def test_validate_template_names():
     good_templates = ("test", "test_template", "test69")
 
     for t in bad_templates:
-        with pytest.raises(EntityError) as exc:
+        with pytest.raises(TemplateError) as exc:
             Template(t)
         assert f"{exc.value}" == (
             "Names can only contain lower case letters, numbers, and "
@@ -48,7 +48,7 @@ def test_validate_template_names():
         template = Template(t)
         assert template.name == t
 
-    with pytest.raises(EntityError) as exc:
+    with pytest.raises(TemplateError) as exc:
         Template("this_is_a_really_long_template_name")
     assert f"{exc.value}" == "Names are limited to 24 characters"
 
@@ -57,7 +57,7 @@ def test_reject_reserved_names():
     bad_templates = ("nsx_complex_pkg", "nsx_simple_ext")
 
     for t in bad_templates:
-        with pytest.raises(EntityError) as exc:
+        with pytest.raises(TemplateError) as exc:
             Template(t)
         assert f"{exc.value}" == "That name is reserved"
 

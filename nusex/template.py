@@ -30,11 +30,9 @@ import os
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
-from nusex.errors import BuildError, EntityError
+from nusex.errors import BuildError, TemplateError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXDecoder, NSXEncoder
-
-from .base import Entity
 
 INIT_ATTR_MAPPING = {
     "__productname__": '"PROJECTNAME"',
@@ -79,7 +77,7 @@ ATTRS = (
 )
 
 
-class Template(Entity):
+class Template:
     """A class in which to create, load, modify, and save templates.
 
     Args:
@@ -98,14 +96,51 @@ class Template(Entity):
             install when deployed.
     """
 
-    __slots__ = ("installs",)
+    __slots__ = ("path", "data", "installs")
 
     def __init__(self, name, *, installs=[]):
-        super().__init__(TEMPLATE_DIR, name, "nsx")
+        self.path = TEMPLATE_DIR / f"{name}.nsx"
         self.installs = installs
+
+        if not os.path.isfile(self.path):
+            return self.create_new(name)
+
+        self.load()
+
+    def __str__(self):
+        return self.path.stem
+
+    def __repr__(self):
+        return (
+            f"<Template name={self.name!r} files={len(self.data['files'])!r}>"
+        )
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return self.name != other.name
 
     def __getitem__(self, key):
         return self.data["files"][key]
+
+    @property
+    def name(self):
+        """The name of the template.
+
+        Returns:
+            str
+        """
+        return self.path.stem
+
+    @property
+    def exists(self):
+        """Whether the template exists on disk.
+
+        Returns:
+            bool
+        """
+        return self.path.is_file()
 
     def create_new(self, name):
         """Create a new template.
@@ -134,14 +169,35 @@ class Template(Entity):
         """Save this profile.
 
         Raises:
-            EntityError: The profile data has been improperly modified.
+            TemplateError: The profile data has been improperly
+                modified.
         """
         try:
             NSXEncoder().write(self.path, self.data)
         except KeyError:
-            raise EntityError(
+            raise TemplateError(
                 "The template data has been improperly modified"
             ) from None
+
+    def delete(self):
+        """Delete this template.
+
+        Raises:
+            FileNotFoundError: The template does not exist on disk.
+        """
+        os.remove(self.path)
+
+    def rename(self, new_name):
+        """Rename this template.
+
+        Args:
+            new_name (str): The new name for the template.
+
+        Raises:
+            FileNotFoundError: The template does not exist on disk.
+        """
+        new_path = f"{self.path}".replace(self.path.stem, new_name)
+        self.path = self.path.rename(new_path)
 
     @classmethod
     def from_cwd(cls, name, *, ignore_exts=set(), ignore_dirs=set()):

@@ -87,7 +87,8 @@ Contents
    :caption: Scripting API reference
 
    api/library
-   api/entities
+   api/profiles
+   api/templates
    api/utils
 
 .. toctree::

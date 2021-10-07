@@ -41,32 +41,35 @@ Exceptions
 
 .. autoexception:: nusex.errors.NusexError
 
-.. autoexception:: nusex.errors.DownloadError
+.. autoexception:: nusex.errors.NusexUserError
+
+.. autoexception:: nusex.errors.ProfileError
+
+.. autoexception:: nusex.errors.TemplateError
 
 .. autoexception:: nusex.errors.BuildError
 
 .. autoexception:: nusex.errors.DeploymentError
 
-.. autoexception:: nusex.errors.UnsupportedFile
-
-.. autoexception:: nusex.errors.NusexUserError
-
-.. autoexception:: nusex.errors.EntityError
-
 .. autoexception:: nusex.errors.AlreadyExists
 
 .. autoexception:: nusex.errors.DoesNotExist
+
+.. autoexception:: nusex.errors.DownloadError
+
+.. autoexception:: nusex.errors.UnsupportedFile
 
 Exception hierarchy
 -------------------
 
 - :exc:`Exception`
     - :exc:`NusexError`
-    - :exc:`DownloadError`
-    - :exc:`BuildError`
-    - :exc:`DeploymentError`
-    - :exc:`UnsupportedFile`
-    - :exc:`NusexUserError`
-        - :exc:`EntityError`
-        - :exc:`AlreadyExists`
-        - :exc:`DoesNotExist`
+        - :exc:`NusexUserError`
+            - :exc:`ProfileError`
+            - :exc:`TemplateError`
+                - :exc:`BuildError`
+                - :exc:`DeploymentError`
+            - :exc:`AlreadyExists`
+            - :exc:`DoesNotExist`
+        - :exc:`DownloadError`
+        - :exc:`UnsupportedFile`

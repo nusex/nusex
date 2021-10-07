@@ -31,7 +31,7 @@ import subprocess as sp
 import sys
 
 from . import INVALID_NAME_PATTERN, PROFILE_DIR, TEMPLATE_DIR
-from .errors import AlreadyExists, EntityError
+from .errors import AlreadyExists, ProfileError, TemplateError
 
 MESSAGE_TYPES = {
     "aok": ("🎉", "\33[92m"),
@@ -48,17 +48,22 @@ def cprint(type, text, **kwargs):
 
 
 def validate_name(name, for_type):
+    err = {
+        "Profile": ProfileError,
+        "Template": TemplateError,
+    }[for_type]
+
     if len(name) > 24:
-        raise EntityError("Names are limited to 24 characters")
+        raise err("Names are limited to 24 characters")
 
     if INVALID_NAME_PATTERN.search(name):
-        raise EntityError(
+        raise err(
             "Names can only contain lower case letters, numbers, "
             "and underscores"
         )
 
     if name.startswith("nsx"):
-        raise EntityError("That name is reserved")
+        raise err("That name is reserved")
 
     in_dir = {
         "Profile": TEMPLATE_DIR,

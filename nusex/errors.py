@@ -31,31 +31,24 @@ class NusexError(Exception):
     """The base exception class for nusex."""
 
 
-class DownloadError(NusexError):
-    """A download failed to complete, or an invalid download request
-    was submitted."""
-
-
-class BuildError(NusexError):
-    """A template failed to build."""
-
-
-class DeploymentError(NusexError):
-    """A template failed to deploy."""
-
-
-class UnsupportedFile(NusexError):
-    """An invalid file has been passed to a decoder, or a file larger
-    than the file size limit has been included in a template."""
-
-
 class NusexUserError(NusexError):
     """An error occurred due to user error."""
 
 
-class EntityError(NusexUserError):
-    """An entity is incorrectly configured, is about to be incorrectly
-    configured, or a problem has been caused thereafter."""
+class ProfileError(NusexUserError):
+    """Something went wrong when working with a profile."""
+
+
+class TemplateError(NusexUserError):
+    """Something went wrong when working with a template."""
+
+
+class BuildError(TemplateError):
+    """A template failed to build."""
+
+
+class DeploymentError(TemplateError):
+    """A template failed to deploy."""
 
 
 class AlreadyExists(NusexUserError):
@@ -64,3 +57,13 @@ class AlreadyExists(NusexUserError):
 
 class DoesNotExist(NusexUserError):
     """An entity does not exist."""
+
+
+class DownloadError(NusexError):
+    """A download failed to complete, or an invalid download request
+    was submitted."""
+
+
+class UnsupportedFile(NusexError):
+    """An invalid file has been passed to a decoder, or a file larger
+    than the file size limit has been included in a template."""
