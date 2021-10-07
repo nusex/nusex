@@ -1,6 +1,7 @@
 ### Custom ###
 dev/
 tests/awesome_pkg/
+PLAN.md
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
