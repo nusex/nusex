@@ -29,40 +29,12 @@
 import os
 from pathlib import Path
 
-from nusex import TEMP_DIR, TEMPLATE_DIR, __url__
+from nusex import TEMP_DIR, TEMPLATE_DIR
+from nusex.builders import PythonBuilder
 from nusex.errors import BuildError, TemplateError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXSpecIO
 
-INIT_ATTR_MAPPING = {
-    "__productname__": '"PROJECTNAME"',
-    "__version__": '"PROJECTVERSION"',
-    "__description__": '"PROJECTDESCRIPTION"',
-    "__url__": '"PROJECTURL"',
-    "__docs__": '"https://PROJECTNAME.readthedocs.io/en/latest"',
-    "__author__": '"PROJECTAUTHOR"',
-    "__author_email__": '"PROJECTAUTHOREMAIL"',
-    "__license__": '"PROJECTLICENSE"',
-    "__bugtracker__": '"PROJECTURL/issues"',
-    "__ci__": '"PROJECTURL/actions"',
-}
-PYPROJECT_ATTR_MAPPING = {
-    "name": '"PROJECTNAME"',
-    "version": '"PROJECTVERSION"',
-    "description": '"PROJECTDESCRIPTION"',
-    "license": '"PROJECTLICENSE"',
-    "authors": '["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]',
-    "maintainers": '["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]',
-    "homepage": '"PROJECTURL"',
-    "repository": '"PROJECTURL"',
-    "documentation": '"https://PROJECTNAME.readthedocs.io/en/latest"',
-}
-DOCS_ATTR_MAPPING = {
-    "project": '"PROJECTNAME"',
-    "copyright": '"PROJECTYEAR, PROJECTAUTHOR"',
-    "author": '"PROJECTAUTHOR"',
-    "release": "PROJECTNAME.__version__",
-}
 ATTRS = (
     "PROJECTNAME",
     "PROJECTAUTHOR",
@@ -336,17 +308,6 @@ class Template:
                 method.
         """
 
-        def get_file_text(key):
-            b = self.data["files"].get(key, None)
-
-            if not b:
-                return None
-
-            return b.decode()
-
-        def set_file_text(key, value):
-            self.data["files"][key] = value.encode()
-
         def resolve_key(path):
             path = "/".join(f"{path.resolve()}".split(os.sep)[nparts:])
             return path.replace(project_name, "PROJECTNAME")
@@ -362,150 +323,14 @@ class Template:
             )
 
         nparts = len(Path(root_dir).resolve().parts)
-        self.data = {
+        data = {
             "files": {resolve_key(f): f.read_bytes() for f in files},
             "installs": self.installs,
             "as_extension_for": "",
         }
 
-        # Handle __init__ file if present.
-        text = get_file_text("PROJECTNAME/__init__.py")
-
-        if text:
-            lines = text.split("\n")
-
-            for i, line in enumerate(lines[:]):
-                # Modify dunder variables.
-                if line.startswith("__"):
-                    k, v = line.split(" = ")
-                    v = v.strip('"').strip("'")
-                    new_v = INIT_ATTR_MAPPING.get(k, v)
-                    lines[i] = f"{k} = {new_v}"
-
-            set_file_text("PROJECTNAME/__init__.py", "\n".join(lines))
-
-        # Handle pyproject.toml file if present.
-        text = get_file_text("pyproject.toml")
-
-        if text:
-            lines = text.split("\n")
-            in_tool_poetry = False
-
-            for i, line in enumerate(lines[:]):
-                # Modify data variables.
-                if in_tool_poetry:
-                    if line.startswith("["):
-                        in_tool_poetry = False
-                        continue
-
-                    try:
-                        k, v = line.split(" = ")
-                        v = v.strip('"').strip("'")
-                        new_v = PYPROJECT_ATTR_MAPPING.get(k, v)
-                        lines[i] = f"{k} = {new_v}"
-                    except ValueError:
-                        ...
-
-                elif line.strip() == "[tool.poetry]":
-                    in_tool_poetry = True
-
-            set_file_text(
-                "pyproject.toml",
-                "\n".join(lines).replace(project_name, "PROJECTNAME"),
-            )
-
-        # Handle sphinx conf file if present.
-        for sf in ("docs/conf.py", "docs/source/conf.py"):
-            text = get_file_text(sf)
-
-            if text:
-                lines = text.split("\n")
-                in_project_info = False
-
-                for i, line in enumerate(lines[:]):
-                    # Modify data variables.
-                    if in_project_info:
-                        if line.startswith("# --"):
-                            in_project_info = False
-                            continue
-
-                        try:
-                            k, v = line.split(" = ")
-                            v = v.strip('"').strip("'")
-                            new_v = DOCS_ATTR_MAPPING.get(k, v)
-                            lines[i] = f"{k} = {new_v}"
-                        except ValueError:
-                            ...
-
-                    elif line.startswith("# -- Project information"):
-                        in_project_info = True
-
-                    elif line.strip() == f"import {project_name}":
-                        lines[i] = "import PROJECTNAME"
-
-                set_file_text(sf, "\n".join(lines))
-
-        # Handle the errors file, if present.
-        for sf in ("PROJECTNAME/error.py", "PROJECTNAME/errors.py"):
-            text = get_file_text(sf)
-
-            if text:
-                lines = text.split("\n")
-
-                for i, line in enumerate(lines[:]):
-                    if line.startswith("class"):
-                        base_exc = line.split("(")[0][6:]
-                        break
-
-                set_file_text(sf, text.replace(base_exc, "PROJECTBASEEXC"))
-
-        # These three files need the same changes.
-        for sf in ("MANIFEST.in", "setup.cfg", "setup.py"):
-            # TODO: Make the setup files more complete:
-            # https://docs.python.org/3/distutils/setupscript.html
-            text = get_file_text(sf)
-            if text:
-                set_file_text(sf, text.replace(project_name, "PROJECTNAME"))
-
-        # README needs to be handled separately.
-        for sf in ("README.md", "README.txt"):
-            text = get_file_text(sf)
-
-            if text:
-                lines = text.split("\n")
-                last_line = len(lines) - 1
-                found_acks = False
-                ack = (
-                    "This project was created in part by the [nusex project "
-                    f"templating utility]({__url__})."
-                )
-
-                for i, line in enumerate(lines[:]):
-                    if line.startswith("#"):
-                        if found_acks:
-                            lines.insert(i, ack)
-                            lines.insert(i + 1, "")
-                            break
-
-                        if "acknowledgements" in line.lower():
-                            found_acks = True
-
-                    elif i == last_line and found_acks:
-                        lines.extend([ack, ""])
-
-                if not found_acks:
-                    lines.extend(["## Acknowledgements", "", ack, ""])
-
-                set_file_text(
-                    sf,
-                    "\n".join(lines).replace(project_name, "PROJECTNAME"),
-                )
-
-        # LICENSE (and others) also needs to be handles separately.
-        for sf in ("LICENSE", "LICENSE.txt", "COPYING", "COPYING.txt"):
-            if sf in self.data["files"].keys():
-                set_file_text(sf, "LICENSEBODY")
-                break
+        builder = PythonBuilder(project_name, data)
+        self.data = builder().data
 
     def check(self):
         """Check the template manifest, including line changes.
