@@ -30,7 +30,7 @@ import os
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR
-from nusex.builders import PythonBuilder
+from nusex.blueprints import PythonBlueprint
 from nusex.errors import BuildError, TemplateError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXSpecIO
@@ -329,8 +329,8 @@ class Template:
             "as_extension_for": "",
         }
 
-        builder = PythonBuilder(project_name, data)
-        self.data = builder().data
+        blueprint = PythonBlueprint(project_name, data)
+        self.data = blueprint().data
 
     def check(self):
         """Check the template manifest, including line changes.

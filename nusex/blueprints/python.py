@@ -27,8 +27,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from nusex import __url__
-from nusex.builders import with_files
-from nusex.builders.base import Builder
+from nusex.blueprints import with_files
+from nusex.blueprints.base import Blueprint
 
 INIT_ATTR_MAPPING = {
     "__productname__": '"PROJECTNAME"',
@@ -61,7 +61,7 @@ DOCS_ATTR_MAPPING = {
 }
 
 
-class PythonBuilder(Builder):
+class PythonBlueprint(Blueprint):
     @with_files("PROJECTNAME/__init__.py")
     def modify_init(self, lines):
         for i, line in enumerate(lines[:]):

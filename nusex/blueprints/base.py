@@ -26,24 +26,21 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-def with_files(*files):
-    def decorator(func):
-        def wrapper(builder):
-            for file in files:
-                input = builder.data["files"].get(file, None)
-
-                if not input:
-                    continue
-
-                input = input.decode()
-                lines = input.split("\n")
-                output = func(builder, lines)
-                builder.data["files"][file] = output.encode()
-
-        return wrapper
-
-    return decorator
+from types import MethodType
 
 
-from .python import PythonBuilder
+class Blueprint:
+    def __init__(self, project_name, data):
+        self.project_name = project_name
+        self.data = data
+
+    def __call__(self):
+        for name in dir(self):
+            if name.startswith("_"):
+                continue
+
+            attr = getattr(self, name)
+            if isinstance(attr, MethodType):
+                attr()
+
+        return self
