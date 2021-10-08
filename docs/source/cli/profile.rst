@@ -11,13 +11,10 @@ Passing no arguments to this command begins the profile setup sequence.
 Arguments
 =========
 
-Required
---------
+This command has no arguments.
 
-This command has no required arguments.
-
-Optional
---------
+Options
+=======
 
 :code:`-c` | :code:`--show-current`
     Show the currently selected profile. This will output the profile's name to the terminal and exit. This will override any other flag.

@@ -9,14 +9,11 @@ Build a new template.
 Arguments
 =========
 
-Required
---------
-
 :code:`name`
     The name for the new template.
 
-Optional
---------
+Options
+=======
 
 :code:`-o` | :code:`--overwrite`
     Overwrite an existing template should it already exist. You will not be asked for confirmation when doing this. It is safe to use this flag even when not overwriting a template.

@@ -11,12 +11,9 @@ See the :doc:`initialisation guide <../starting/init>` to learn how this command
 Arguments
 =========
 
-Required
---------
+This command has no arguments.
 
-This command has no required arguments.
+Options
+=======
 
-Optional
---------
-
-This command has no optional arguments.
+This command has no options.
