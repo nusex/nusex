@@ -4,7 +4,7 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/nusex.svg)](https://pypi.python.org/pypi/nusex/)
 [![PyPI - Implementation](https://img.shields.io/pypi/implementation/nusex)](https://pypi.python.org/pypi/nusex/)
 [![PyPI - Status](https://img.shields.io/pypi/status/nusex)](https://pypi.python.org/pypi/nusex/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/nusex)](https://pypistats.org/packages/nusex)
+[![Downloads](https://pepy.tech/badge/nusex)](https://pepy.tech/project/nusex)
 
 [![Maintenance](https://img.shields.io/maintenance/yes/2021)](https://github.com/nusex/nusex)
 [![GitHub Release Date](https://img.shields.io/github/release-date/nusex/nusex)](https://github.com/nusex/nusex)

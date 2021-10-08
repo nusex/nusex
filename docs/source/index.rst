@@ -17,9 +17,9 @@ nusex
    :alt: PyPI - Status
    :target: https://pypi.python.org/pypi/nusex/
 
-.. image:: https://img.shields.io/pypi/dm/nusex
-   :alt: PyPI - Downloads
-   :target: https://pypistats.org/packages/nusex
+.. image:: https://pepy.tech/badge/nusex
+   :alt: Downloads
+   :target: https://pepy.tech/project/nusex
 
 .. image:: https://img.shields.io/maintenance/yes/2021
    :alt: Maintenance
