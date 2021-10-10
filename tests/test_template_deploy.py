@@ -76,21 +76,26 @@ def test_init_file_okay():
     with open(DEPLOY_DIR / "my_app/__init__.py", "r") as f:
         lines = f.read().split("\n")
 
-    with open(CONFIG_DIR / f"licenses/{profile['preferred_license']}.txt") as f:
+    with open(
+        CONFIG_DIR / f"licenses/{profile['preferred_license']}.txt"
+    ) as f:
         lic_name = f.read().split("\n")[1][7:]
 
     assert lines[0] == '__productname__ = "my_app"'
     assert lines[1] == f'__version__ = "{profile["starting_version"]}"'
     assert lines[2] == f'__description__ = "{profile["default_description"]}"'
     assert lines[3] == f'__url__ = "{profile["git_profile_url"]}/my_app"'
-    assert (
-        lines[4] == '__docs__ = "https://my_app.readthedocs.io/en/latest"'
-    )
+    assert lines[4] == '__docs__ = "https://my_app.readthedocs.io/en/latest"'
     assert lines[5] == f'__author__ = "{profile["author_name"]}"'
     assert lines[6] == f'__author_email__ = "{profile["author_email"]}"'
     assert lines[7] == f'__license__ = "{lic_name}"'
-    assert lines[8] == f'__bugtracker__ = "{profile["git_profile_url"]}/my_app/issues"'
-    assert lines[9] == f'__ci__ = "{profile["git_profile_url"]}/my_app/actions"'
+    assert (
+        lines[8]
+        == f'__bugtracker__ = "{profile["git_profile_url"]}/my_app/issues"'
+    )
+    assert (
+        lines[9] == f'__ci__ = "{profile["git_profile_url"]}/my_app/actions"'
+    )
 
 
 def test_pyproject_file_okay():
@@ -106,13 +111,18 @@ def test_pyproject_file_okay():
     assert lines[2] == f'version = "{profile["starting_version"]}"'
     assert lines[3] == f'description = "{profile["default_description"]}"'
     assert lines[4] == f'license = "{lic_name}"'
-    assert lines[5] == f'authors = ["{profile["author_name"]} <{profile["author_email"]}>"]'
-    assert lines[6] == f'maintainers = ["{profile["author_name"]} <{profile["author_email"]}>"]'
+    assert lines[5] == (
+        f'authors = ["{profile["author_name"]} '
+        f'<{profile["author_email"]}>"]'
+    )
+    assert lines[6] == (
+        f'maintainers = ["{profile["author_name"]} '
+        f'<{profile["author_email"]}>"]'
+    )
     assert lines[7] == f'homepage = "{profile["git_profile_url"]}/my_app"'
     assert lines[8] == f'repository = "{profile["git_profile_url"]}/my_app"'
     assert (
-        lines[9]
-        == 'documentation = "https://my_app.readthedocs.io/en/latest"'
+        lines[9] == 'documentation = "https://my_app.readthedocs.io/en/latest"'
     )
     assert lines[12] == 'extend-exclude = "my_app/__init__.py"'
 
@@ -128,7 +138,10 @@ def test_sphinx_conf_files_okay():
 
         assert lines[15] == "import my_app"
         assert lines[22] == 'project = "my_app"'
-        assert lines[23] == f'copyright = "{dt.date.today().year}, {profile["author_name"]}"'
+        assert lines[23] == (
+            f'copyright = "{dt.date.today().year}, '
+            f'{profile["author_name"]}"'
+        )
         assert lines[24] == f'author = "{profile["author_name"]}"'
         assert lines[27] == "release = my_app.__version__"
 
@@ -195,9 +208,7 @@ def test_license_file_okay():
     with open(LICENSE_DIR / f"{profile['preferred_license']}.txt") as f:
         lines = f.read().split("\n")
 
-        header = [i for i, line in enumerate(lines) if line == "---"][
-            -1
-        ] + 2
+        header = [i for i, line in enumerate(lines) if line == "---"][-1] + 2
         header = lines[header]
 
     for file in ("LICENSE", "COPYING", "LICENSE.txt", "COPYING.txt"):
@@ -207,6 +218,7 @@ def test_license_file_okay():
             lines = f.read().split("\n")
 
         assert lines[0] == header
+
 
 def test_clean_up():
     shutil.rmtree(Path(__file__).parent / "my_app")

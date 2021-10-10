@@ -193,7 +193,9 @@ def test_license_files_okay():
         logging.info(f"File: {file}")
         assert file in template.data["files"]
 
-        lines = re.split("\r\n|[\r\n]", template.data["files"]["LICENSE"].decode())
+        lines = re.split(
+            "\r\n|[\r\n]", template.data["files"]["LICENSE"].decode()
+        )
         assert lines[0] == "LICENSEBODY"
 
 

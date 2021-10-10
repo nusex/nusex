@@ -33,10 +33,10 @@ from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, Profile
 from nusex.blueprints import PythonBlueprint
-from nusex.constants import CONFIG_DIR, LICENSE_DIR
+from nusex.constants import LICENSE_DIR
 from nusex.errors import BuildError, TemplateError
 from nusex.helpers import run, validate_name
-from nusex.spec import NSCSpecIO, NSXSpecIO
+from nusex.spec import NSXSpecIO
 
 ATTRS = (
     "PROJECTNAME",
@@ -367,12 +367,13 @@ class Template:
                 lines[1][7:],
                 "\n".join(lines[start:])
                 .replace("[year]", f"{dt.date.today().year}")
-                .replace("[fullname]", profile["author_name"])
+                .replace("[fullname]", profile["author_name"]),
             )
 
         profile = Profile.current()
         project_name = Path(path).resolve().parts[-1]
         lic_name, lic_body = resolve_license_info(profile["preferred_license"])
+        project_error = project_name.replace("_", " ").title().replace(" ", "")
 
         var_mapping = {
             b"PROJECTNAME": project_name,
@@ -384,7 +385,7 @@ class Template:
             b"PROJECTLICENSE": lic_name,
             b"LICENSEBODY": lic_body,
             b"PROJECTYEAR": f"{dt.date.today().year}",
-            b"PROJECTBASEEXC": f"{project_name.replace('_', ' ').title().replace(' ', '')}Error"
+            b"PROJECTBASEEXC": f"{project_error}Error",
         }
 
         for name, data in self.data["files"].items():
