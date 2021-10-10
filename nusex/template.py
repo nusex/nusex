@@ -26,14 +26,17 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import datetime as dt
+import json
 import os
 from pathlib import Path
 
-from nusex import TEMP_DIR, TEMPLATE_DIR
+from nusex import TEMP_DIR, TEMPLATE_DIR, Profile
 from nusex.blueprints import PythonBlueprint
+from nusex.constants import CONFIG_DIR, LICENSE_DIR
 from nusex.errors import BuildError, TemplateError
 from nusex.helpers import run, validate_name
-from nusex.spec import NSXSpecIO
+from nusex.spec import NSCSpecIO, NSXSpecIO
 
 ATTRS = (
     "PROJECTNAME",
@@ -331,6 +334,67 @@ class Template:
 
         blueprint = PythonBlueprint(project_name, data)
         self.data = blueprint().data
+
+    def deploy(self):
+        def resolve_version(key):
+            if key != "CALVER":
+                return key
+
+            return dt.date.today().strftime("%Y.%m.%d")
+
+        def resolve_license(key):
+            with open(LICENSE_DIR / f"{key}.txt", encoding="utf-8") as f:
+                lines = f.read().split("\n")
+
+            start = [i for i, line in enumerate(lines) if line == "---"][
+                -1
+            ] + 2
+
+            return (
+                "\n".join(lines[start:])
+                .replace("[year]", f"{dt.date.today().year}")
+                .replace("[fullname]", profile["author_name"])
+            )
+
+        project_name = Path(".").resolve().parts[-1]
+
+        profile = Profile(
+            NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"]
+        )
+        var_mapping = {
+            b"PROJECTNAME": project_name,
+            b"PROJECTVERSION": resolve_version(profile["starting_version"]),
+            b"PROJECTDESCRIPTION": profile["default_description"],
+            b"PROJECTURL": f"{profile['git_profile_url']}/{project_name}",
+            b"PROJECTAUTHOR": profile["author_name"],
+            b"PROJECTAUTHOREMAIL": profile["author_email"],
+            b"PROJECTLICENSE": profile["preferred_license"],
+            b"LICENSEBODY": resolve_license(profile["preferred_license"]),
+            b"PROJECTYEAR": f"{dt.date.today().year}",
+        }
+
+        for name, data in self.data["files"].items():
+            name = name.replace(
+                "PROJECTNAME",
+                project_name.lower().replace(" ", "_").replace("-", "_"),
+            )
+
+            dirs = name.split("/")[:-1]
+            if dirs:
+                os.makedirs("/".join(dirs), exist_ok=True)
+
+            for k, v in var_mapping.items():
+                data = data.replace(k, v.encode())
+
+            with open(name, "wb") as f:
+                f.write(data)
+
+        meta = {
+            "template": self.name,
+            "files": list(self.data["files"].keys()),
+        }
+        with open("./.nusexmeta", "w") as f:
+            json.dump(meta, f)
 
     def check(self):
         """Check the template manifest, including line changes.
