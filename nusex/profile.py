@@ -193,7 +193,7 @@ class Profile:
             v = values[order[i]]
 
             if k == "starting_version":
-                if v != "DATE" and not VERSION_PATTERN.match(v):
+                if v != "CALVER" and not VERSION_PATTERN.match(v):
                     v = (
                         input(f"🎤 Starting version [0.1.0]: ").strip()
                         or "0.1.0"
@@ -268,10 +268,10 @@ class Profile:
             option = option.strip("/")
 
         if key == "starting_version":
-            if option != "DATE" and not VERSION_PATTERN.match(option):
+            if option != "CALVER" and not VERSION_PATTERN.match(option):
                 raise ProfileError(
                     "That version number does not conform to PEP 440 "
-                    "standards, or is not 'DATE'"
+                    "standards, or is not 'CALVER'"
                 )
 
         if key == "preferred_license":

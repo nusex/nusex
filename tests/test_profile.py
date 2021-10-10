@@ -97,7 +97,7 @@ def test_update_profile_starting_version():
         profile.update(starting_version="test")
     assert f"{exc.value}" == (
         "That version number does not conform to PEP 440 standards, or is "
-        "not 'DATE'"
+        "not 'CALVER'"
     )
 
 
