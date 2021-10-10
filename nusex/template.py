@@ -118,10 +118,16 @@ class Template:
         return self.path.is_file()
 
     def create_new(self, name):
-        """Create a new template.
+        """Create a new template. This should never need to be
+        called as templates are created automatically when necessary
+        upon object instantiation.
 
         Args:
             name (str): The name of the template.
+
+        Raises:
+            TemplateError: The provided name is invalid.
+            AlreadyExists: The template already exists on disk.
         """
         validate_name(name, self.__class__.__name__)
         self.data = {
@@ -133,7 +139,7 @@ class Template:
     def load(self):
         """Load an existing template. This should never need to be
         called as templates are loaded automatically when necessary upon
-        object creation.
+        object instantiation.
 
         Raises:
             FileNotFoundError: The template does not exist on disk.
@@ -335,7 +341,14 @@ class Template:
         blueprint = PythonBlueprint(project_name, data)
         self.data = blueprint().data
 
-    def deploy(self):
+    def deploy(self, path="."):
+        """Deploy this template.
+
+        Keyword Args:
+            path (str): The path to deploy this template to. Defaults to
+                the current directory.
+        """
+
         def resolve_version(key):
             if key != "CALVER":
                 return key
@@ -356,7 +369,7 @@ class Template:
                 .replace("[fullname]", profile["author_name"])
             )
 
-        project_name = Path(".").resolve().parts[-1]
+        project_name = Path(path).resolve().parts[-1]
 
         profile = Profile(
             NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"]
@@ -381,19 +394,19 @@ class Template:
 
             dirs = name.split("/")[:-1]
             if dirs:
-                os.makedirs("/".join(dirs), exist_ok=True)
+                os.makedirs(f"{path}/" + "/".join(dirs), exist_ok=True)
 
             for k, v in var_mapping.items():
                 data = data.replace(k, v.encode())
 
-            with open(name, "wb") as f:
+            with open(f"{path}/{name}", "wb") as f:
                 f.write(data)
 
         meta = {
             "template": self.name,
             "files": list(self.data["files"].keys()),
         }
-        with open("./.nusexmeta", "w") as f:
+        with open(f"{path}/.nusexmeta", "w") as f:
             json.dump(meta, f)
 
     def check(self):

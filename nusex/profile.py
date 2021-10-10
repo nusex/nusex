@@ -105,6 +105,10 @@ class Profile:
 
         Args:
             name (str): The name of the profile.
+
+        Raises:
+            ProfileError: The provided name is invalid.
+            AlreadyExists: The profile already exists on disk.
         """
         validate_name(name, self.__class__.__name__)
         self.data = {
