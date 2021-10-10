@@ -106,10 +106,6 @@ setuptools.setup(
         "Bug Tracker": bug_tracker,
         "CI": ci,
     },
-    # install_requires=parse_requirements("./requirements.txt"),
-    # extras_require={
-    #     "dev": parse_requirements("./requirements-dev.txt"),
-    # },
     python_requires=">=3.6.0,<3.12",
     packages=setuptools.find_packages(exclude=["tests*"]),
     entry_points={
