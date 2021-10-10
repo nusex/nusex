@@ -371,9 +371,7 @@ class Template:
 
         project_name = Path(path).resolve().parts[-1]
 
-        profile = Profile(
-            NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"]
-        )
+        profile = Profile.current()
         var_mapping = {
             b"PROJECTNAME": project_name,
             b"PROJECTVERSION": resolve_version(profile["starting_version"]),
