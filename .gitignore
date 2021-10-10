@@ -1,5 +1,6 @@
 ### Custom ###
 dev/
+tests/my_app
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

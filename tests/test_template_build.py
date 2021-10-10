@@ -186,12 +186,15 @@ def test_readme_txt_file_okay():
     )
 
 
-def test_license_file_okay():
+def test_license_files_okay():
     template = Template("__test_build__")
-    assert "LICENSE" in template.data["files"]
 
-    lines = re.split("\r\n|[\r\n]", template.data["files"]["LICENSE"].decode())
-    assert lines[0] == "LICENSEBODY"
+    for file in ("LICENSE", "COPYING", "LICENSE.txt", "COPYING.txt"):
+        logging.info(f"File: {file}")
+        assert file in template.data["files"]
+
+        lines = re.split("\r\n|[\r\n]", template.data["files"]["LICENSE"].decode())
+        assert lines[0] == "LICENSEBODY"
 
 
 def test_ignore_extensions():
