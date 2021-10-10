@@ -355,7 +355,7 @@ class Template:
 
             return dt.date.today().strftime("%Y.%m.%d")
 
-        def resolve_license(key):
+        def resolve_license_info(key):
             with open(LICENSE_DIR / f"{key}.txt", encoding="utf-8") as f:
                 lines = f.read().split("\n")
 
@@ -364,24 +364,27 @@ class Template:
             ] + 2
 
             return (
+                lines[1][7:],
                 "\n".join(lines[start:])
                 .replace("[year]", f"{dt.date.today().year}")
                 .replace("[fullname]", profile["author_name"])
             )
 
-        project_name = Path(path).resolve().parts[-1]
-
         profile = Profile.current()
+        project_name = Path(path).resolve().parts[-1]
+        lic_name, lic_body = resolve_license_info(profile["preferred_license"])
+
         var_mapping = {
             b"PROJECTNAME": project_name,
             b"PROJECTVERSION": resolve_version(profile["starting_version"]),
             b"PROJECTDESCRIPTION": profile["default_description"],
             b"PROJECTURL": f"{profile['git_profile_url']}/{project_name}",
-            b"PROJECTAUTHOR": profile["author_name"],
             b"PROJECTAUTHOREMAIL": profile["author_email"],
-            b"PROJECTLICENSE": profile["preferred_license"],
-            b"LICENSEBODY": resolve_license(profile["preferred_license"]),
+            b"PROJECTAUTHOR": profile["author_name"],
+            b"PROJECTLICENSE": lic_name,
+            b"LICENSEBODY": lic_body,
             b"PROJECTYEAR": f"{dt.date.today().year}",
+            b"PROJECTBASEEXC": f"{project_name.replace('_', ' ').title().replace(' ', '')}Error"
         }
 
         for name, data in self.data["files"].items():
