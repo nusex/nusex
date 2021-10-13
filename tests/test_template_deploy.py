@@ -31,6 +31,9 @@ import logging
 import os
 import shutil
 from pathlib import Path
+from platform import python_implementation
+
+import pytest  # type: ignore
 
 from nusex import Profile, Template
 from nusex.constants import CONFIG_DIR, LICENSE_DIR
@@ -223,6 +226,10 @@ def test_license_file_okay():
         assert lines[0] == header
 
 
+@pytest.mark.skipif(
+    python_implementation() == "PyPy",
+    reason="Dependency installs do not work with PyPy",
+)
 def test_installs_okay():
     template = Template("__test_deploy__")
     assert template.data["installs"] == ["analytix", "sqlite2pg"]

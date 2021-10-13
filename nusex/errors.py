@@ -67,3 +67,8 @@ class DownloadError(NusexError):
 class UnsupportedFile(NusexError):
     """An invalid file has been passed to a decoder, or a file larger
     than the file size limit has been included in a template."""
+
+
+class IncompatibilityError(NusexError):
+    """A operation is incompatible with your OS, Python version, or
+    Python implementation."""

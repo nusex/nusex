@@ -31,11 +31,12 @@ import json
 import os
 import sys
 from pathlib import Path
+from platform import python_implementation
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, Profile
 from nusex.blueprints import PythonBlueprint
 from nusex.constants import LICENSE_DIR
-from nusex.errors import BuildError, TemplateError
+from nusex.errors import BuildError, IncompatibilityError, TemplateError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXSpecIO
 
@@ -420,7 +421,14 @@ class Template:
             json.dump(meta, f)
 
     def install_dependencies(self):
-        """Install this template's dependencies."""
+        """Install this template's dependencies. Note that this does not
+        work on PyPy Python implementations."""
+        if python_implementation() == "PyPy":
+            raise IncompatibilityError(
+                "Dependency installation is not supported on PyPy "
+                "implementations"
+            )
+
         if not self.data["installs"]:
             return
 
