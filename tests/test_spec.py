@@ -65,7 +65,7 @@ def test_nsx_spec():
             f"{p}".split("/")[-1]: p.read_bytes()
             for p in (Path(__file__).parent / "data/nsx").glob("*")
         },
-        "installs": ["-r requirements.txt", "nusex"],
+        "installs": ["analytix", "nusex"],
         "as_extension_for": "template",
     }
     NSXSpecIO().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)

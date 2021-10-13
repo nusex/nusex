@@ -32,6 +32,8 @@ import os
 import shutil
 from pathlib import Path
 
+from pkg_resources import working_set
+
 from nusex import Profile, Template
 from nusex.constants import CONFIG_DIR, LICENSE_DIR
 
@@ -42,10 +44,13 @@ def test_deploy_okay():
     os.makedirs(DEPLOY_DIR, exist_ok=True)
 
     template = Template.from_dir(
-        "__test_deploy__", Path(__file__).parent / "data/testarosa"
+        "__test_deploy__",
+        Path(__file__).parent / "data/testarosa",
+        installs=["analytix", "sqlite2pg"],
     )
-    template.deploy(DEPLOY_DIR)
+    template.save()
 
+    template.deploy(DEPLOY_DIR)
     assert os.path.isfile(DEPLOY_DIR / "docs/source/conf.py")
     assert os.path.isfile(DEPLOY_DIR / "docs/conf.py")
     assert os.path.isfile(DEPLOY_DIR / "ignorethisdir/goodbye.everyone")
@@ -218,6 +223,15 @@ def test_license_file_okay():
             lines = f.read().split("\n")
 
         assert lines[0] == header
+
+
+def test_installs_okay():
+    template = Template("__test_deploy__")
+    assert template.data["installs"] == ["analytix", "sqlite2pg"]
+    template.install_dependencies()
+    installed = [pkg.key for pkg in working_set]
+    assert "analytix" in installed
+    assert "sqlite2pg" in installed
 
 
 def test_clean_up():

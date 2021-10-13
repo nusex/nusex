@@ -29,6 +29,7 @@
 import datetime as dt
 import json
 import os
+import sys
 from pathlib import Path
 
 from nusex import TEMP_DIR, TEMPLATE_DIR, Profile
@@ -67,15 +68,13 @@ class Template:
     Attributes:
         path (pathlib.Path): The complete filepath to the template.
         data (dict[str, Any]): The data for the template.
-        installs (list[str]): A list of dependencies the template will
-            install when deployed.
     """
 
-    __slots__ = ("path", "data", "installs")
+    __slots__ = ("path", "data", "_installs")
 
     def __init__(self, name, *, installs=[]):
         self.path = TEMPLATE_DIR / f"{name}.nsx"
-        self.installs = installs
+        self._installs = installs
 
         if not os.path.isfile(self.path):
             return self.create_new(name)
@@ -181,7 +180,9 @@ class Template:
         self.path = self.path.rename(new_path)
 
     @classmethod
-    def from_cwd(cls, name, *, ignore_exts=set(), ignore_dirs=set()):
+    def from_cwd(
+        cls, name, *, installs=[], ignore_exts=set(), ignore_dirs=set()
+    ):
         """Create a template using files from the current working
         directory.
 
@@ -197,7 +198,7 @@ class Template:
         Returns:
             Template: The newly created template.
         """
-        c = cls(name)
+        c = cls(name, installs=installs)
         c.build(
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
@@ -205,7 +206,9 @@ class Template:
         return c
 
     @classmethod
-    def from_dir(cls, name, path, *, ignore_exts=set(), ignore_dirs=set()):
+    def from_dir(
+        cls, name, path, *, installs=[], ignore_exts=set(), ignore_dirs=set()
+    ):
         """Create a template using files from a specific directory.
 
         Args:
@@ -222,7 +225,7 @@ class Template:
         Returns:
             Template: The newly created template.
         """
-        c = cls(name)
+        c = cls(name, installs=installs)
         c.build(
             root_dir=path,
             ignore_exts=ignore_exts,
@@ -231,7 +234,9 @@ class Template:
         return c
 
     @classmethod
-    def from_repo(cls, name, url, *, ignore_exts=set(), ignore_dirs=set()):
+    def from_repo(
+        cls, name, url, *, installs=[], ignore_exts=set(), ignore_dirs=set()
+    ):
         """Create a template using files from a GitHub repository.
 
         Args:
@@ -262,7 +267,10 @@ class Template:
 
         os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
         return cls.from_cwd(
-            name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+            name,
+            installs=installs,
+            ignore_exts=ignore_exts,
+            ignore_dirs=ignore_dirs,
         )
 
     def get_file_listing(
@@ -334,7 +342,7 @@ class Template:
         nparts = len(Path(root_dir).resolve().parts)
         data = {
             "files": {resolve_key(f): f.read_bytes() for f in files},
-            "installs": self.installs,
+            "installs": self._installs,
             "as_extension_for": "",
         }
 
@@ -410,6 +418,16 @@ class Template:
         }
         with open(f"{path}/.nusexmeta", "w") as f:
             json.dump(meta, f)
+
+    def install_dependencies(self):
+        """Install this template's dependencies."""
+        if not self.data["installs"]:
+            return
+
+        run(
+            f"{sys.executable} -m pip install "
+            + " ".join(self.data["installs"])
+        )
 
     def check(self):
         """Check the template manifest, including line changes.

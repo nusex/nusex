@@ -42,11 +42,22 @@ def _options_as_set(values):
     return s
 
 
+def _options_as_list(values):
+    l = values.split(",")
+
+    if l == [""]:
+        return []
+
+    return l
+
+
 def run(
     name,
     overwrite,
     check,
     from_repo,
+    with_installs,
+    with_requirements_file,
     ignore_exts,
     extend_ignore_exts,
     ignore_dirs,
@@ -60,15 +71,28 @@ def run(
     ignore_exts = ignore_exts.union(extend_ignore_exts)
     ignore_dirs = ignore_dirs.union(extend_ignore_dirs)
 
+    if with_requirements_file:
+        with open(with_requirements_file) as f:
+            d = f.read().split("\n")
+            d.remove("")
+            with_installs.extend(d)
+
     # TODO: Make so when overwriting a template, it doesn't have to
     # load the previous one first.
     if from_repo:
         template = Template.from_repo(
-            name, from_repo, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+            name,
+            from_repo,
+            installs=with_installs,
+            ignore_exts=ignore_exts,
+            ignore_dirs=ignore_dirs,
         )
     else:
         template = Template.from_cwd(
-            name, ignore_exts=ignore_exts, ignore_dirs=ignore_dirs
+            name,
+            installs=with_installs,
+            ignore_exts=ignore_exts,
+            ignore_dirs=ignore_dirs,
         )
 
     if check:
@@ -82,7 +106,18 @@ def run(
                     print(f"└── Line {ln}: {line}")
                 else:
                     print(f"├── Line {ln}: {line}")
-        return
+
+        installs = template.data["installs"]
+        if installs:
+            print()
+            cprint("inf", "Showing dependencies:")
+            max_dep = len(installs) - 1
+            for i, dep in enumerate(installs):
+                if i == max_dep:
+                    print(f"└── {dep}")
+                else:
+                    print(f"├── {dep}")
+            return
 
     template.save()
     cprint("aok", f"Template '{name}' built successfully!")
@@ -114,6 +149,21 @@ def setup(subparsers):
             "installed)"
         ),
         metavar="URL",
+        default="",
+    )
+    s.add_argument(
+        "-i",
+        "--with-installs",
+        help="a comma-separated list of dependencies to install",
+        metavar="DEPS",
+        default="",
+        type=_options_as_list,
+    )
+    s.add_argument(
+        "-I",
+        "--with-requirements-file",
+        help="a file within the template to install dependencies from",
+        metavar="FILENAME",
         default="",
     )
     s.add_argument(
