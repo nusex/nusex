@@ -56,14 +56,14 @@ def setup(subparsers):
     s.add_argument(
         "--force",
         help=(
-            "force a deployment, overriding any existing files with the same "
+            "force a deployment, overwriting any existing files with the same "
             "names"
         ),
         action="store_true",
     )
     s.add_argument(
         "--no-deps",
-        help="deploy this template without installing dependencies",
+        help="deploy the template without installing dependencies",
         action="store_true",
     )
     return subparsers

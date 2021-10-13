@@ -81,6 +81,7 @@ Contents
    cli/init
    cli/profile
    cli/build
+   cli/deploy
 
 .. toctree::
    :maxdepth: 1

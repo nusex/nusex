@@ -154,7 +154,9 @@ def setup(subparsers):
     s.add_argument(
         "-i",
         "--with-installs",
-        help="a comma-separated list of dependencies to install",
+        help=(
+            "a comma-separated list of dependencies to install when deploying"
+        ),
         metavar="DEPS",
         default="",
         type=_options_as_list,
@@ -162,7 +164,10 @@ def setup(subparsers):
     s.add_argument(
         "-I",
         "--with-requirements-file",
-        help="a file within the template to install dependencies from",
+        help=(
+            "a file within the template to install dependencies from when "
+            "deploying"
+        ),
         metavar="FILENAME",
         default="",
     )

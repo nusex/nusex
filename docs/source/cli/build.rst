@@ -24,8 +24,11 @@ Options
 :code:`-r URL` | :code:`--from-repo URL`
     The repository URL to build a template from. This link can be for any repository provider, but Git must be installed before you can do this.
 
-:code:`-e TEMPLATE` | :code:`--as-extension-for TEMPLATE`
-    Build this template as an extension for another template. The template to build the extension for must already exist.
+:code:`-i DEPS` | :code:`--with-installs DEPS`
+    A comma-separated list of dependencies to install when deploying. This can include version restrictions, but will probably require quotes when doing so.
+
+:code:`-I FILENAME` | :code:`--with-requirements-file`
+    A file within the template to install dependencies from when deploying. Note that if you update the requirements file within the template, then dependencies DO NOT get automatically updated, and you will need to re-specify the requirements when rebuilding.
 
 :code:`--ignore-exts EXTS`
     A comma-separated list of file extensions to ignore. The default is "pyc,pyd,pyo".
