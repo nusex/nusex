@@ -64,6 +64,17 @@ def test_load_profile():
     assert profile.data["preferred_license"] == "mit"
 
 
+def test_magic_methods():
+    p1 = Profile("__test_profile__")
+    p2 = Profile("default")
+
+    assert p1.name == str(p1) == "__test_profile__"
+    assert repr(p2) == "<Profile name='default'>"
+    assert p1 == p1
+    assert p1 != p2
+    assert p2.data["author_name"] == p2["author_name"]
+
+
 def test_select_profile():
     profile = Profile("__test_profile__")
     assert not profile.is_selected

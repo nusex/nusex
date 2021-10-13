@@ -28,6 +28,7 @@
 
 import os
 import re
+import sys
 from pathlib import Path
 
 
@@ -35,7 +36,7 @@ def _suffix():
     # Determine whether this is a production copy or not. This
     # prevents actual user configs from getting messed up.
     parts = Path(__file__).parts
-    if ".nox" in parts:
+    if "nox" in " ".join(sys.argv) or ".nox" in parts:
         return "nusex-test"
     if "site-packages" not in parts:
         return "nusex-dev"

@@ -23,12 +23,10 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: |
-          python -m pip install nox
+        run: python -m pip install nox
 
       - name: Run checks
-        run: |
-          python -m nox -k "not tests and not check_docs"
+        run: python -m nox -k "not tests and not check_docs"
 
   check_docs:
     name: Check docs build
@@ -44,12 +42,10 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: |
-          python -m pip install nox
+        run: python -m pip install nox
 
       - name: Run checks
-        run: |
-          python -m nox -s check_docs_build
+        run: python -m nox -s check_docs_build
 
   test_lib:
     strategy:
@@ -71,9 +67,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: |
-          python -m pip install nox . --use-feature=in-tree-build
+        run: python -m pip install nox . --use-feature=in-tree-build
 
       - name: Run tests
-        run: |
-          python -m nox -s tests
+        run: python -m nox -s tests

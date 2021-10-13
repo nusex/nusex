@@ -21,6 +21,8 @@ nusex
    :alt: Downloads
    :target: https://pepy.tech/project/nusex
 
+|
+
 .. image:: https://img.shields.io/maintenance/yes/2021
    :alt: Maintenance
    :target: https://github.com/nusex/nusex
@@ -40,6 +42,13 @@ nusex
 .. image:: https://img.shields.io/github/license/nusex/nusex.svg
    :alt: License
    :target: https://github.com/nusex/nusex/blob/main/LICENSE
+
+|
+
+.. image:: https://api.codeclimate.com/v1/badges/5122e8a19a45b39f8945/test_coverage
+   :target: https://codeclimate.com/github/nusex/nusex/test_coverage
+   :alt: Test Coverage
+
 
 What is nusex?
 ==============

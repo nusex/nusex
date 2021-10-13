@@ -12,6 +12,8 @@
 [![Read the Docs](https://img.shields.io/readthedocs/nusex)](https://nusex.readthedocs.io/en/latest/index.html)
 [![License](https://img.shields.io/github/license/nusex/nusex.svg)](https://github.com/nusex/nusex/blob/main/LICENSE)
 
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5122e8a19a45b39f8945/test_coverage)](https://codeclimate.com/github/nusex/nusex/test_coverage)
+
 A project templating utility for Python.
 
 CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported. PyPy 3.8 support is unknown.

@@ -35,7 +35,6 @@ from nusex import Template
 
 def test_create_template():
     template = Template("__test_template__")
-    assert template.name == "__test_template__"
     assert template.data["files"] == {}
     assert template.data["installs"] == []
     assert template.data["as_extension_for"] == ""
@@ -53,6 +52,17 @@ def test_build_okay():
 
     template.save()
     assert template.exists
+
+
+def test_magic_methods():
+    t1 = Template("__test_template__")
+    t2 = Template("__test_build__")
+
+    assert t1.name == str(t1) == "__test_template__"
+    assert repr(t2) == "<Template name='__test_build__' files=21>"
+    assert t1 == t1
+    assert t1 != t2
+    assert t2.data["files"]["README.md"] == t2["README.md"]
 
 
 def test_init_file_okay():

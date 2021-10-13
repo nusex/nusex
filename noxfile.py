@@ -43,16 +43,15 @@ TEST_DIR = Path(__file__).parent / "tests"
 def parse_requirements(path):
     with open(path, mode="r", encoding="utf-8") as f:
         deps = (d.strip() for d in f.readlines())
-        return [d for d in deps if not d.startswith(("#", "-r"))]
+        return [d for d in deps if not d.startswith(("#", "-r", "."))]
 
 
 DEPS = {
-    name: install
-    for name, install in (
-        r.split("~=")
-        for r in parse_requirements("./requirements-dev.txt")
-        if not r.startswith(("#", "-r"))
-    )
+    dep.split("~=")[0]: dep
+    for dep in [
+        *parse_requirements("./requirements-dev.txt"),
+        *parse_requirements("./requirements-test.txt"),
+    ]
 }
 
 
@@ -67,34 +66,48 @@ def tests(session):
     ) as z:
         z.extractall(test_config_dir)
 
-    deps = parse_requirements("./requirements-test.txt")
-    session.install("-U", *deps)
-    session.run("pytest", "--testdox", "--log-level=INFO")
+    session.install("-U", *parse_requirements("./requirements-test.txt"))
+    session.run(
+        "coverage",
+        "run",
+        "--omit",
+        "tests/*",
+        "-m",
+        "pytest",
+        "--testdox",
+        "--log-level=INFO",
+    )
 
     if os.path.isdir(test_config_dir):
         shutil.rmtree(test_config_dir)
 
 
 @nox.session(reuse_venv=True)
+def check_coverage(session):
+    session.install("-U", DEPS["coverage"])
+
+    if not os.path.isfile(Path(__file__).parent / ".coverage"):
+        session.skip("No coverage to check")
+
+    session.run("coverage", "report", "-m")
+
+
+@nox.session(reuse_venv=True)
 def check_docs_build(session):
-    session.install(
-        "-U", f"sphinx~={DEPS['sphinx']}", f"furo~={DEPS['furo']}", "."
-    )
+    session.install("-U", DEPS["sphinx"], DEPS["furo"], ".")
     session.cd("./docs")
     session.run("make", "html")
 
 
 @nox.session(reuse_venv=True)
 def check_formatting(session):
-    session.install("-U", f"black~={DEPS['black']}")
+    session.install("-U", DEPS["black"])
     session.run("black", ".", "--check")
 
 
 @nox.session(reuse_venv=True)
 def check_imports(session):
-    session.install(
-        "-U", f"flake8~={DEPS['flake8']}", f"isort~={DEPS['isort']}"
-    )
+    session.install("-U", DEPS["flake8"], DEPS["isort"])
     # flake8 doesn't use the gitignore so we have to be explicit.
     session.run(
         "flake8",
@@ -112,7 +125,7 @@ def check_imports(session):
 
 @nox.session(reuse_venv=True)
 def check_line_lengths(session):
-    session.install("-U", f"len8~={DEPS['len8']}")
+    session.install("-U", DEPS["len8"])
     session.run("len8", PROJECT_NAME, "tests", "-x", "testarosa")
 
 
