@@ -191,6 +191,8 @@ class Template:
             name (str): The name of the template.
 
         Keyword Args:
+            installs (list[str]): A list of dependencies to install when
+                this template is deployed. Defaults to an empty list.
             ignore_exts (set[str]): A set of file extensions to ignore.
                 Defaults to an empty set.
             ignore_dirs (set[str]): A set of directories to ignore.
@@ -218,6 +220,8 @@ class Template:
                 template with.
 
         Keyword Args:
+            installs (list[str]): A list of dependencies to install when
+                this template is deployed. Defaults to an empty list.
             ignore_exts (set[str]): A set of file extensions to ignore.
                 Defaults to an empty set.
             ignore_dirs (set[str]): A set of directories to ignore.
@@ -244,7 +248,9 @@ class Template:
             name (str): The name of the template.
             url (str): The URL of the GitHub repository to clone.
 
-        Keyword Args:n
+        Keyword Args:
+            installs (list[str]): A list of dependencies to install when
+                this template is deployed. Defaults to an empty list.
             ignore_exts (set[str]): A set of file extensions to ignore.
                 Defaults to an empty set.
             ignore_dirs (set[str]): A set of directories to ignore.
