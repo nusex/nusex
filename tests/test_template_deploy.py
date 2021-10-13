@@ -32,8 +32,6 @@ import os
 import shutil
 from pathlib import Path
 
-from pkg_resources import working_set
-
 from nusex import Profile, Template
 from nusex.constants import CONFIG_DIR, LICENSE_DIR
 
@@ -229,9 +227,9 @@ def test_installs_okay():
     template = Template("__test_deploy__")
     assert template.data["installs"] == ["analytix", "sqlite2pg"]
     template.install_dependencies()
-    installed = [pkg.key for pkg in working_set]
-    assert "analytix" in installed
-    assert "sqlite2pg" in installed
+
+    import analytix  # noqa: F401
+    import sqlite2pg  # noqa: F401
 
 
 def test_clean_up():
