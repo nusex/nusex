@@ -33,7 +33,7 @@ import traceback
 from importlib import import_module
 from pathlib import Path
 
-from nusex import CONFIG_DIR, __version__
+from nusex import CONFIG_DIR, __description__, __version__
 from nusex.errors import NusexError, NusexUserError
 from nusex.helpers import cprint
 
@@ -43,9 +43,7 @@ COMMAND_MAPPING = {
     if p.stem != "__init__"
 }
 
-parser = argparse.ArgumentParser(
-    description="A project templating utility for Python."
-)
+parser = argparse.ArgumentParser(description=__description__)
 parser.add_argument(
     "-v",
     "--version",
