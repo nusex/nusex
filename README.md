@@ -1,22 +1,19 @@
 # nusex
 
 [![PyPi version](https://img.shields.io/pypi/v/nusex.svg)](https://pypi.python.org/pypi/nusex/)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/nusex.svg)](https://pypi.python.org/pypi/nusex/)
-[![PyPI - Implementation](https://img.shields.io/pypi/implementation/nusex)](https://pypi.python.org/pypi/nusex/)
 [![PyPI - Status](https://img.shields.io/pypi/status/nusex)](https://pypi.python.org/pypi/nusex/)
 [![Downloads](https://pepy.tech/badge/nusex)](https://pepy.tech/project/nusex)
-
-[![Maintenance](https://img.shields.io/maintenance/yes/2021)](https://github.com/nusex/nusex)
-[![GitHub Release Date](https://img.shields.io/github/release-date/nusex/nusex)](https://github.com/nusex/nusex)
 [![GitHub last commit](https://img.shields.io/github/last-commit/nusex/nusex)](https://github.com/nusex/nusex)
-[![Read the Docs](https://img.shields.io/readthedocs/nusex)](https://nusex.readthedocs.io/en/latest/index.html)
 [![License](https://img.shields.io/github/license/nusex/nusex.svg)](https://github.com/nusex/nusex/blob/main/LICENSE)
 
+[![CI](https://github.com/nusex/nusex/actions/workflows/ci.yml/badge.svg)](https://github.com/nusex/nusex/actions/workflows/ci.yml)
+[![Read the Docs](https://img.shields.io/readthedocs/nusex)](https://nusex.readthedocs.io/en/latest/index.html)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5122e8a19a45b39f8945/maintainability)](https://codeclimate.com/github/nusex/nusex/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5122e8a19a45b39f8945/test_coverage)](https://codeclimate.com/github/nusex/nusex/test_coverage)
 
 A project templating utility for Python.
 
-CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported. PyPy 3.8 support is unknown.
+CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported.
 
 Windows, MacOS, and Linux are all supported.
 
