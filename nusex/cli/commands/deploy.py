@@ -33,7 +33,7 @@ from nusex.errors import DeploymentError, DoesNotExist
 from nusex.helpers import cprint
 
 
-def run(name, force, no_deps):
+def run(name, force, no_installs):
     if not os.path.isfile(TEMPLATE_DIR / f"{name}.nsx"):
         raise DoesNotExist("No template with that name exists")
 
@@ -42,7 +42,7 @@ def run(name, force, no_deps):
 
     template = Template(name)
     template.deploy()
-    if not no_deps:
+    if not no_installs:
         template.install_dependencies()
 
     cprint("aok", f"Template '{name}' deployed successfully!")
@@ -62,7 +62,7 @@ def setup(subparsers):
         action="store_true",
     )
     s.add_argument(
-        "--no-deps",
+        "--no-installs",
         help="deploy the template without installing dependencies",
         action="store_true",
     )
