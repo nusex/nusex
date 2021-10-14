@@ -44,25 +44,23 @@ jobs:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
 
+    - name: Upload artefacts to action
+      uses: actions/upload-artifact@v2
+      with:
+        name: artefacts
+        path: dist/
+
   artefacts:
     name: Publish artefacts
-    needs: check-version
+    needs: package
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Download artefacts
+      uses: actions/download-artifact@v2
       with:
-        python-version: "3.x"
-
-    - name: Install dependencies
-      run: python -m pip install build
-
-    - name: Build artefacts
-      run: python -m build
+        name: artefacts
+        path: dist/
 
     - name: Attach artefacts to release
       uses: svenstaro/upload-release-action@v2
