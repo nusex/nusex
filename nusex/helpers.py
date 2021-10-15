@@ -54,11 +54,11 @@ def validate_name(name, for_type):
     }[for_type]
 
     if len(name) > 24:
-        raise err("Names are limited to 24 characters")
+        raise err(f"{for_type} names are limited to 24 characters")
 
     if INVALID_NAME_PATTERN.search(name):
         raise err(
-            "Names can only contain lower case letters, numbers, "
+            f"{for_type} names can only contain lower case letters, numbers, "
             "and underscores"
         )
 

@@ -185,7 +185,7 @@ def test_validate_profile_names():
         with pytest.raises(ProfileError) as exc:
             Profile(t)
         assert f"{exc.value}" == (
-            "Names can only contain lower case letters, numbers, and "
+            "Profile names can only contain lower case letters, numbers, and "
             "underscores"
         )
 
@@ -195,7 +195,7 @@ def test_validate_profile_names():
 
     with pytest.raises(ProfileError) as exc:
         Profile("this_is_a_really_long_profile_name")
-    assert f"{exc.value}" == "Names are limited to 24 characters"
+    assert f"{exc.value}" == "Profile names are limited to 24 characters"
 
 
 def test_reject_reserved_names():

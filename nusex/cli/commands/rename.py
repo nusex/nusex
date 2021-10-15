@@ -26,43 +26,33 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import pytest  # type: ignore
+import os
 
-from nusex import Template
-from nusex.errors import AlreadyExists, TemplateError
-
-
-def test_validate_template_names():
-    bad_templates = ("test-template", "TestTemplate", "folder/test")
-    good_templates = ("test", "test_template", "test69")
-
-    for t in bad_templates:
-        with pytest.raises(TemplateError) as exc:
-            Template(t)
-        assert f"{exc.value}" == (
-            "Template names can only contain lower case letters, numbers, and "
-            "underscores"
-        )
-
-    for t in good_templates:
-        template = Template(t)
-        assert template.name == t
-
-    with pytest.raises(TemplateError) as exc:
-        Template("this_is_a_really_long_template_name")
-    assert f"{exc.value}" == "Template names are limited to 24 characters"
+from nusex import TEMPLATE_DIR
+from nusex.errors import DoesNotExist, TemplateError
+from nusex.helpers import cprint, validate_name
 
 
-def test_reject_reserved_names():
-    bad_templates = ("nsx_complex_pkg", "nsx_simple_ext")
+def run(name, new_name):
+    if name.startswith("nsx"):
+        raise TemplateError("You cannot rename premade templates")
 
-    for t in bad_templates:
-        with pytest.raises(TemplateError) as exc:
-            Template(t)
-        assert f"{exc.value}" == "That name is reserved"
+    if not (TEMPLATE_DIR / f"{name}.nsx").exists():
+        raise DoesNotExist(f"Template '{name}' not found")
+
+    validate_name(new_name, "Template")
+    os.rename(TEMPLATE_DIR / f"{name}.nsx", TEMPLATE_DIR / f"{new_name}.nsx")
+    cprint("aok", f"Template '{name}' successfully renamed to '{new_name}'!")
 
 
-def test_reject_taken_names():
-    with pytest.raises(AlreadyExists) as exc:
-        Template("default")
-    assert f"{exc.value}" == "A profile is already using that name"
+def setup(subparsers):
+    s = subparsers.add_parser("rename", description="Rename a template.")
+    s.add_argument(
+        "name",
+        help="the name of the template to rename",
+    )
+    s.add_argument(
+        "new_name",
+        help="the new name for the template",
+    )
+    return subparsers
