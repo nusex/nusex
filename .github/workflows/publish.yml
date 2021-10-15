@@ -17,8 +17,8 @@ jobs:
       run: |
         [[ $(sed -rn 's/__version__ = "(.*)"/v\1/p' nusex/__init__.py) == ${{ github.event.release.tag_name }} ]]
 
-  package:
-    name: Publish package
+  build:
+    name: Build package
     needs: check-version
     runs-on: ubuntu-latest
 
@@ -38,21 +38,33 @@ jobs:
     - name: Build package
       run: python -m build
 
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
-
-    - name: Upload artefacts to action
+    - name: Upload artefacts to workflow
       uses: actions/upload-artifact@v2
       with:
         name: artefacts
         path: dist/
 
-  artefacts:
-    name: Publish artefacts
-    needs: package
+  publish:
+    name: Publish package
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artefacts
+      uses: actions/download-artifact@v2
+      with:
+        name: artefacts
+        path: dist/
+
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@v1.4.2
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+
+  attach:
+    name: Attach artefacts to release
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
