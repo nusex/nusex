@@ -51,6 +51,31 @@ def _options_as_list(values):
     return l
 
 
+def _check(template):
+    cprint("inf", "Showing template manifest (incl. changes):")
+    manifest = template.check()
+    for file, meta in manifest.items():
+        print(file)
+        max_meta = len(meta) - 1
+        for i, (ln, line) in enumerate(meta):
+            if i == max_meta:
+                print(f"└── Line {ln}: {line}")
+            else:
+                print(f"├── Line {ln}: {line}")
+
+    installs = template.data["installs"]
+    if installs:
+        print()
+        cprint("inf", "Showing dependencies:")
+        max_dep = len(installs) - 1
+        for i, dep in enumerate(installs):
+            if i == max_dep:
+                print(f"└── {dep}")
+            else:
+                print(f"├── {dep}")
+        return
+
+
 def run(
     name,
     overwrite,
@@ -96,28 +121,7 @@ def run(
         )
 
     if check:
-        cprint("inf", "Showing template manifest (incl. changes):")
-        manifest = template.check()
-        for file, meta in manifest.items():
-            print(file)
-            max_meta = len(meta) - 1
-            for i, (ln, line) in enumerate(meta):
-                if i == max_meta:
-                    print(f"└── Line {ln}: {line}")
-                else:
-                    print(f"├── Line {ln}: {line}")
-
-        installs = template.data["installs"]
-        if installs:
-            print()
-            cprint("inf", "Showing dependencies:")
-            max_dep = len(installs) - 1
-            for i, dep in enumerate(installs):
-                if i == max_dep:
-                    print(f"└── {dep}")
-                else:
-                    print(f"├── {dep}")
-            return
+        return _check(template)
 
     template.save()
     cprint("aok", f"Template '{name}' built successfully!")
