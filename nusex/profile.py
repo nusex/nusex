@@ -211,6 +211,7 @@ class Profile:
                         input(f"🎤 Preferred license [unlicense]: ").strip()
                         or "unlicense"
                     )
+                    v = c._validate_option(k, v)
 
             c.data[k] = v
 
