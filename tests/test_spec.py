@@ -26,6 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import re
 from pathlib import Path
 
 from nusex import CONFIG_DIR, PROFILE_DIR, TEMPLATE_DIR, __version__
@@ -35,8 +36,9 @@ from nusex.spec import NSCSpecIO, NSPSpecIO, NSXSpecIO
 def test_nsc_spec():
     data = {
         "profile": "default",
-        "last_update": __version__,
+        "last_update": re.match(r"[0-9]+.[0-9]+.[0-9]+", __version__).group(),
         "use_wildmatch_ignore": False,
+        "auto_update": True,
     }
     NSCSpecIO().write(CONFIG_DIR / "config.nsc", data)
 

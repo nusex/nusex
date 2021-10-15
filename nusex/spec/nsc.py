@@ -39,6 +39,7 @@ class NSCSpecIO:
             "profile": "default",
             "last_update": "1.0.0",
             "use_wildmatch_ignore": False,
+            "auto_update": True,
         }
 
     def read(self, path):
@@ -52,14 +53,18 @@ class NSCSpecIO:
             data["profile"] = f.read(24).decode().strip()
 
             ver = "{}.{}.{}".format(*f.read(3).decode())
-            dev = f.read(3)
-            if dev != b"   ":
-                ver += f".dev{dev.decode().strip()}"
             data["last_update"] = ver
+            f.read(3)  # Skip old data
 
             # Not guaranteed from here.
-            if f.peek(1):
-                data["use_wildmatch_ignore"] = f.read(1) == b"\x01"
+            attrs = ("use_wildmatch_ignore", "auto_update")
+            for attr in attrs:
+                try:
+                    b = f.read(1)
+                    print(b)
+                    data[attr] = b == b"\x01"
+                except Exception as exc:
+                    break
 
         return data
 
@@ -70,13 +75,8 @@ class NSCSpecIO:
 
             # Write data.
             f.write(data["profile"].ljust(24).encode())
-            f.write(
-                data["last_update"]
-                .replace(".", "")
-                .replace("dev", "")
-                .ljust(6)
-                .encode()
-            )
+            f.write(data["last_update"].replace(".", "").ljust(6).encode())
 
             # Not guaranteed, so write a default value if not present.
             f.write((b"\x00", b"\x01")[data.get("use_wildmatch_ignore", 0)])
+            f.write((b"\x00", b"\x01")[data.get("auto_update", 1)])
