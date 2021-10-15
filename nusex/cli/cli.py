@@ -27,7 +27,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-import os
 import sys
 import traceback
 from importlib import import_module
@@ -75,19 +74,22 @@ def main():
         return parser.parse_args(("-h",))
 
     # Setup checks.
-    if (
-        not os.path.isfile(CONFIG_DIR / "config.nsc")
-        and args.subparser != "init"
+    if (CONFIG_DIR / "user.nsc").exists() and args.subparser != "migrate":
+        cprint(
+            "err",
+            "It looks like you still have an old nusex configuration. Use "
+            "`nusex migrate` to fix this.",
+        )
+        sys.exit(2)
+    elif not (CONFIG_DIR / "config.nsc").exists() and args.subparser not in (
+        "init",
+        "migrate",
     ):
         cprint(
             "err",
             "That command cannot be run before nusex has been initialised.",
         )
         sys.exit(2)
-    elif os.path.isfile(CONFIG_DIR / "user.nsc"):
-        ...  # Migrate
-    else:
-        ...  # Check for updates
 
     # Command runs.
     try:

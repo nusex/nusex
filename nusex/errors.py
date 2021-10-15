@@ -59,6 +59,10 @@ class DoesNotExist(NusexUserError):
     """An entity does not exist."""
 
 
+class MigrationError(NusexUserError):
+    """A migration or migration reversion failed."""
+
+
 class DownloadError(NusexError):
     """A download failed to complete, or an invalid download request
     was submitted."""

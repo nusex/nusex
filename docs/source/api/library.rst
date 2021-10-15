@@ -59,6 +59,10 @@ Exceptions
 
 .. autoexception:: nusex.errors.UnsupportedFile
 
+.. autoexception:: nusex.errors.IncompatibilityError
+
+.. autoexception:: nusex.errors.MigrationError
+
 Exception hierarchy
 -------------------
 
@@ -71,5 +75,7 @@ Exception hierarchy
                 - :exc:`DeploymentError`
             - :exc:`AlreadyExists`
             - :exc:`DoesNotExist`
+            - :exc:`MigrationError
         - :exc:`DownloadError`
         - :exc:`UnsupportedFile`
+        - :exc:`IncompatibilityError``
