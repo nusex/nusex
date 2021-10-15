@@ -81,6 +81,8 @@ Contents
    cli/profile
    cli/build
    cli/deploy
+   cli/delete
+   cli/download
    cli/migrate
 
 .. toctree::

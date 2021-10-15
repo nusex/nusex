@@ -26,17 +26,47 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__productname__ = "nusex"
-__version__ = "1.0.0.dev7"
-__description__ = "A project templating utility for Python."
-__url__ = "https://github.com/nusex/nusex"
-__docs__ = "https://nusex.readthedocs.io/en/latest"
-__author__ = "Ethan Henderson"
-__author_email__ = "ethan.henderson.1998@gmail.com"
-__license__ = "BSD-3-Clause"
-__bugtracker__ = "https://github.com/nusex/nusex/issues"
-__ci__ = "https://github.com/nusex/nusex/actions"
+import os
 
-from .constants import *
-from .profile import Profile
-from .template import Template
+from nusex import TEMPLATE_DIR
+from nusex.errors import DoesNotExist, TemplateError
+from nusex.helpers import cprint
+
+
+def run(names, strict):
+    count = 0
+
+    for name in names:
+        if not (TEMPLATE_DIR / f"{name}.nsx").exists():
+            if strict:
+                raise DoesNotExist(f"Template '{name}' not found") from None
+
+            cprint("war", f"Template '{name}' not found, skipping...")
+            continue
+
+        os.remove(TEMPLATE_DIR / f"{name}.nsx")
+        count += 1
+
+    if not count:
+        raise TemplateError("No templates deleted")
+
+    cprint("aok", f"Successfully deleted {count:,} templates!")
+
+
+def setup(subparsers):
+    s = subparsers.add_parser(
+        "delete", description="Delete one or more templates."
+    )
+    s.add_argument(
+        "names",
+        help="the name(s) of the template(s) to delete",
+        nargs="+",
+    )
+    s.add_argument(
+        "--strict",
+        help=(
+            "throw an error instead of a warning if a template does not exist",
+        ),
+        action="store_true",
+    )
+    return subparsers
