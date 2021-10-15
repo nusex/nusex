@@ -52,11 +52,11 @@ class DeploymentError(TemplateError):
 
 
 class AlreadyExists(NusexUserError):
-    """An entity already exists."""
+    """A profile or template already exists."""
 
 
 class DoesNotExist(NusexUserError):
-    """An entity does not exist."""
+    """A profile or template does not exist."""
 
 
 class MigrationError(NusexUserError):
