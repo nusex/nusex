@@ -59,7 +59,7 @@ class NSXSpecIO:
                 name += chunk
 
             else:
-                size = int(f.read(12).decode().strip())
+                size = int(f.read(8).decode().strip(), base=16)
                 chunk = f.read(size)
                 data["files"].update({name.decode(): chunk})
                 name = b""
@@ -123,11 +123,11 @@ class NSXSpecIO:
                 f.write(k.encode())
                 f.write(b"\x97")
                 size = len(v)
-                if size > 999_999_999_999:
+                if size > 0xFFFFFFFF:
                     raise UnsupportedFile(
-                        "Files larger than 1 TB (~931 GiB) are not supported"
+                        "Files larger than 4 GB are not supported"
                     )
-                f.write(f"{len(v)}".ljust(12).encode())
+                f.write(hex(len(v))[2:].ljust(8).encode())
                 f.write(v)
             f.write(b"\x98")
 
