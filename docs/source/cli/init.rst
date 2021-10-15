@@ -6,8 +6,6 @@ Description
 
 Initialise nusex.
 
-See the :doc:`initialisation guide <../starting/init>` to learn how this command works.
-
 Arguments
 =========
 

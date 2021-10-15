@@ -83,6 +83,7 @@ Contents
    cli/deploy
    cli/delete
    cli/rename
+   cli/list
    cli/download
    cli/migrate
 
