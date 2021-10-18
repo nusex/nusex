@@ -81,7 +81,7 @@ def _migrate():
         "last_update": __version__,
         "use_wildmatch_ignore": False,
     }
-    NSCSpecIO().write(CONFIG_DIR / "config.nsc", settings)
+    NSCSpecIO().write(settings)
 
 
 def _revert():

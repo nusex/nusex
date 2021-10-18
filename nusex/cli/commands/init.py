@@ -29,7 +29,7 @@
 import os
 import sys
 
-from nusex import CONFIG_DIR, Profile, __version__
+from nusex import CONFIG_DIR, CONFIG_FILE, Profile, __version__
 from nusex.helpers import cprint
 from nusex.spec import NSCSpecIO
 from nusex.utils import Downloader
@@ -38,7 +38,7 @@ DIRS = ("licenses", "profiles", "templates")
 
 
 def run():
-    if os.path.isfile(CONFIG_DIR / "config.nsc"):
+    if os.path.isfile(CONFIG_FILE):
         cprint("err", "You've already initialised nusex!")
         sys.exit(2)
 
@@ -59,7 +59,7 @@ def run():
         "last_update": __version__,
         "use_wildmatch_ignore": False,
     }
-    NSCSpecIO().write(CONFIG_DIR / "config.nsc", settings)
+    NSCSpecIO().write(settings)
 
     cprint("aok", "Initialisation complete!")
 

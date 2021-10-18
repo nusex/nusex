@@ -32,7 +32,7 @@ import traceback
 from importlib import import_module
 from pathlib import Path
 
-from nusex import CONFIG_DIR, __description__, __version__
+from nusex import CONFIG_DIR, CONFIG_FILE, __description__, __version__
 from nusex.errors import NusexError, NusexUserError
 from nusex.helpers import cprint
 
@@ -81,7 +81,7 @@ def main():
             "`nusex migrate` to fix this.",
         )
         sys.exit(2)
-    elif not (CONFIG_DIR / "config.nsc").exists() and args.subparser not in (
+    elif not (CONFIG_FILE).exists() and args.subparser not in (
         "init",
         "migrate",
     ):

@@ -170,7 +170,7 @@ class Profile:
         Returns:
             Profile: The currently selected profile.
         """
-        return cls(NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"])
+        return cls(NSCSpecIO().read()["profile"])
 
     @classmethod
     def from_legacy(cls, name="default"):
@@ -224,16 +224,13 @@ class Profile:
         Returns:
             bool
         """
-        return (
-            NSCSpecIO().read(CONFIG_DIR / "config.nsc")["profile"]
-            == self.path.stem
-        )
+        return NSCSpecIO().read()["profile"] == self.path.stem
 
     def select(self):
         """Select this profile."""
-        data = NSCSpecIO().read(CONFIG_DIR / "config.nsc")
+        data = NSCSpecIO().read()
         data["profile"] = self.path.stem
-        NSCSpecIO().write(CONFIG_DIR / "config.nsc", data)
+        NSCSpecIO().write(data)
 
     def _resolve_license(self, value):
         for file in LICENSE_DIR.glob("*.txt"):

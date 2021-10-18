@@ -26,6 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from nusex import CONFIG_FILE
 from nusex.errors import UnsupportedFile
 
 SPEC_ID = b"\x99\x63"
@@ -37,46 +38,48 @@ class NSCSpecIO:
     def __init__(self):
         self.defaults = {
             "profile": "default",
-            "last_update": "1.0.0",
+            "last_update": "000101",
             "use_wildmatch_ignore": False,
-            "auto_update": True,
+            "auto_update": False,
         }
 
-    def read(self, path):
+    def read(self):
         data = self.defaults.copy()
-        with open(path, "rb") as f:
+        with open(CONFIG_FILE, "rb") as f:
             # Validate format.
             if f.read(2) != SPEC_ID:
                 raise UnsupportedFile("Not a valid NSC file")
 
             # Load profile data.
             data["profile"] = f.read(24).decode().strip()
-
-            ver = "{}.{}.{}".format(*f.read(3).decode())
-            data["last_update"] = ver
-            f.read(3)  # Skip old data
+            date = f.read(6).decode()
+            try:
+                int(date)
+                data["last_update"] = date
+            except ValueError:
+                # Some invalid or broken config.
+                ...
 
             # Not guaranteed from here.
             attrs = ("use_wildmatch_ignore", "auto_update")
             for attr in attrs:
                 try:
-                    b = f.read(1)
-                    print(b)
-                    data[attr] = b == b"\x01"
+                    data[attr] = f.read(1) == b"\x01"
                 except Exception as exc:
+                    # Most likely no more options to read, so exit.
                     break
 
         return data
 
-    def write(self, path, data):
-        with open(path, "wb") as f:
+    def write(self, data):
+        with open(CONFIG_FILE, "wb") as f:
             # Identify format.
             f.write(SPEC_ID)
 
             # Write data.
             f.write(data["profile"].ljust(24).encode())
-            f.write(data["last_update"].replace(".", "").ljust(6).encode())
+            f.write(data["last_update"].encode())
 
             # Not guaranteed, so write a default value if not present.
             f.write((b"\x00", b"\x01")[data.get("use_wildmatch_ignore", 0)])
-            f.write((b"\x00", b"\x01")[data.get("auto_update", 1)])
+            f.write((b"\x00", b"\x01")[data.get("auto_update", 0)])
