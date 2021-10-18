@@ -26,10 +26,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import datetime as dt
 import os
 import sys
 
-from nusex import CONFIG_DIR, CONFIG_FILE, Profile, __version__
+from nusex import CONFIG_DIR, CONFIG_FILE, Profile
 from nusex.helpers import cprint
 from nusex.spec import NSCSpecIO
 from nusex.utils import Downloader
@@ -56,7 +57,7 @@ def run():
 
     settings = {
         "profile": profile_name,
-        "last_update": __version__,
+        "last_update": dt.date.today().strftime("%y%m%d"),
         "use_wildmatch_ignore": False,
     }
     NSCSpecIO().write(settings)

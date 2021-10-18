@@ -27,15 +27,22 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import datetime as dt
 import sys
 import traceback
 from importlib import import_module
 from pathlib import Path
+from urllib import request
+from urllib.error import HTTPError
 
 from nusex import CONFIG_DIR, CONFIG_FILE, __description__, __version__
 from nusex.errors import NusexError, NusexUserError
 from nusex.helpers import cprint
+from nusex.spec import NSCSpecIO
 
+LAST_UPDATE_URL = (
+    "https://raw.githubusercontent.com/nusex/downloads/main/lastupdate.txt"
+)
 COMMAND_MAPPING = {
     p.stem: import_module(f".cli.commands.{p.stem}", package="nusex")
     for p in Path(__file__).parent.glob("commands/*.py")
@@ -52,6 +59,55 @@ parser.add_argument(
 subparsers = parser.add_subparsers(dest="subparser")
 for module in COMMAND_MAPPING.values():
     subparsers = module.setup(subparsers)  # type: ignore
+
+
+def _check_config(subcommand):
+    if (CONFIG_DIR / "user.nsc").exists() and subcommand != "migrate":
+        cprint(
+            "err",
+            "It looks like you still have an old nusex configuration. Use "
+            "`nusex migrate` to fix this.",
+        )
+        sys.exit(2)
+
+
+def _check_init(subcommand):
+    if not CONFIG_FILE.exists() and subcommand not in ("init", "migrate"):
+        cprint(
+            "err",
+            "That command cannot be run before nusex has been initialised.",
+        )
+        sys.exit(2)
+
+
+def _check_for_updates():
+    if not CONFIG_FILE.exists():
+        return
+
+    data = NSCSpecIO().read()
+    last_checked = data["last_update"]
+    try:
+        last_checked = dt.datetime.strptime(last_checked, "%y%m%d").date()
+    except ValueError:
+        # Probably some old config.
+        last_checked = dt.date.min
+
+    if last_checked == dt.date.today():
+        return
+
+    try:
+        with request.urlopen(LAST_UPDATE_URL) as r:
+            last_update = dt.datetime.strptime(
+                r.readlines()[0].strip().decode(), "%y%m%d"
+            ).date()
+    except HTTPError:
+        return
+
+    if last_checked < last_update:
+        cprint("inf", "nusex has updates. Use `nusex download` to get them.")
+
+    data["last_update"] = dt.date.today().strftime("%y%m%d")
+    NSCSpecIO().write(data)
 
 
 def main():
@@ -73,23 +129,10 @@ def main():
     if not args.subparser:
         return parser.parse_args(("-h",))
 
-    # Setup checks.
-    if (CONFIG_DIR / "user.nsc").exists() and args.subparser != "migrate":
-        cprint(
-            "err",
-            "It looks like you still have an old nusex configuration. Use "
-            "`nusex migrate` to fix this.",
-        )
-        sys.exit(2)
-    elif not (CONFIG_FILE).exists() and args.subparser not in (
-        "init",
-        "migrate",
-    ):
-        cprint(
-            "err",
-            "That command cannot be run before nusex has been initialised.",
-        )
-        sys.exit(2)
+    # # Setup checks.
+    _check_config(args.subparser)
+    _check_init(args.subparser)
+    _check_for_updates()
 
     # Command runs.
     try:
