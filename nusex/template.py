@@ -58,17 +58,18 @@ class Template:
     """A class in which to create, load, modify, and save templates.
 
     Args:
-        name (str): The name of the template. If the template does not
-            exist, a new one is created, otherwise an existing one is
-            loaded.
+        name (:obj:`str`): The name of the template. If the template
+            does not exist, a new one is created, otherwise an existing
+            one is loaded.
 
     Keyword Args:
-        installs (list[str]): A list of dependancies to be installed
-            when the template is deployed.
+        installs (:obj:`list[str]`): A list of dependancies to be
+            installed when the template is deployed.
 
     Attributes:
-        path (pathlib.Path): The complete filepath to the template.
-        data (dict[str, Any]): The data for the template.
+        path (:obj:`pathlib.Path`): The complete filepath to the
+            template.
+        data (:obj:`dict[str, Any]`): The data for the template.
     """
 
     __slots__ = ("path", "data", "_installs")
@@ -104,7 +105,7 @@ class Template:
         """The name of the template.
 
         Returns:
-            str
+            :obj:`str`
         """
         return self.path.stem
 
@@ -113,7 +114,7 @@ class Template:
         """Whether the template exists on disk.
 
         Returns:
-            bool
+            :obj:`bool`
         """
         return self.path.is_file()
 
@@ -123,11 +124,11 @@ class Template:
         upon object instantiation.
 
         Args:
-            name (str): The name of the template.
+            name (:obj:`str`): The name of the template.
 
         Raises:
-            TemplateError: The provided name is invalid.
-            AlreadyExists: The template already exists on disk.
+            :obj:`TemplateError`: The provided name is invalid.
+            :obj:`AlreadyExists`: The template already exists on disk.
         """
         validate_name(name, self.__class__.__name__)
         self.data = {
@@ -142,7 +143,8 @@ class Template:
         object instantiation.
 
         Raises:
-            FileNotFoundError: The template does not exist on disk.
+            :obj:`FileNotFoundError`: The template does not exist on
+                disk.
         """
         self.data = NSXSpecIO().read(self.path)
 
@@ -150,7 +152,7 @@ class Template:
         """Save this profile.
 
         Raises:
-            TemplateError: The profile data has been improperly
+            :obj:`TemplateError`: The profile data has been improperly
                 modified.
         """
         try:
@@ -164,7 +166,8 @@ class Template:
         """Delete this template.
 
         Raises:
-            FileNotFoundError: The template does not exist on disk.
+            :obj:`FileNotFoundError`: The template does not exist on
+                disk.
         """
         os.remove(self.path)
 
@@ -172,10 +175,11 @@ class Template:
         """Rename this template.
 
         Args:
-            new_name (str): The new name for the template.
+            new_name (:obj:`str`): The new name for the template.
 
         Raises:
-            FileNotFoundError: The template does not exist on disk.
+            :obj:`FileNotFoundError`: The template does not exist on
+                disk.
         """
         new_path = f"{self.path}".replace(self.path.stem, new_name)
         self.path = self.path.rename(new_path)
@@ -188,18 +192,19 @@ class Template:
         directory.
 
         Args:
-            name (str): The name of the template.
+            name (:obj:`str`): The name of the template.
 
         Keyword Args:
-            installs (list[str]): A list of dependencies to install when
-                this template is deployed. Defaults to an empty list.
-            ignore_exts (set[str]): A set of file extensions to ignore.
-                Defaults to an empty set.
-            ignore_dirs (set[str]): A set of directories to ignore.
-                Defaults to an empty set.
+            installs (:obj:`list[str]`): A list of dependencies to
+                install when this template is deployed. Defaults to an
+                empty list.
+            ignore_exts (:obj:`set[str]`): A set of file extensions to
+                ignore. Defaults to an empty set.
+            ignore_dirs (:obj:`set[str]`): A set of directories to
+                ignore. Defaults to an empty set.
 
         Returns:
-            Template: The newly created template.
+            :obj:`Template`: The newly created template.
         """
         c = cls(name, installs=installs)
         c.build(
@@ -215,20 +220,21 @@ class Template:
         """Create a template using files from a specific directory.
 
         Args:
-            name (str): The name of the template.
-            path (str | os.PathLike): The path to the files to build the
-                template with.
+            name (:obj:`str`): The name of the template.
+            path (:obj:`str` | :obj:`os.PathLike`): The path to the
+                files to build the template with.
 
         Keyword Args:
-            installs (list[str]): A list of dependencies to install when
-                this template is deployed. Defaults to an empty list.
-            ignore_exts (set[str]): A set of file extensions to ignore.
-                Defaults to an empty set.
-            ignore_dirs (set[str]): A set of directories to ignore.
-                Defaults to an empty set.
+            installs (:obj:`list[str]`): A list of dependencies to
+                install when this template is deployed. Defaults to an
+                empty list.
+            ignore_exts (:obj:`set[str]`): A set of file extensions to
+                ignore. Defaults to an empty set.
+            ignore_dirs (:obj:`set[str]`): A set of directories to
+                ignore. Defaults to an empty set.
 
         Returns:
-            Template: The newly created template.
+            :obj:`Template`: The newly created template.
         """
         c = cls(name, installs=installs)
         c.build(
@@ -245,22 +251,23 @@ class Template:
         """Create a template using files from a GitHub repository.
 
         Args:
-            name (str): The name of the template.
-            url (str): The URL of the GitHub repository to clone.
+            name (:obj:`str`): The name of the template.
+            url (:obj:`str`): The URL of the GitHub repository to clone.
 
         Keyword Args:
-            installs (list[str]): A list of dependencies to install when
-                this template is deployed. Defaults to an empty list.
-            ignore_exts (set[str]): A set of file extensions to ignore.
-                Defaults to an empty set.
-            ignore_dirs (set[str]): A set of directories to ignore.
-                Defaults to an empty set.
+            installs (:obj:`list[str]`): A list of dependencies to
+                install when this template is deployed. Defaults to an
+                empty list.
+            ignore_exts (:obj:`set[str]`): A set of file extensions to
+                ignore. Defaults to an empty set.
+            ignore_dirs (:obj:`set[str]`): A set of directories to
+                ignore. Defaults to an empty set.
 
         Returns:
-            Template: The newly created template.
+            :obj:`Template`: The newly created template.
 
         Raises:
-            BuildError: Cloning the repository failed.
+            :obj:`BuildError`: Cloning the repository failed.
         """
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
@@ -286,17 +293,17 @@ class Template:
         """Get a list of files to include in this template.
 
         Args:
-            root_dir (str): The root directory that nusex will search
-                from.
+            root_dir (:obj:`str`): The root directory that nusex will
+                search from.
 
         Keyword Args:
-            ignore_exts (set[str]): A set of file extensions to ignore.
-                Defaults to an empty set.
-            ignore_dirs (set[str]): A set of directories to ignore.
-                Defaults to an empty set.
+            ignore_exts (:obj:`set[str]`): A set of file extensions to
+                ignore. Defaults to an empty set.
+            ignore_dirs (:obj:`set[str]`): A set of directories to
+                ignore. Defaults to an empty set.
 
         Returns:
-            list[Path]: A list of filepaths.
+            :obj:`list[pathlib.Path]`: A list of filepaths.
         """
 
         def is_valid(path):
@@ -320,16 +327,16 @@ class Template:
         command does in more detail.
 
         Keyword Args:
-            project_name (str): The name of the project. If this is None
-                the project name is set to the name of the parent
-                folder. Defaults to None.
-            files (list[str]): The list of files to include in this
-                template. If no files are specified, the file listing
-                is automatically retrieved.
-            root_dir (str): The root directory that nusex will search
-                from. Defaults to the current directory.
-            **kwargs (Any): Arguments for the :code:`get_file_listing`
-                method.
+            project_name (:obj:`str`): The name of the project. If this
+                is None the project name is set to the name of the
+                parent folder. Defaults to None.
+            files (:obj:`list[str]`): The list of files to include in
+                this template. If no files are specified, the file
+                listing is automatically retrieved.
+            root_dir (:obj:`str`): The root directory that nusex will
+                search from. Defaults to the current directory.
+            **kwargs (:obj:`Any`): Arguments for the
+                :obj:`get_file_listing` method.
         """
 
         def resolve_key(path):
@@ -360,8 +367,8 @@ class Template:
         """Deploy this template.
 
         Keyword Args:
-            path (str): The path to deploy this template to. Defaults to
-                the current directory.
+            path (:obj:`str`): The path to deploy this template to.
+                Defaults to the current directory.
         """
 
         def resolve_version(key):
@@ -447,10 +454,10 @@ class Template:
         """Check the template manifest, including line changes.
 
         Returns:
-            dict[str, list[tuple[int, str]]]: The template manifest. The
-            keys are always file names, and the values are tuples
-            of the line numbers and line values that have been changed.
-            This may not always be present.
+            :obj:`dict[str, list[tuple[int, str]]]`: The template
+            manifest. The keys are always file names, and the values are
+            tuples of the line numbers and line values that have been
+            changed. This may not always be present.
         """
         manifest = {}
 

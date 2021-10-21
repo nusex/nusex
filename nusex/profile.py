@@ -48,13 +48,14 @@ class Profile:
     """A class in which to create, load, modify, and save profiles.
 
     Keyword Args:
-        name (str): The name of the profile. If the profile does not
-            exist, a new one is created, otherwise an existing one is
-            loaded. Defaults to "default".
+        name (:obj:`str`): The name of the profile. If the profile does
+            not exist, a new one is created, otherwise an existing one
+            is loaded. Defaults to "default".
 
     Attributes:
-        path (pathlib.Path): The complete filepath to the profile.
-        data (dict[str, Any]): The data for the profile.
+        path (:obj:`pathlib.Path`): The complete filepath to the
+            profile.
+        data (:obj:`dict[str, Any]`): The data for the profile.
     """
 
     __slots__ = ("path", "data")
@@ -87,7 +88,7 @@ class Profile:
         """The name of this profile.
 
         Returns:
-            str
+            :obj:`str`
         """
         return self.path.stem
 
@@ -96,7 +97,7 @@ class Profile:
         """Whether this profile exists on disk.
 
         Returns:
-            bool
+            :obj:`bool`
         """
         return self.path.is_file()
 
@@ -104,11 +105,11 @@ class Profile:
         """Create a new profile.
 
         Args:
-            name (str): The name of the profile.
+            name (:obj:`str`): The name of the profile.
 
         Raises:
-            ProfileError: The provided name is invalid.
-            AlreadyExists: The profile already exists on disk.
+            :obj:`ProfileError`: The provided name is invalid.
+            :obj:`AlreadyExists`: The profile already exists on disk.
         """
         validate_name(name, self.__class__.__name__)
         self.data = {
@@ -126,7 +127,8 @@ class Profile:
         creation.
 
         Raises:
-            FileNotFoundError: The profile does not exist on disk.
+            :obj:`FileNotFoundError`: The profile does not exist on
+                disk.
         """
         self.data = NSPSpecIO().read(self.path)
 
@@ -134,7 +136,8 @@ class Profile:
         """Save this profile.
 
         Raises:
-            ProfileError: The profile data has been improperly modified.
+            :obj:`ProfileError`: The profile data has been improperly
+                modified.
         """
         try:
             NSPSpecIO().write(self.path, self.data)
@@ -147,7 +150,8 @@ class Profile:
         """Delete this profile.
 
         Raises:
-            FileNotFoundError: The profile does not exist on disk.
+            :obj:`FileNotFoundError`: The profile does not exist on
+                disk.
         """
         os.remove(self.path)
 
@@ -155,10 +159,11 @@ class Profile:
         """Rename this profile.
 
         Args:
-            new_name (str): The new name for the profile.
+            new_name (:obj:`str`): The new name for the profile.
 
         Raises:
-            FileNotFoundError: The profile does not exist on disk.
+            :obj:`FileNotFoundError`: The profile does not exist on
+                disk.
         """
         new_path = f"{self.path}".replace(self.path.stem, new_name)
         self.path = self.path.rename(new_path)
@@ -168,7 +173,7 @@ class Profile:
         """Create an instance for the currently selected profile.
 
         Returns:
-            Profile: The currently selected profile.
+            :obj:`Profile`: The currently selected profile.
         """
         return cls(NSCSpecIO().read()["profile"])
 
@@ -177,14 +182,15 @@ class Profile:
         """Create a profile from a 0.x spec user.nsc file.
 
         Keyword Args:
-            name (str): The name of the profile. Defaults to "default".
+            name (:obj:`str`): The name of the profile. Defaults to
+                "default".
 
         Returns:
-            Profile: The newly created profile.
+            :obj:`Profile`: The newly created profile.
 
         Raises:
-            FileNotFoundError: No user.nsc file exists in the config
-                directory.
+            :obj:`FileNotFoundError`: No user.nsc file exists in the
+                config directory.
         """
         with open(CONFIG_DIR / "user.nsc") as f:
             data = json.load(f)
@@ -222,7 +228,7 @@ class Profile:
         """Whether this profile is currently selected.
 
         Returns:
-            bool
+            :obj:`bool`
         """
         return NSCSpecIO().read()["profile"] == self.path.stem
 
@@ -290,8 +296,8 @@ class Profile:
         information.
 
         Raises:
-            ProfileError: An invalid value was provided to one of the
-                inputs.
+            :obj:`ProfileError`: An invalid value was provided to one of
+                the inputs.
         """
         for k, v in self.data.items():
             kq = (k[0].upper() + k[1:].replace("_", " ")).replace("url", "URL")
@@ -305,15 +311,15 @@ class Profile:
         warnings, not errors.
 
         Keyword Args:
-            author_name (str): An author name.
-            author_email (str): An author email.
-            git_profile_url (str): Your GitHub/Gitlab/BitBucket/etc.
-                profile link.
-            starting_version (str): The version to initialise project
-                with.
-            default_description (str): The description to initialise
-                projects with.
-            preferred_license (str): Your preferred license.
+            author_name (:obj:`str`): An author name.
+            author_email (:obj:`str`): An author email.
+            git_profile_url (:obj:`str`): Your
+                GitHub/Gitlab/BitBucket/etc. profile link.
+            starting_version (:obj:`str`): The version to initialise
+                project with.
+            default_description (:obj:`str`): The description to
+                initialise projects with.
+            preferred_license (:obj:`str`): Your preferred license.
         """
         for k, v in kwargs.items():
             if k not in VALID_CONFIG_KEYS:
