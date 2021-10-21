@@ -29,7 +29,7 @@
 import os
 
 from nusex import PROFILE_DIR, Profile
-from nusex.errors import AlreadyExists
+from nusex.errors import AlreadyExists, DoesNotExist
 from nusex.helpers import cprint
 
 
@@ -53,6 +53,8 @@ def run(show_current, create_new, switch, **kwargs):
 
     if switch:
         profile = Profile(switch)
+        if not profile.exists:
+            raise DoesNotExist(f"Profile '{switch}' not found")
         profile.select()
         return cprint("aok", f"Switched to profile '{profile}'!")
 
