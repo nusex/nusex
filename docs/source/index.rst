@@ -78,6 +78,7 @@ Contents
    :caption: CLI reference
 
    cli/init
+   cli/config
    cli/profile
    cli/build
    cli/deploy

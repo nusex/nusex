@@ -39,6 +39,7 @@ from nusex import CONFIG_DIR, CONFIG_FILE, __description__, __version__
 from nusex.errors import NusexError, NusexUserError
 from nusex.helpers import cprint
 from nusex.spec import NSCSpecIO
+from nusex.utils import Downloader
 
 LAST_UPDATE_URL = (
     "https://raw.githubusercontent.com/nusex/downloads/main/lastupdate.txt"
@@ -86,6 +87,8 @@ def _check_for_updates():
 
     data = NSCSpecIO().read()
     last_checked = data["last_update"]
+    auto_update = data["auto_update"]
+
     try:
         last_checked = dt.datetime.strptime(last_checked, "%y%m%d").date()
     except ValueError:
@@ -104,7 +107,17 @@ def _check_for_updates():
         return
 
     if last_checked < last_update:
-        cprint("inf", "nusex has updates. Use `nusex download` to get them.")
+        if auto_update:
+            cprint(
+                "inf", "nusex is automatically downloading asset updates..."
+            )
+            Downloader("templates").download(display_progress=True)
+            Downloader("licenses").download(display_progress=True)
+        else:
+            cprint(
+                "inf",
+                "nusex has asset updates. Use `nusex download` to get them.",
+            )
 
     data["last_update"] = dt.date.today().strftime("%y%m%d")
     NSCSpecIO().write(data)
