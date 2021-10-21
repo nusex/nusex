@@ -1,7 +1,7 @@
-Migrating to v10
+Migrating to v1.0
 #################
 
-There are a LOT of changes between v0x and v1x, so many in fact that the following list likely isn't exhaustive.
+There are a LOT of changes between v0.x and v1.x, so many in fact that the following list likely isn't exhaustive.
 
 To help mitigate this shift, a new command, `nusex migrate`, has been created, which should be able to transfer your config and templates to the new way of doing things If this messes up for whatever reason, your old config is backed up, and can be brought back with `nusex migrate --revert`.
 
