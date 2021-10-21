@@ -19,5 +19,5 @@ jobs:
       with:
         type: now
         from_branch: main
-        target_branch: stable/latest
+        target_branch: stable
         github_token: ${{ github.token }}
