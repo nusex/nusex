@@ -26,19 +26,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import datetime as dt
 import json
 import os
 import shutil
 from pathlib import Path
 
-from nusex import (
-    CONFIG_DIR,
-    LICENSE_DIR,
-    PROFILE_DIR,
-    TEMPLATE_DIR,
-    Profile,
-    __version__,
-)
+from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, TEMPLATE_DIR, Profile
 from nusex.errors import MigrationError
 from nusex.helpers import cprint
 from nusex.spec import NSCSpecIO, NSXSpecIO
@@ -78,7 +72,7 @@ def _migrate():
     # Create config file
     settings = {
         "profile": "default",
-        "last_update": __version__,
+        "last_update": dt.date.today().strftime("%y%m%d"),
         "use_wildmatch_ignore": False,
     }
     NSCSpecIO().write(settings)
