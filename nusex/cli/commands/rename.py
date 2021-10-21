@@ -28,8 +28,8 @@
 
 import os
 
-from nusex import TEMPLATE_DIR
-from nusex.errors import DoesNotExist, TemplateError
+from nusex import PROFILE_DIR, TEMPLATE_DIR, Profile
+from nusex.errors import DoesNotExist, ProfileError, TemplateError
 from nusex.helpers import cprint, validate_name
 
 
@@ -37,22 +37,40 @@ def run(name, new_name):
     if name.startswith("nsx"):
         raise TemplateError("You cannot rename premade templates")
 
-    if not (TEMPLATE_DIR / f"{name}.nsx").exists():
-        raise DoesNotExist(f"Template '{name}' not found")
+    if (PROFILE_DIR / f"{name}.nsp").exists():
+        if Profile(name) == Profile.current():
+            raise ProfileError(
+                "You cannot rename the currently selected profile"
+            )
+        validate_name(new_name, "Profile")
+        os.rename(PROFILE_DIR / f"{name}.nsp", PROFILE_DIR / f"{new_name}.nsp")
+        cprint(
+            "aok", f"Profile '{name}' successfully renamed to '{new_name}'!"
+        )
 
-    validate_name(new_name, "Template")
-    os.rename(TEMPLATE_DIR / f"{name}.nsx", TEMPLATE_DIR / f"{new_name}.nsx")
-    cprint("aok", f"Template '{name}' successfully renamed to '{new_name}'!")
+    elif (TEMPLATE_DIR / f"{name}.nsx").exists():
+        validate_name(new_name, "Template")
+        os.rename(
+            TEMPLATE_DIR / f"{name}.nsx", TEMPLATE_DIR / f"{new_name}.nsx"
+        )
+        cprint(
+            "aok", f"Template '{name}' successfully renamed to '{new_name}'!"
+        )
+
+    else:
+        raise DoesNotExist(f"No profile or template with name '{name}' found")
 
 
 def setup(subparsers):
-    s = subparsers.add_parser("rename", description="Rename a template.")
+    s = subparsers.add_parser(
+        "rename", description="Rename a profile or template."
+    )
     s.add_argument(
         "name",
-        help="the name of the template to rename",
+        help="the name of the profile or template to rename",
     )
     s.add_argument(
         "new_name",
-        help="the new name for the template",
+        help="the new name for the profile or template",
     )
     return subparsers
