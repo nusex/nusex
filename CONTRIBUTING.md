@@ -23,7 +23,7 @@ If you are making a very small change (one or two lines), it would be better to 
 2. Clone your fork.
 3. Run `pip install -e . -r requirements-dev.txt` to install the cloned library and its development dependencies.
 4. Make your changes/additions.
-5. Run `black .` in the project root to format the code properly.
+5. Run `isort . && black .` in the project root to format the code properly.
 6. Run `nox` to run the tests. If they all pass, advance to step 7, otherwise, go back to step 4.
 7. Create a PR with your changes, making sure to provide the issue number(s) it relates to.
 
