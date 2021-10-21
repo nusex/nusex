@@ -4,16 +4,15 @@ delete
 Description
 ===========
 
-Delete one or more templates.
+Delete one or more profiles or templates.
 
 Arguments
 =========
 
 :code:`names`
-    The name(s) of the template(s) to delete.
+    The name(s) of the profile(s) or template(s) to delete.
 
 Options
 =======
 
-:code:`--strict`
-    Throw an error instead of a warning if a template does not exist.
+This command has no options.

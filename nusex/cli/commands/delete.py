@@ -28,45 +28,40 @@
 
 import os
 
-from nusex import TEMPLATE_DIR
-from nusex.errors import DoesNotExist, TemplateError
+from nusex import PROFILE_DIR, TEMPLATE_DIR
+from nusex.errors import TemplateError
 from nusex.helpers import cprint
 
 
-def run(names, strict):
+def run(names):
     count = 0
 
     for name in names:
-        if not (TEMPLATE_DIR / f"{name}.nsx").exists():
-            if strict:
-                raise DoesNotExist(f"Template '{name}' not found") from None
-
-            cprint("war", f"Template '{name}' not found, skipping...")
+        if (PROFILE_DIR / f"{name}.nsp").exists():
+            os.remove(PROFILE_DIR / f"{name}.nsp")
+            count += 1
+        elif (TEMPLATE_DIR / f"{name}.nsx").exists():
+            os.remove(TEMPLATE_DIR / f"{name}.nsx")
+            count += 1
+        else:
+            cprint(
+                "war", f"Profile or template '{name}' not found, skipping..."
+            )
             continue
 
-        os.remove(TEMPLATE_DIR / f"{name}.nsx")
-        count += 1
-
     if not count:
-        raise TemplateError("No templates deleted")
+        raise TemplateError("No profiles or templates deleted")
 
-    cprint("aok", f"Successfully deleted {count:,} templates!")
+    cprint("aok", f"Successfully deleted {count:,} profiles/templates!")
 
 
 def setup(subparsers):
     s = subparsers.add_parser(
-        "delete", description="Delete one or more templates."
+        "delete", description="Delete one or more profiles or templates."
     )
     s.add_argument(
         "names",
-        help="the name(s) of the template(s) to delete",
+        help="the name(s) of the profile(s) or template(s) to delete",
         nargs="+",
-    )
-    s.add_argument(
-        "--strict",
-        help=(
-            "throw an error instead of a warning if a template does not exist",
-        ),
-        action="store_true",
     )
     return subparsers
