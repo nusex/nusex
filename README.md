@@ -21,7 +21,7 @@ Windows, MacOS, and Linux are all supported.
 
 - An easy-to-use CLI (command-line interface)
 - Dynamic templating using placeholder variables
-- Template extensions for use during the whole development lifecycle (coming in v1.1)
+- Template extensions for use during the whole development lifecycle (coming soon)
 - A profile system for those who maintain personal and organisation-owned projects
 - Automatic dependency installation
 - Premade templates for applications and packages
