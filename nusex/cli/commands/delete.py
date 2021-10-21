@@ -28,8 +28,8 @@
 
 import os
 
-from nusex import PROFILE_DIR, TEMPLATE_DIR
-from nusex.errors import TemplateError
+from nusex import PROFILE_DIR, TEMPLATE_DIR, Profile
+from nusex.errors import ProfileError, TemplateError
 from nusex.helpers import cprint
 
 
@@ -38,11 +38,17 @@ def run(names):
 
     for name in names:
         if (PROFILE_DIR / f"{name}.nsp").exists():
+            if Profile(name) == Profile.current():
+                raise ProfileError(
+                    "You cannot delete the currently selected profile"
+                )
             os.remove(PROFILE_DIR / f"{name}.nsp")
             count += 1
+
         elif (TEMPLATE_DIR / f"{name}.nsx").exists():
             os.remove(TEMPLATE_DIR / f"{name}.nsx")
             count += 1
+
         else:
             cprint(
                 "war", f"Profile or template '{name}' not found, skipping..."
