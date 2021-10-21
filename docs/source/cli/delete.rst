@@ -9,7 +9,7 @@ Delete one or more profiles or templates.
 Arguments
 =========
 
-:code:`names`
+``names``
     The name(s) of the profile(s) or template(s) to delete.
 
 Options

@@ -9,10 +9,10 @@ Rename a profile or template.
 Arguments
 =========
 
-:code:`name`
+``name``
     The name of the profile or template to rename.
 
-:code:`new_name`
+``new_name``
     The new name for the profile or template.
 
 Options

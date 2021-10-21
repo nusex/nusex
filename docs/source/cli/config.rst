@@ -16,5 +16,5 @@ This command has no arguments.
 Options
 =======
 
-:code:`-u` | :code:`--auto-update`
+``-u`` | ``--auto-update``
     Activate auto-updating (omitting this flag will deactivate auto-updating).

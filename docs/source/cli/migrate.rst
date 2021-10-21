@@ -18,4 +18,5 @@ This command has no arguments.
 Options
 =======
 
-This command has no options.
+``--revert``
+    Revert back to an 0.x config, if possible.

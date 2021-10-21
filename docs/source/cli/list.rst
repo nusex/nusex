@@ -14,8 +14,8 @@ This command has no arguments.
 Options
 =======
 
-:code:`-p` | :code:`--profiles`
+``-p`` | ``--profiles``
     Only display profiles.
 
-:code:`-t` | :code:`--templates`
+``-t`` | ``--templates``
     Only display templates.

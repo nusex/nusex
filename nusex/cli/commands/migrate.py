@@ -118,7 +118,7 @@ def setup(subparsers):
     )
     s.add_argument(
         "--revert",
-        help="Revert back to an 0.x config, if possible.",
+        help="revert back to a 0.x config, if possible",
         action="store_true",
     )
     return subparsers

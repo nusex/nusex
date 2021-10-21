@@ -29,4 +29,4 @@ When you create a profile in this way, you'll be prompted to provide everything 
 Configuring profiles
 ====================
 
-You can configure any existing profile at any time using the :code:`nusex profile` command. If you don't provide any options, the setup sequence will run again, though this time the defaults will be set to what they currently are. You can also pass options to quickly change one or more field; look at the command reference to find out how.
+You can configure any existing profile at any time using the ``nusex profile`` command. If you don't provide any options, the setup sequence will run again, though this time the defaults will be set to what they currently are. You can also pass options to quickly change one or more field; look at the command reference to find out how.
