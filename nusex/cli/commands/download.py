@@ -26,13 +26,20 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import datetime as dt
+
 from nusex.helpers import cprint
+from nusex.spec import NSCSpecIO
 from nusex.utils import Downloader
 
 
 def run():
     for dl in ("templates", "licenses"):
         Downloader(dl).download(display_progress=True)
+
+    data = NSCSpecIO().read()
+    data["auto_update"] = dt.date.today().strftime("%y%m%d")
+    NSCSpecIO().write(data)
 
     cprint("aok", "Download complete!")
 
