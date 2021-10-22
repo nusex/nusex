@@ -47,3 +47,4 @@ def with_files(*files):
 
 
 from .python import PythonBlueprint
+from .rust import RustBlueprint
