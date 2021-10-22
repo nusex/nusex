@@ -38,7 +38,7 @@ def run(name, new_name):
         raise TemplateError("You cannot rename premade templates")
 
     if (PROFILE_DIR / f"{name}.nsp").exists():
-        if Profile(name) == Profile.current():
+        if Profile(name).is_selected:
             raise ProfileError(
                 "You cannot rename the currently selected profile"
             )

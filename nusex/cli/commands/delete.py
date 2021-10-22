@@ -38,7 +38,7 @@ def run(names):
 
     for name in names:
         if (PROFILE_DIR / f"{name}.nsp").exists():
-            if Profile(name) == Profile.current():
+            if Profile(name).is_selected:
                 raise ProfileError(
                     "You cannot delete the currently selected profile"
                 )
