@@ -43,7 +43,7 @@ INIT_ATTR_MAPPING = {
 
 
 class RustBlueprint(Blueprint):
-    @with_files("PROJECTNAME/Cargo.toml")
+    @with_files("PROJECTNAME/Cargo.toml", "PROJECTNAME/Cargo.lock")
     def modify_init(self, lines):
         for i, line in enumerate(lines[:]):
             if line.startswith("["):
@@ -61,15 +61,6 @@ class RustBlueprint(Blueprint):
                 ...
 
         return "\n".join(lines)
-
-    @with_files("PROJECTNAME/error.py", "PROJECTNAME/errors.py")
-    def modify_error_files(self, lines):
-        for line in lines[:]:
-            if line.startswith("class"):
-                base_exc = line.split("(")[0][6:]
-                break
-
-        return "\n".join(lines).replace(base_exc, "PROJECTBASEEXC")
 
     @with_files("README.md", "README.txt")
     def modify_readme(self, lines):
