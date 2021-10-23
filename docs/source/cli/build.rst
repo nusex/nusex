@@ -24,6 +24,9 @@ Options
 ``-r URL`` | ``--from-repo URL``
     The repository URL to build a template from. This link can be for any repository provider, but Git must be installed before you can do this.
 
+``-l LANGUAGE`` | ``--language LANGUAGE``
+    the language to assume the project is using. This changes which files are modified in the template, and how those files are modified. The default is "python".
+
 ``-i DEPS`` | ``--with-installs DEPS``
     A comma-separated list of dependencies to install when deploying. This can include version restrictions, but will probably require quotes when doing so.
 

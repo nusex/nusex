@@ -28,8 +28,8 @@
 
 import os
 
-from nusex import TEMPLATE_DIR, Template
-from nusex.errors import AlreadyExists
+from nusex import BLUEPRINT_MAPPING, TEMPLATE_DIR, Template
+from nusex.errors import AlreadyExists, DoesNotExist
 from nusex.helpers import cprint
 
 
@@ -81,6 +81,7 @@ def run(
     overwrite,
     check,
     from_repo,
+    language,
     with_installs,
     with_requirements_file,
     ignore_exts,
@@ -102,12 +103,17 @@ def run(
             d.remove("")
             with_installs.extend(d)
 
+    if language not in BLUEPRINT_MAPPING.keys():
+        raise DoesNotExist("That language is not supported")
+    blueprint = BLUEPRINT_MAPPING[language]
+
     # TODO: Make so when overwriting a template, it doesn't have to
     # load the previous one first.
     if from_repo:
         template = Template.from_repo(
             name,
             from_repo,
+            blueprint=blueprint,
             installs=with_installs,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
@@ -115,6 +121,7 @@ def run(
     else:
         template = Template.from_cwd(
             name,
+            blueprint=blueprint,
             installs=with_installs,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
@@ -154,6 +161,14 @@ def setup(subparsers):
         ),
         metavar="URL",
         default="",
+    )
+    s.add_argument(
+        "-l",
+        "--language",
+        help="the language to assume the project is using (default: python)",
+        metavar="LANGUAGE",
+        default="python",
+        type=lambda x: x.lower(),
     )
     s.add_argument(
         "-i",

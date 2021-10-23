@@ -186,7 +186,13 @@ class Template:
 
     @classmethod
     def from_cwd(
-        cls, name, *, installs=[], ignore_exts=set(), ignore_dirs=set()
+        cls,
+        name,
+        *,
+        blueprint=None,
+        installs=[],
+        ignore_exts=set(),
+        ignore_dirs=set(),
     ):
         """Create a template using files from the current working
         directory.
@@ -195,6 +201,7 @@ class Template:
             name (:obj:`str`): The name of the template.
 
         Keyword Args:
+            blueprint (:obj:`Blueprint`): The language blueprint to use.
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
@@ -208,6 +215,7 @@ class Template:
         """
         c = cls(name, installs=installs)
         c.build(
+            blueprint=blueprint,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
         )
@@ -215,7 +223,14 @@ class Template:
 
     @classmethod
     def from_dir(
-        cls, name, path, *, installs=[], ignore_exts=set(), ignore_dirs=set()
+        cls,
+        name,
+        path,
+        *,
+        blueprint=None,
+        installs=[],
+        ignore_exts=set(),
+        ignore_dirs=set(),
     ):
         """Create a template using files from a specific directory.
 
@@ -225,6 +240,7 @@ class Template:
                 files to build the template with.
 
         Keyword Args:
+            blueprint (:obj:`Blueprint`): The language blueprint to use.
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
@@ -239,6 +255,7 @@ class Template:
         c = cls(name, installs=installs)
         c.build(
             root_dir=path,
+            blueprint=blueprint,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
         )
@@ -246,7 +263,14 @@ class Template:
 
     @classmethod
     def from_repo(
-        cls, name, url, *, installs=[], ignore_exts=set(), ignore_dirs=set()
+        cls,
+        name,
+        url,
+        *,
+        blueprint=None,
+        installs=[],
+        ignore_exts=set(),
+        ignore_dirs=set(),
     ):
         """Create a template using files from a GitHub repository.
 
@@ -255,6 +279,7 @@ class Template:
             url (:obj:`str`): The URL of the GitHub repository to clone.
 
         Keyword Args:
+            blueprint (:obj:`Blueprint`): The language blueprint to use.
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
@@ -282,6 +307,7 @@ class Template:
         os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
         return cls.from_cwd(
             name,
+            blueprint=blueprint,
             installs=installs,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
@@ -321,7 +347,14 @@ class Template:
         files = filter(lambda p: is_valid(p), Path(root_dir).rglob("*"))
         return list(files)
 
-    def build(self, project_name=None, files=[], root_dir=".", **kwargs):
+    def build(
+        self,
+        project_name=None,
+        files=[],
+        root_dir=".",
+        blueprint=None,
+        **kwargs,
+    ):
         """Build this template. View the
         :doc:`template guide <../guide/templates>` to see what this
         command does in more detail.
@@ -335,6 +368,7 @@ class Template:
                 listing is automatically retrieved.
             root_dir (:obj:`str`): The root directory that nusex will
                 search from. Defaults to the current directory.
+            blueprint (:obj:`Blueprint`): The language blueprint to use.
             **kwargs (:obj:`Any`): Arguments for the
                 :obj:`get_file_listing` method.
         """
@@ -345,6 +379,9 @@ class Template:
 
         if not project_name:
             project_name = Path(root_dir).resolve().parts[-1]
+
+        if not blueprint:
+            blueprint = PythonBlueprint
 
         if not files:
             files = self.get_file_listing(
@@ -360,8 +397,8 @@ class Template:
             "as_extension_for": "",
         }
 
-        blueprint = PythonBlueprint(project_name, data)
-        self.data = blueprint().data
+        bp = blueprint(project_name, data)
+        self.data = bp().data
 
     def deploy(self, path="."):
         """Deploy this template.

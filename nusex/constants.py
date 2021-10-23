@@ -31,6 +31,8 @@ import re
 import sys
 from pathlib import Path
 
+from nusex import blueprints
+
 
 def _suffix():
     # Determine whether this is a production copy or not. This
@@ -90,3 +92,7 @@ VERSION_PATTERN = re.compile(
 """,
     re.VERBOSE | re.IGNORECASE,
 )
+
+BLUEPRINT_MAPPING = {
+    "python": blueprints.PythonBlueprint,
+}
