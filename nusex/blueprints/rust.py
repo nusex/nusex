@@ -30,7 +30,7 @@ from nusex import __url__
 from nusex.blueprints import with_files
 from nusex.blueprints.base import Blueprint
 
-INIT_ATTR_MAPPING = {
+CARGO_ATTR_MAPPING = {
     "name": '"PROJECTNAME"',
     "version": '"PROJECTVERSION"',
     "description": '"PROJECTDESCRIPTION"',
@@ -44,23 +44,27 @@ INIT_ATTR_MAPPING = {
 
 class RustBlueprint(Blueprint):
     @with_files("PROJECTNAME/Cargo.toml", "PROJECTNAME/Cargo.lock")
-    def modify_init(self, lines):
+    def modify_cargo(self, lines):
+        in_package = False
+
         for i, line in enumerate(lines[:]):
-            if line.startswith("["):
-                continue
+            if in_package:
+                if line.startswith("["):
+                    in_package = True
+                    continue
 
-            if line.startswith("[dependencies]"):
-                break
+                try:
+                    k, v = line.split(" = ")
+                    v = v.strip('"').strip("'")
+                    new_v = CARGO_ATTR_MAPPING.get(k, v)
+                    lines[i] = f"{k} = {new_v}"
+                except ValueError:
+                    ...
 
-            try:
-                k, v = line.split(" = ")
-                v = v.strip('"').strip("'")
-                new_v = INIT_ATTR_MAPPING.get(k, v)
-                lines[i] = f"{k} = {new_v}"
-            except ValueError:
-                ...
+            elif line.strip() == "[package]":
+                in_package = True
 
-        return "\n".join(lines)
+        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
     @with_files("README.md", "README.txt")
     def modify_readme(self, lines):
