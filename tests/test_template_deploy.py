@@ -52,7 +52,7 @@ def test_deploy_okay():
     )
     template.save()
 
-    template.deploy(DEPLOY_DIR)
+    template.deploy(destination=DEPLOY_DIR)
     assert os.path.isfile(DEPLOY_DIR / "docs/source/conf.py")
     assert os.path.isfile(DEPLOY_DIR / "docs/conf.py")
     assert os.path.isfile(DEPLOY_DIR / "ignorethisdir/goodbye.everyone")

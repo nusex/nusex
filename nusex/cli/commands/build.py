@@ -81,6 +81,7 @@ def run(
     overwrite,
     check,
     from_repo,
+    project_name,
     language,
     with_installs,
     with_requirements_file,
@@ -113,6 +114,7 @@ def run(
         template = Template.from_repo(
             name,
             from_repo,
+            project_name=project_name,
             blueprint=blueprint,
             installs=with_installs,
             ignore_exts=ignore_exts,
@@ -121,6 +123,7 @@ def run(
     else:
         template = Template.from_cwd(
             name,
+            project_name=project_name,
             blueprint=blueprint,
             installs=with_installs,
             ignore_exts=ignore_exts,
@@ -161,6 +164,15 @@ def setup(subparsers):
         ),
         metavar="URL",
         default="",
+        type=lambda x: x or None,
+    )
+    s.add_argument(
+        "-p",
+        "--project-name",
+        help="the project name to use (default: name of parent directory)",
+        metavar="NAME",
+        default="",
+        type=lambda x: x or None,
     )
     s.add_argument(
         "-l",

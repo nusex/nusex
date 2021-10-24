@@ -197,6 +197,7 @@ class Template:
         cls,
         name,
         *,
+        project_name=None,
         blueprint=None,
         installs=[],
         ignore_exts=set(),
@@ -209,7 +210,12 @@ class Template:
             name (:obj:`str`): The name of the template.
 
         Keyword Args:
+            project_name (:obj:`str`): The name to use as the project
+                name when building the project. If this is None, the
+                name of the parent directory is used. Defaults to None.
             blueprint (:obj:`Blueprint`): The language blueprint to use.
+                If this is None, the Python blueprint is selected.
+                Defaults to None.
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
@@ -222,10 +228,11 @@ class Template:
             :obj:`Template`: The newly created template.
 
         .. versionchanged:: 1.1
-            Added ``blueprint`` keyword argument.
+            Added ``project_name`` and ``blueprint`` keyword arguments.
         """
         c = cls(name, installs=installs)
         c.build(
+            project_name=project_name,
             blueprint=blueprint,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
@@ -238,6 +245,7 @@ class Template:
         name,
         path,
         *,
+        project_name=None,
         blueprint=None,
         installs=[],
         ignore_exts=set(),
@@ -251,7 +259,12 @@ class Template:
                 files to build the template with.
 
         Keyword Args:
+            project_name (:obj:`str`): The name to use as the project
+                name when building the project. If this is None, the
+                name of the parent directory is used. Defaults to None.
             blueprint (:obj:`Blueprint`): The language blueprint to use.
+                If this is None, the Python blueprint is selected.
+                Defaults to None.
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
@@ -264,10 +277,11 @@ class Template:
             :obj:`Template`: The newly created template.
 
         .. versionchanged:: 1.1
-            Added ``blueprint`` keyword argument.
+            Added ``project_name`` and ``blueprint`` keyword arguments.
         """
         c = cls(name, installs=installs)
         c.build(
+            project_name=project_name,
             root_dir=path,
             blueprint=blueprint,
             ignore_exts=ignore_exts,
@@ -281,6 +295,7 @@ class Template:
         name,
         url,
         *,
+        project_name=None,
         blueprint=None,
         installs=[],
         ignore_exts=set(),
@@ -293,7 +308,12 @@ class Template:
             url (:obj:`str`): The URL of the GitHub repository to clone.
 
         Keyword Args:
+            project_name (:obj:`str`): The name to use as the project
+                name when building the project. If this is None, the
+                name of the parent directory is used. Defaults to None.
             blueprint (:obj:`Blueprint`): The language blueprint to use.
+                If this is None, the Python blueprint is selected.
+                Defaults to None.
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
@@ -309,7 +329,7 @@ class Template:
             :obj:`BuildError`: Cloning the repository failed.
 
         .. versionchanged:: 1.1
-            Added ``blueprint`` keyword argument.
+            Added ``project_name`` and ``blueprint`` keyword arguments.
         """
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
@@ -326,6 +346,7 @@ class Template:
         log.debug(f"[{name}] Building from {os.path.abspath(os.curdir)}...")
         return cls.from_cwd(
             name,
+            project_name=project_name,
             blueprint=blueprint,
             installs=installs,
             ignore_exts=ignore_exts,
@@ -372,6 +393,7 @@ class Template:
 
     def build(
         self,
+        *,
         project_name=None,
         files=[],
         root_dir=".",
@@ -383,15 +405,17 @@ class Template:
         command does in more detail.
 
         Keyword Args:
-            project_name (:obj:`str`): The name of the project. If this
-                is None the project name is set to the name of the
-                parent folder. Defaults to None.
+            project_name (:obj:`str`): The name to use as the project
+                name when building the project. If this is None, the
+                name of the parent directory is used. Defaults to None.
             files (:obj:`list[str]`): The list of files to include in
                 this template. If no files are specified, the file
                 listing is automatically retrieved.
             root_dir (:obj:`str`): The root directory that nusex will
                 search from. Defaults to the current directory.
             blueprint (:obj:`Blueprint`): The language blueprint to use.
+                If this is None, the Python blueprint is selected.
+                Defaults to None.
             **kwargs (:obj:`Any`): Arguments for the
                 :obj:`get_file_listing` method.
 
@@ -434,12 +458,18 @@ class Template:
 
         log.info(f"[{self.name}] Build successful")
 
-    def deploy(self, path="."):
+    def deploy(self, *, project_name=None, destination="."):
         """Deploy this template.
 
         Keyword Args:
-            path (:obj:`str`): The path to deploy this template to.
-                Defaults to the current directory.
+            project_name (:obj:`str`): The name to use as the project
+                name when deploying the project. If this is None, the
+                name of the parent directory is used. Defaults to None.
+            destination (:obj:`str`): The path to deploy this template
+                to. Defaults to the current directory.
+
+        .. versionchanged:: 1.1
+            Added ``project_name`` keyword argument.
         """
 
         def resolve_version(key):
@@ -463,16 +493,19 @@ class Template:
                 .replace("[fullname]", profile["author_name"]),
             )
 
-        profile = Profile.current()
-        project_name = Path(path).resolve().parts[-1]
-        lic_name, lic_body = resolve_license_info(profile["preferred_license"])
+        if not project_name:
+            project_name = Path(destination).resolve().parts[-1]
+        project_slug = project_name.lower().replace(" ", "_").replace("-", "_")
         project_error = project_name.replace("_", " ").title().replace(" ", "")
+
+        profile = Profile.current()
+        lic_name, lic_body = resolve_license_info(profile["preferred_license"])
 
         var_mapping = {
             b"PROJECTNAME": project_name,
             b"PROJECTVERSION": resolve_version(profile["starting_version"]),
             b"PROJECTDESCRIPTION": profile["default_description"],
-            b"PROJECTURL": f"{profile['git_profile_url']}/{project_name}",
+            b"PROJECTURL": f"{profile['git_profile_url']}/{project_slug}",
             b"PROJECTAUTHOREMAIL": profile["author_email"],
             b"PROJECTAUTHOR": profile["author_name"],
             b"PROJECTLICENSE": lic_name,
@@ -480,23 +513,22 @@ class Template:
             b"PROJECTYEAR": f"{dt.date.today().year}",
             b"PROJECTBASEEXC": f"{project_error}Error",
         }
+
         log.info(f"[{self.name}] Using project name: {project_name}")
+        log.info(f"[{self.name}] Using project slug: {project_slug}")
         log.debug(f"[{self.name}] Using var mapping: {var_mapping}")
 
         for name, data in self.data["files"].items():
-            name = name.replace(
-                "PROJECTNAME",
-                project_name.lower().replace(" ", "_").replace("-", "_"),
-            )
+            name = name.replace("PROJECTNAME", project_slug)
 
             dirs = name.split("/")[:-1]
             if dirs:
-                os.makedirs(f"{path}/" + "/".join(dirs), exist_ok=True)
+                os.makedirs(f"{destination}/" + "/".join(dirs), exist_ok=True)
 
             for k, v in var_mapping.items():
                 data = data.replace(k, v.encode())
 
-            with open(f"{path}/{name}", "wb") as f:
+            with open(f"{destination}/{name}", "wb") as f:
                 f.write(data)
 
         meta = {
@@ -504,7 +536,7 @@ class Template:
             "files": list(self.data["files"].keys()),
             "language": self.data["language"],
         }
-        with open(f"{path}/.nusexmeta", "w") as f:
+        with open(f"{destination}/.nusexmeta", "w") as f:
             json.dump(meta, f)
 
         log.info(f"[{self.name}] Deployment successful")
