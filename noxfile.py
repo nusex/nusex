@@ -126,7 +126,7 @@ def check_imports(session):
 @nox.session(reuse_venv=True)
 def check_line_lengths(session):
     session.install("-U", DEPS["len8"])
-    session.run("len8", PROJECT_NAME, "tests", "-x", "testarosa")
+    session.run("len8", PROJECT_NAME, "tests", "-x", "data")
 
 
 @nox.session(reuse_venv=True)
