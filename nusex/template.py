@@ -181,8 +181,10 @@ class Template:
             :obj:`FileNotFoundError`: The template does not exist on
                 disk.
         """
+        validate_name(new_name, self.__class__.__name__)
         new_path = f"{self.path}".replace(self.path.stem, new_name)
-        self.path = self.path.rename(new_path)
+        self.path.rename(new_path)
+        self.path = TEMPLATE_DIR / f"{new_name}.nsx"
 
     @classmethod
     def from_cwd(
