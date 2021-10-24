@@ -52,12 +52,12 @@ class NSPSpecIO:
             "preferred_license": b"\x06",
         }
         self.defaults = {
-            "author_name": "John Smith",
-            "author_email": "thedoctor@email.com",
-            "git_profile_url": "https://github.com/shakespearecode",
+            "author_name": "",
+            "author_email": "",
+            "git_profile_url": "",
             "starting_version": "0.1.0",
-            "default_description": "My project, made using nusex",
-            "preferred_license": "mit",
+            "default_description": "My project, created using nusex",
+            "preferred_license": "unlicense",
         }
 
     def _scan(self, path):

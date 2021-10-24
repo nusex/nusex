@@ -112,14 +112,7 @@ class Profile:
             :obj:`AlreadyExists`: The profile already exists on disk.
         """
         validate_name(name, self.__class__.__name__)
-        self.data = {
-            "author_name": "",
-            "author_email": "",
-            "git_profile_url": "",
-            "starting_version": "0.1.0",
-            "default_description": "My project, created using nusex",
-            "preferred_license": "unlicense",
-        }
+        self.data = NSPSpecIO().defaults
 
     def load(self):
         """Load an existing profile. This should never need to be called
