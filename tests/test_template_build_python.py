@@ -38,6 +38,7 @@ def test_create_template():
     assert template.data["files"] == {}
     assert template.data["installs"] == []
     assert template.data["as_extension_for"] == ""
+    assert template.data["language"] == "python"
 
     template.save()
     assert template.exists

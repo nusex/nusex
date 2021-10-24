@@ -78,7 +78,7 @@ class Template:
         self.path = TEMPLATE_DIR / f"{name}.nsx"
         self._installs = installs
 
-        if not os.path.isfile(self.path):
+        if not self.path.exists():
             return self.create_new(name)
 
         self.load()
@@ -131,11 +131,7 @@ class Template:
             :obj:`AlreadyExists`: The template already exists on disk.
         """
         validate_name(name, self.__class__.__name__)
-        self.data = {
-            "files": {},
-            "installs": [],
-            "as_extension_for": "",
-        }
+        self.data = NSXSpecIO().defaults
 
     def load(self):
         """Load an existing template. This should never need to be
@@ -391,13 +387,11 @@ class Template:
             )
 
         nparts = len(Path(root_dir).resolve().parts)
-        data = {
-            "files": {resolve_key(f): f.read_bytes() for f in files},
-            "installs": self._installs,
-            "as_extension_for": "",
-        }
 
-        bp = blueprint(project_name, data)
+        self.data["files"] = {resolve_key(f): f.read_bytes() for f in files}
+        self.data["installs"] = self._installs
+
+        bp = blueprint(project_name, self.data)
         self.data = bp().data
 
     def deploy(self, path="."):
@@ -466,6 +460,7 @@ class Template:
         meta = {
             "template": self.name,
             "files": list(self.data["files"].keys()),
+            "language": self.data["language"],
         }
         with open(f"{path}/.nusexmeta", "w") as f:
             json.dump(meta, f)

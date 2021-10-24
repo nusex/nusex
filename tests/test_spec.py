@@ -68,6 +68,7 @@ def test_nsx_spec():
         },
         "installs": ["analytix", "nusex"],
         "as_extension_for": "template",
+        "language": "python",
     }
     NSXSpecIO().write(TEMPLATE_DIR / "__nsx_spec_test__.nsx", data)
 

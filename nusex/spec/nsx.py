@@ -39,6 +39,7 @@ class NSXSpecIO:
             "files": {},
             "installs": [],
             "as_extension_for": "",
+            "language": "python",
         }
 
     def _process_files(self, f, data):
@@ -91,7 +92,11 @@ class NSXSpecIO:
             if ef == b"\x01":
                 data["as_extension_for"] = f.read(24).decode().strip()
 
-            f.read(9)  # Skip reserved.
+            l = f.read(1)
+            if l == b"\x01":
+                data["language"] = f.read(12).decode().strip()
+
+            f.read(8)  # Skip reserved.
 
             # Process chunks.
             while f.peek(1):
@@ -115,7 +120,14 @@ class NSXSpecIO:
             else:
                 f.write(b"\x00")
 
-            f.write(b"\x00" * 9)  # Reserved space.
+            l = data["language"]
+            if l:
+                f.write(b"\x01")
+                f.write(l.ljust(12).encode())
+            else:
+                f.write(b"\x00")
+
+            f.write(b"\x00" * 8)  # Reserved space.
 
             # Files chunk starting byte.
             f.write(b"\x01")
