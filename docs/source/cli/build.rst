@@ -6,6 +6,9 @@ Description
 
 Build a new template.
 
+.. versionchanged:: 1.1
+    Added ``language`` option.
+
 Arguments
 =========
 

@@ -208,6 +208,9 @@ class Template:
 
         Returns:
             :obj:`Template`: The newly created template.
+
+        .. versionchanged:: 1.1
+            Added ``blueprint`` keyword argument.
         """
         c = cls(name, installs=installs)
         c.build(
@@ -247,6 +250,9 @@ class Template:
 
         Returns:
             :obj:`Template`: The newly created template.
+
+        .. versionchanged:: 1.1
+            Added ``blueprint`` keyword argument.
         """
         c = cls(name, installs=installs)
         c.build(
@@ -289,6 +295,9 @@ class Template:
 
         Raises:
             :obj:`BuildError`: Cloning the repository failed.
+
+        .. versionchanged:: 1.1
+            Added ``blueprint`` keyword argument.
         """
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
@@ -367,6 +376,9 @@ class Template:
             blueprint (:obj:`Blueprint`): The language blueprint to use.
             **kwargs (:obj:`Any`): Arguments for the
                 :obj:`get_file_listing` method.
+
+        .. versionchanged:: 1.1
+            Added ``blueprint`` keyword argument.
         """
 
         def resolve_key(path):
