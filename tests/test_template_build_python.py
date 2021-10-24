@@ -32,6 +32,8 @@ from pathlib import Path
 
 from nusex import Template
 
+TEST_DIR = Path(__file__).parent / "data/testarosa_py"
+
 
 def test_create_template():
     template = Template("__test_template__")
@@ -45,9 +47,7 @@ def test_create_template():
 
 
 def test_build_okay():
-    template = Template.from_dir(
-        "__test_build__", Path(__file__).parent / "data/testarosa"
-    )
+    template = Template.from_dir("__test_build__", TEST_DIR)
     assert template.name == "__test_build__"
     assert len(template.data["files"].keys()) == 21
 
@@ -213,7 +213,7 @@ def test_license_files_okay():
 def test_ignore_extensions():
     template = Template.from_dir(
         "__test_ignore_ext__",
-        Path(__file__).parent / "data/testarosa",
+        TEST_DIR,
         ignore_exts={"lol", "rofl"},
     )
     assert template.name == "__test_ignore_ext__"
@@ -223,7 +223,7 @@ def test_ignore_extensions():
 def test_ignore_directories():
     template = Template.from_dir(
         "__test_ignore_dir__",
-        Path(__file__).parent / "data/testarosa",
+        TEST_DIR,
         ignore_dirs={"ignorethisdir"},
     )
     assert template.name == "__test_ignore_dir__"
@@ -233,7 +233,7 @@ def test_ignore_directories():
 def test_ignore_wildmatch_directories():
     template = Template.from_dir(
         "__test_ignore_w_dir__",
-        Path(__file__).parent / "data/testarosa",
+        TEST_DIR,
         ignore_dirs={"*setup"},
     )
     assert template.name == "__test_ignore_w_dir__"

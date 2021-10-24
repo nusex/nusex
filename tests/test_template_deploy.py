@@ -30,6 +30,7 @@ import datetime as dt
 import logging
 import os
 import shutil
+import typing as t
 from pathlib import Path
 from platform import python_implementation
 
@@ -46,7 +47,7 @@ def test_deploy_okay():
 
     template = Template.from_dir(
         "__test_deploy__",
-        Path(__file__).parent / "data/testarosa",
+        Path(__file__).parent / "data/testarosa_py",
         installs=["analytix", "sqlite2pg"],
     )
     template.save()
@@ -226,6 +227,7 @@ def test_license_file_okay():
         assert lines[0] == header
 
 
+@t.no_type_check
 @pytest.mark.skipif(
     python_implementation() == "PyPy",
     reason="Dependency installs do not work with PyPy",
