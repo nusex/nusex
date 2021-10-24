@@ -94,5 +94,7 @@ VERSION_PATTERN = re.compile(
 )
 
 BLUEPRINT_MAPPING = {
+    "none": blueprints.GenericBlueprint,
     "python": blueprints.PythonBlueprint,
+    "rust": blueprints.RustBlueprint,
 }

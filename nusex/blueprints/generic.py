@@ -26,41 +26,72 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from nusex import __url__
 from nusex.blueprints import with_files
-from nusex.blueprints.generic import GenericBlueprint
+from nusex.blueprints.base import Blueprint
 
-CARGO_ATTR_MAPPING = {
-    "name": '"PROJECTNAME"',
-    "version": '"PROJECTVERSION"',
-    "description": '"PROJECTDESCRIPTION"',
-    "homepage": '"PROJECTURL"',
-    "repository": '"PROJECTURL"',
-    "docs": '"https://docs.rs/PROJECTNAME/PROJECTVERSION"',
-    "authors": '["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]',
-    "license": '"PROJECTLICENSE"',
+DOCS_ATTR_MAPPING = {
+    "project": '"PROJECTNAME"',
+    "copyright": '"PROJECTYEAR, PROJECTAUTHOR"',
+    "author": '"PROJECTAUTHOR"',
+    "release": "PROJECTNAME.__version__",
 }
 
 
-class RustBlueprint(GenericBlueprint):
-    @with_files("Cargo.toml")
-    def modify_cargo(self, lines):
-        in_package = False
+class GenericBlueprint(Blueprint):
+    @with_files("README.md", "README.txt")
+    def modify_readme(self, lines):
+        last_line = len(lines) - 1
+        found_acks = False
+        ack = (
+            "This project was created in part by the [nusex project "
+            f"templating utility]({__url__})."
+        )
 
         for i, line in enumerate(lines[:]):
-            if in_package:
-                if line.startswith("["):
-                    in_package = True
+            if line.startswith("#"):
+                if found_acks:
+                    lines.insert(i, ack)
+                    lines.insert(i + 1, "")
+                    break
+
+                if "acknowledgements" in line.lower():
+                    found_acks = True
+
+            elif i == last_line and found_acks:
+                lines.extend([ack, ""])
+
+        if not found_acks:
+            lines.extend(["## Acknowledgements", "", ack, ""])
+
+        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
+
+    @with_files("LICENSE", "LICENSE.txt", "COPYING", "COPYING.txt")
+    def modify_license(self, _):
+        return "LICENSEBODY"
+
+    @with_files("docs/conf.py", "docs/source/conf.py")
+    def modify_docs_conf(self, lines):
+        in_project_info = False
+
+        for i, line in enumerate(lines[:]):
+            if in_project_info:
+                if line.startswith("# --"):
+                    in_project_info = False
                     continue
 
                 try:
                     k, v = line.split(" = ")
                     v = v.strip('"').strip("'")
-                    new_v = CARGO_ATTR_MAPPING.get(k, v)
+                    new_v = DOCS_ATTR_MAPPING.get(k, v)
                     lines[i] = f"{k} = {new_v}"
                 except ValueError:
                     ...
 
-            elif line.strip() == "[package]":
-                in_package = True
+            elif line.startswith("# -- Project information"):
+                in_project_info = True
 
-        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
+            elif line.strip() == f"import {self.project_name}":
+                lines[i] = "import PROJECTNAME"
+
+        return "\n".join(lines)

@@ -46,5 +46,6 @@ def with_files(*files):
     return decorator
 
 
+from .generic import GenericBlueprint
 from .python import PythonBlueprint
 from .rust import RustBlueprint

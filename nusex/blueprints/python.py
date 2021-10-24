@@ -26,9 +26,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex import __url__
 from nusex.blueprints import with_files
-from nusex.blueprints.base import Blueprint
+from nusex.blueprints.generic import GenericBlueprint
 
 INIT_ATTR_MAPPING = {
     "__productname__": '"PROJECTNAME"',
@@ -53,15 +52,9 @@ PYPROJECT_ATTR_MAPPING = {
     "repository": '"PROJECTURL"',
     "documentation": '"https://PROJECTNAME.readthedocs.io/en/latest"',
 }
-DOCS_ATTR_MAPPING = {
-    "project": '"PROJECTNAME"',
-    "copyright": '"PROJECTYEAR, PROJECTAUTHOR"',
-    "author": '"PROJECTAUTHOR"',
-    "release": "PROJECTNAME.__version__",
-}
 
 
-class PythonBlueprint(Blueprint):
+class PythonBlueprint(GenericBlueprint):
     @with_files("PROJECTNAME/__init__.py")
     def modify_init(self, lines):
         for i, line in enumerate(lines[:]):
@@ -96,31 +89,11 @@ class PythonBlueprint(Blueprint):
 
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
-    @with_files("docs/conf.py", "docs/source/conf.py")
-    def modify_docs_conf(self, lines):
-        in_project_info = False
-
-        for i, line in enumerate(lines[:]):
-            if in_project_info:
-                if line.startswith("# --"):
-                    in_project_info = False
-                    continue
-
-                try:
-                    k, v = line.split(" = ")
-                    v = v.strip('"').strip("'")
-                    new_v = DOCS_ATTR_MAPPING.get(k, v)
-                    lines[i] = f"{k} = {new_v}"
-                except ValueError:
-                    ...
-
-            elif line.startswith("# -- Project information"):
-                in_project_info = True
-
-            elif line.strip() == f"import {self.project_name}":
-                lines[i] = "import PROJECTNAME"
-
-        return "\n".join(lines)
+    @with_files("MANIFEST.in", "setup.cfg", "setup.py")
+    def modify_other_files(self, lines):
+        # TODO: Make the setup files more complete:
+        # https://docs.python.org/3/distutils/setupscript.html
+        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
     @with_files("PROJECTNAME/error.py", "PROJECTNAME/errors.py")
     def modify_error_files(self, lines):
@@ -130,40 +103,3 @@ class PythonBlueprint(Blueprint):
                 break
 
         return "\n".join(lines).replace(base_exc, "PROJECTBASEEXC")
-
-    @with_files("README.md", "README.txt")
-    def modify_readme(self, lines):
-        last_line = len(lines) - 1
-        found_acks = False
-        ack = (
-            "This project was created in part by the [nusex project "
-            f"templating utility]({__url__})."
-        )
-
-        for i, line in enumerate(lines[:]):
-            if line.startswith("#"):
-                if found_acks:
-                    lines.insert(i, ack)
-                    lines.insert(i + 1, "")
-                    break
-
-                if "acknowledgements" in line.lower():
-                    found_acks = True
-
-            elif i == last_line and found_acks:
-                lines.extend([ack, ""])
-
-        if not found_acks:
-            lines.extend(["## Acknowledgements", "", ack, ""])
-
-        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
-
-    @with_files("LICENSE", "LICENSE.txt", "COPYING", "COPYING.txt")
-    def modify_license(self, _):
-        return "LICENSEBODY"
-
-    @with_files("MANIFEST.in", "setup.cfg", "setup.py")
-    def modify_other_files(self, lines):
-        # TODO: Make the setup files more complete:
-        # https://docs.python.org/3/distutils/setupscript.html
-        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
