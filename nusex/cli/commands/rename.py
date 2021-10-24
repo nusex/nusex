@@ -26,11 +26,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
-
-from nusex import PROFILE_DIR, TEMPLATE_DIR, Profile
+from nusex import PROFILE_DIR, TEMPLATE_DIR, Profile, Template
 from nusex.errors import DoesNotExist, ProfileError, TemplateError
-from nusex.helpers import cprint, validate_name
+from nusex.helpers import cprint
 
 
 def run(name, new_name):
@@ -38,21 +36,19 @@ def run(name, new_name):
         raise TemplateError("You cannot rename premade templates")
 
     if (PROFILE_DIR / f"{name}.nsp").exists():
-        if Profile(name).is_selected:
+        profile = Profile(name)
+        if profile.is_selected:
             raise ProfileError(
                 "You cannot rename the currently selected profile"
             )
-        validate_name(new_name, "Profile")
-        os.rename(PROFILE_DIR / f"{name}.nsp", PROFILE_DIR / f"{new_name}.nsp")
+        profile.rename(new_name)
         cprint(
             "aok", f"Profile '{name}' successfully renamed to '{new_name}'!"
         )
 
     elif (TEMPLATE_DIR / f"{name}.nsx").exists():
-        validate_name(new_name, "Template")
-        os.rename(
-            TEMPLATE_DIR / f"{name}.nsx", TEMPLATE_DIR / f"{new_name}.nsx"
-        )
+        template = Template(name)
+        template.rename(new_name)
         cprint(
             "aok", f"Template '{name}' successfully renamed to '{new_name}'!"
         )

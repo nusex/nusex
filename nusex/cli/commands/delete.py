@@ -26,11 +26,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
-
 from nusex import PROFILE_DIR, TEMPLATE_DIR, Profile
 from nusex.errors import ProfileError, TemplateError
 from nusex.helpers import cprint
+from nusex.template import Template
 
 
 def run(names):
@@ -38,15 +37,17 @@ def run(names):
 
     for name in names:
         if (PROFILE_DIR / f"{name}.nsp").exists():
-            if Profile(name).is_selected:
+            profile = Profile(name)
+            if profile.is_selected:
                 raise ProfileError(
                     "You cannot delete the currently selected profile"
                 )
-            os.remove(PROFILE_DIR / f"{name}.nsp")
+            profile.delete()
             count += 1
 
         elif (TEMPLATE_DIR / f"{name}.nsx").exists():
-            os.remove(TEMPLATE_DIR / f"{name}.nsx")
+            template = Template(name)
+            template.delete()
             count += 1
 
         else:
