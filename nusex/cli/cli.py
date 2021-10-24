@@ -28,6 +28,7 @@
 
 import argparse
 import datetime as dt
+import logging
 import sys
 import traceback
 from importlib import import_module
@@ -53,6 +54,11 @@ COMMAND_MAPPING = {
 parser = argparse.ArgumentParser(description=__description__)
 parser.add_argument(
     "-v",
+    "--verbose",
+    help="emit logging messages",
+    action="store_true",
+)
+parser.add_argument(
     "--version",
     help="show nusex's version and exit",
     action="store_true",
@@ -132,6 +138,13 @@ def main():
     if not args.subparser:
         return parser.parse_args(("-h",))
 
+    if args.verbose:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="[%(levelname)s] %(name)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+
     # # Setup checks.
     _check_config(args.subparser)
     _check_init(args.subparser)
@@ -143,7 +156,7 @@ def main():
             **{
                 k: v
                 for k, v in args.__dict__.items()
-                if k not in ("subparser", "version")
+                if k not in ("subparser", "verbose", "version")
             }
         )
     except NusexUserError as exc:

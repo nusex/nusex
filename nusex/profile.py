@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
+import logging
 import os
 
 from nusex import CONFIG_DIR, LICENSE_DIR, PROFILE_DIR, VERSION_PATTERN
@@ -42,6 +43,8 @@ VALID_CONFIG_KEYS = (
     "default_description",
     "preferred_license",
 )
+
+log = logging.getLogger(__name__)
 
 
 class Profile:
@@ -64,8 +67,10 @@ class Profile:
         self.path = PROFILE_DIR / f"{name}.nsp"
 
         if not os.path.isfile(self.path):
+            log.info(f"[{name}] Not found; creating new...")
             return self.create_new(name)
 
+        log.info(f"[{name}] Loading data...")
         self.load()
 
     def __str__(self):
@@ -113,6 +118,7 @@ class Profile:
         """
         validate_name(name, self.__class__.__name__)
         self.data = NSPSpecIO().defaults
+        log.debug(f"[{self.name}] Data = {self.data}")
 
     def load(self):
         """Load an existing profile. This should never need to be called
@@ -124,6 +130,7 @@ class Profile:
                 disk.
         """
         self.data = NSPSpecIO().read(self.path)
+        log.debug(f"[{self.name}] Data = {self.data}")
 
     def save(self):
         """Save this profile.
@@ -134,6 +141,7 @@ class Profile:
         """
         try:
             NSPSpecIO().write(self.path, self.data)
+            log.info(f"[{self.name}] Saved to {self.path}")
         except KeyError:
             raise ProfileError(
                 "The profile data has been improperly modified"
@@ -147,6 +155,7 @@ class Profile:
                 disk.
         """
         os.remove(self.path)
+        log.info(f"[{self.name}] Deleted from {self.path}")
 
     def rename(self, new_name):
         """Rename this profile.
@@ -160,6 +169,7 @@ class Profile:
         """
         new_path = f"{self.path}".replace(self.path.stem, new_name)
         self.path = self.path.rename(new_path)
+        log.info(f"[{self.name}] Renamed")
 
     @classmethod
     def current(cls):
@@ -187,6 +197,7 @@ class Profile:
         """
         with open(CONFIG_DIR / "user.nsc") as f:
             data = json.load(f)
+            log.debug(f"[{name}] Old config data: {data}")
 
         c = cls(name)
         values = list(data.values())
@@ -202,6 +213,7 @@ class Profile:
                         or "0.1.0"
                     )
                     v = c._validate_option(k, v)
+                    log.info(f"[{name}] Option '{k}' resolved to '{v}'")
 
             elif k == "preferred_license":
                 v = c._resolve_license(v)
@@ -211,8 +223,10 @@ class Profile:
                         or "unlicense"
                     )
                     v = c._validate_option(k, v)
+                    log.info(f"[{name}] Option '{k}' resolved to '{v}'")
 
             c.data[k] = v
+            log.debug(f"[{name}] Option '{k}' set to '{v}' in profile data")
 
         return c
 
@@ -226,14 +240,19 @@ class Profile:
         return NSCSpecIO().read()["profile"] == self.path.stem
 
     def select(self):
-        """Select this profile."""
+        """Select this profile. This will not error if the profile is
+        already selected; use the :obj:`is_selected` property to check
+        if this profile is already selected instead.
+        """
         data = NSCSpecIO().read()
         data["profile"] = self.path.stem
         NSCSpecIO().write(data)
+        log.info(f"[{self.name}] Selected")
 
     def _resolve_license(self, value):
         for file in LICENSE_DIR.glob("*.txt"):
             if value == file.stem:
+                log.debug(f"[{self.name}] License found: {value}")
                 return value
 
             attrs = {}
@@ -262,6 +281,7 @@ class Profile:
                 )
                 == value
             ):
+                log.debug(f"[{self.name}] License attrs ({value}): {attrs}")
                 return file.stem
 
     def _validate_option(self, key, option):
@@ -282,6 +302,7 @@ class Profile:
                     "Your input could not be resolved to a valid license"
                 )
 
+        log.debug(f"[{self.name}] Option '{key}' resolved to '{option}'")
         return option
 
     def setup(self):
@@ -322,3 +343,4 @@ class Profile:
             if v:
                 v = self._validate_option(k, v)
                 self.data[k] = v
+                log.debug(f"[{self.name}] Option '{k}' updated to '{v}'")

@@ -28,6 +28,7 @@
 
 import datetime as dt
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -52,6 +53,8 @@ ATTRS = (
     "LICENSEBODY",
     "PROJECTBASEEXC",
 )
+
+log = logging.getLogger(__name__)
 
 
 class Template:
@@ -79,8 +82,10 @@ class Template:
         self._installs = installs
 
         if not self.path.exists():
+            log.info(f"[{name}] Not found; creating new...")
             return self.create_new(name)
 
+        log.info(f"[{name}] Loading data...")
         self.load()
 
     def __str__(self):
@@ -132,6 +137,7 @@ class Template:
         """
         validate_name(name, self.__class__.__name__)
         self.data = NSXSpecIO().defaults
+        log.debug(f"[{self.name}] Data = {self.data}")
 
     def load(self):
         """Load an existing template. This should never need to be
@@ -143,6 +149,7 @@ class Template:
                 disk.
         """
         self.data = NSXSpecIO().read(self.path)
+        log.debug(f"[{self.name}] Files = {list(self.data['files'].keys())}")
 
     def save(self):
         """Save this profile.
@@ -153,6 +160,7 @@ class Template:
         """
         try:
             NSXSpecIO().write(self.path, self.data)
+            log.info(f"[{self.name}] Saved to {self.path}")
         except KeyError:
             raise TemplateError(
                 "The template data has been improperly modified"
@@ -166,6 +174,7 @@ class Template:
                 disk.
         """
         os.remove(self.path)
+        log.info(f"[{self.name}] Deleted from {self.path}")
 
     def rename(self, new_name):
         """Rename this template.
@@ -179,6 +188,7 @@ class Template:
         """
         new_path = f"{self.path}".replace(self.path.stem, new_name)
         self.path = self.path.rename(new_path)
+        log.info(f"[{self.name}] Renamed")
 
     @classmethod
     def from_cwd(
@@ -302,6 +312,7 @@ class Template:
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
 
+        log.debug(f"[{name}] Cloning {url} into {TEMP_DIR}...")
         output = run(f"git clone {url}")
         if output.returncode == 1:
             raise BuildError(
@@ -310,6 +321,7 @@ class Template:
             )
 
         os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
+        log.debug(f"[{name}] Building from {os.path.abspath(os.curdir)}...")
         return cls.from_cwd(
             name,
             blueprint=blueprint,
@@ -349,6 +361,10 @@ class Template:
             filter(lambda x: x.startswith("*"), ignore_dirs)
         )
         true_dir_ignores = ignore_dirs - wild_dir_ignores
+        log.debug(f"[{self.name}] Ignoring exts: {ignore_exts}")
+        log.debug(f"[{self.name}] Ignoring dirs (true): {true_dir_ignores}")
+        log.debug(f"[{self.name}] Ignoring dirs (wild): {wild_dir_ignores}")
+
         files = filter(lambda p: is_valid(p), Path(root_dir).rglob("*"))
         return list(files)
 
@@ -398,13 +414,23 @@ class Template:
                 ignore_dirs=kwargs.pop("ignore_dirs", set()),
             )
 
-        nparts = len(Path(root_dir).resolve().parts)
+        log.info(f"[{self.name}] Using project name: {project_name}")
+        log.info(f"[{self.name}] Using blueprint: {blueprint.__name__}")
+        log.info(
+            f"[{self.name}] As extension for: " + self.data["as_extension_for"]
+        )
+        log.info(f"[{self.name}] For language: " + self.data["language"])
+        log.info(f"[{self.name}] With {len(files):,} files")
+        log.debug(f"[{self.name}] With files: {files}")
 
+        nparts = len(Path(root_dir).resolve().parts)
         self.data["files"] = {resolve_key(f): f.read_bytes() for f in files}
         self.data["installs"] = self._installs
 
         bp = blueprint(project_name, self.data)
         self.data = bp().data
+
+        log.info(f"[{self.name}] Build successful")
 
     def deploy(self, path="."):
         """Deploy this template.
@@ -452,6 +478,8 @@ class Template:
             b"PROJECTYEAR": f"{dt.date.today().year}",
             b"PROJECTBASEEXC": f"{project_error}Error",
         }
+        log.info(f"[{self.name}] Using project name: {project_name}")
+        log.debug(f"[{self.name}] Using var mapping: {var_mapping}")
 
         for name, data in self.data["files"].items():
             name = name.replace(
@@ -477,6 +505,8 @@ class Template:
         with open(f"{path}/.nusexmeta", "w") as f:
             json.dump(meta, f)
 
+        log.info(f"[{self.name}] Deployment successful")
+
     def install_dependencies(self):
         """Install this template's dependencies. Note that this does not
         work on PyPy Python implementations."""
@@ -486,13 +516,20 @@ class Template:
                 "implementations"
             )
 
-        if not self.data["installs"]:
+        if self.data["language"] != "python":
+            raise IncompatibilityError(
+                "Dependency installation is not supported on languages other "
+                "than Python"
+            )
+
+        installs = self.data["installs"]
+
+        if not installs:
+            log.info(f"[{self.name}] No dependencies to install")
             return
 
-        run(
-            f"{sys.executable} -m pip install "
-            + " ".join(self.data["installs"])
-        )
+        log.info(f"[{self.name}] Installing {len(installs):,} dependencies...")
+        run(f"{sys.executable} -m pip install " + " ".join(installs))
 
     def check(self):
         """Check the template manifest, including line changes.
