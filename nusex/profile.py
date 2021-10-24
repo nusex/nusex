@@ -168,7 +168,8 @@ class Profile:
                 disk.
         """
         new_path = f"{self.path}".replace(self.path.stem, new_name)
-        self.path = self.path.rename(new_path)
+        self.path.rename(new_path)
+        self.path = PROFILE_DIR / f"{new_name}.nsp"
         log.info(f"[{self.name}] Renamed")
 
     @classmethod
