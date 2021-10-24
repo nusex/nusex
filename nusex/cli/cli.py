@@ -126,16 +126,6 @@ def _check_for_updates():
 def main():
     args = parser.parse_args()
 
-    # NOTE: Remove in v1.1.
-    if parser.prog == "nsx":
-        cprint(
-            "war",
-            (
-                "The 'nsx' command is deprecated, and will be removed in v1.1 "
-                "(use 'nusex' instead)."
-            ),
-        )
-
     if args.version:
         return print(__version__)
 
@@ -162,9 +152,9 @@ def main():
     except NusexError as exc:
         cprint("err", f"{exc}.")
         sys.exit(1)
-    except KeyboardInterrupt as exc:
+    except KeyboardInterrupt:
         sys.exit(130)
-    except Exception as exc:
+    except Exception:
         cprint(
             "err",
             f"Oh no! Something went wrong.\n\n{traceback.format_exc()}",

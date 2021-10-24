@@ -111,7 +111,6 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "nusex = nusex.cli.cli:main",
-            "nsx = nusex.cli.cli:main",
         ]
     },
 )
