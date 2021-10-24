@@ -55,7 +55,7 @@ PYPROJECT_ATTR_MAPPING = {
 
 
 class PythonBlueprint(GenericBlueprint):
-    @with_files("PROJECTNAME/__init__.py")
+    @with_files("PROJECTNAME/__init__.py$")
     def modify_init(self, lines):
         for i, line in enumerate(lines[:]):
             if line.startswith("__"):
@@ -66,7 +66,7 @@ class PythonBlueprint(GenericBlueprint):
 
         return "\n".join(lines)
 
-    @with_files("pyproject.toml")
+    @with_files("pyproject.toml$")
     def modify_pyproject(self, lines):
         in_tool_poetry = False
 
@@ -89,13 +89,13 @@ class PythonBlueprint(GenericBlueprint):
 
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
-    @with_files("MANIFEST.in", "setup.cfg", "setup.py")
+    @with_files("MANIFEST.in$", "setup.(cfg|py)$")
     def modify_other_files(self, lines):
         # TODO: Make the setup files more complete:
         # https://docs.python.org/3/distutils/setupscript.html
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
-    @with_files("PROJECTNAME/error.py", "PROJECTNAME/errors.py")
+    @with_files("PROJECTNAME/errors?.py$")
     def modify_error_files(self, lines):
         for line in lines[:]:
             if line.startswith("class"):

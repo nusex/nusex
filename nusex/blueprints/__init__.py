@@ -26,10 +26,18 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import re
 
-def with_files(*files):
+
+def with_files(*exprs):
     def decorator(func):
         def wrapper(blueprint):
+            files = [
+                file
+                for file in blueprint.data["files"]
+                if re.match("|".join(exprs), file)
+            ]
+
             for file in files:
                 input = blueprint.data["files"].get(file, None)
 

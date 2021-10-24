@@ -42,7 +42,7 @@ CARGO_ATTR_MAPPING = {
 
 
 class RustBlueprint(GenericBlueprint):
-    @with_files("Cargo.toml")
+    @with_files("Cargo.toml$")
     def modify_cargo_toml(self, lines):
         in_package = False
 
@@ -65,7 +65,7 @@ class RustBlueprint(GenericBlueprint):
 
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
-    @with_files("Cargo.lock")
+    @with_files("Cargo.lock$")
     def modify_cargo_lock(self, lines):
         for i, line in enumerate(lines[:]):
             if line == f'name = "{self.project_name}"':

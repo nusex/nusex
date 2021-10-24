@@ -39,7 +39,7 @@ DOCS_ATTR_MAPPING = {
 
 
 class GenericBlueprint(Blueprint):
-    @with_files("README.md", "README.txt")
+    @with_files("README")
     def modify_readme(self, lines):
         last_line = len(lines) - 1
         found_acks = False
@@ -66,11 +66,11 @@ class GenericBlueprint(Blueprint):
 
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
-    @with_files("LICENSE", "LICENSE.txt", "COPYING", "COPYING.txt")
+    @with_files("LICENSE", "LICENCE", "COPYING")
     def modify_license(self, _):
         return "LICENSEBODY"
 
-    @with_files("docs/conf.py", "docs/source/conf.py")
+    @with_files("docs/(source/)?conf.py$")
     def modify_docs_conf(self, lines):
         in_project_info = False
 
