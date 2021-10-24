@@ -11,7 +11,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/5122e8a19a45b39f8945/maintainability)](https://codeclimate.com/github/nusex/nusex/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5122e8a19a45b39f8945/test_coverage)](https://codeclimate.com/github/nusex/nusex/test_coverage)
 
-A project templating utility for Python.
+A dynamic, multi-language project templating utility.
 
 CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported.
 

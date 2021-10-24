@@ -43,7 +43,7 @@ nusex
 What is nusex?
 ==============
 
-nusex is a project templating utility build in Python. While it is designed to be used for Python projects, nusex can work with any files.
+nusex is a dynamic, multi-language project templating utility written in Python. While nusex does not support :doc:`dynamic templating <./guide/templates>` for all languages, nusex can work with any files, including images, audio, and executables.
 
 Why use it?
 ===========
