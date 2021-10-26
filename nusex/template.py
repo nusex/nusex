@@ -183,6 +183,10 @@ class Template:
             new_name (:obj:`str`): The new name for the template.
 
         Raises:
+            :obj:`TemplateError`: The new name for the template is
+                invalid.
+            :obj:`AlreadyExists`: The new name for the template is
+                already being used by a profile.
             :obj:`FileNotFoundError`: The template does not exist on
                 disk.
         """

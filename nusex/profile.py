@@ -164,6 +164,10 @@ class Profile:
             new_name (:obj:`str`): The new name for the profile.
 
         Raises:
+            :obj:`ProfileError`: The new name for the profile is
+                invalid.
+            :obj:`AlreadyExists`: The new name for the profile is
+                already being used by a template.
             :obj:`FileNotFoundError`: The profile does not exist on
                 disk.
         """
