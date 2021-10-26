@@ -64,13 +64,6 @@ def run():
 
     cprint("aok", "Initialisation complete!")
 
-    if sys.version_info < (3, 7, 0):
-        cprint(
-            "war",
-            "Support for Python 3.6 is deprecated, and will be "
-            "removed in a future version.",
-        )
-
 
 def setup(subparsers):
     subparsers.add_parser("init", description="Initialise nusex.")
