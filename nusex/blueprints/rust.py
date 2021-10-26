@@ -26,6 +26,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import re
+
 from nusex.blueprints import with_files
 from nusex.blueprints.generic import GenericBlueprint
 
@@ -74,3 +76,25 @@ class RustBlueprint(GenericBlueprint):
                 break
 
         return "\n".join(lines)
+
+    @with_files("src/errors?.rs$")
+    def modify_error_files(self, lines):
+        found_derive = False
+
+        for line in lines[:]:
+            if found_derive:
+                if line.startswith("#"):
+                    continue
+
+                base_exc = (
+                    re.sub("[^a-zA-Z0-9_ ]", "", line).strip().split()[-1]
+                )
+                break
+
+            elif line.startswith("#[derive"):
+                found_derive = True
+
+        if base_exc == "Error":
+            return "\n".join(lines)
+
+        return "\n".join(lines).replace(base_exc, "PROJECTBASEEXC")

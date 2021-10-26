@@ -102,4 +102,7 @@ class PythonBlueprint(GenericBlueprint):
                 base_exc = line.split("(")[0][6:]
                 break
 
+        if base_exc == "Error":
+            return "\n".join(lines)
+
         return "\n".join(lines).replace(base_exc, "PROJECTBASEEXC")
