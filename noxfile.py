@@ -79,7 +79,12 @@ def tests(session):
     )
 
     if os.path.isdir(test_config_dir):
-        shutil.rmtree(test_config_dir)
+        try:
+            shutil.rmtree(test_config_dir)
+        except PermissionError:
+            # Some weird permissions error with Windows we don't
+            # care about.
+            ...
 
 
 @nox.session(reuse_venv=True)
