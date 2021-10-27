@@ -26,17 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__productname__ = "nusex"
-__version__ = "1.1.1"
-__description__ = "A dynamic, multi-language project templating utility."
-__url__ = "https://github.com/nusex/nusex"
-__docs__ = "https://nusex.readthedocs.io/en/latest"
-__author__ = "Ethan Henderson"
-__author_email__ = "ethan.henderson.1998@gmail.com"
-__license__ = "BSD-3-Clause"
-__bugtracker__ = "https://github.com/nusex/nusex/issues"
-__ci__ = "https://github.com/nusex/nusex/actions"
+from nusex.cli import cli
 
-from .constants import *
-from .profile import Profile
-from .template import Template
+if __name__ == "__main__":
+    cli.main()
