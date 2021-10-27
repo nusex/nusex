@@ -491,7 +491,7 @@ class Template:
             ] + 2
 
             return (
-                lines[1][7:],
+                lines[1][7:].replace('"', "'"),
                 "\n".join(lines[start:])
                 .replace("[year]", f"{dt.date.today().year}")
                 .replace("[fullname]", profile["author_name"]),
