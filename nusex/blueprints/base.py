@@ -32,6 +32,10 @@ from types import MethodType
 class Blueprint:
     def __init__(self, project_name, data):
         self.project_name = project_name
+        data["language"] = (
+            self.__class__.__name__.replace("Blueprint", "").lower()
+            or "custom"
+        )
         self.data = data
 
     def __call__(self):
