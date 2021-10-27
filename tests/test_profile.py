@@ -34,7 +34,7 @@ from nusex import CONFIG_DIR, PROFILE_DIR, Profile
 from nusex.errors import AlreadyExists, ProfileError
 
 
-def test_create_profile():
+def test_create_valid_profile():
     profile = Profile("__test_profile__")
     assert profile.name == "__test_profile__"
     assert profile.data["starting_version"] == "0.1.0"
@@ -46,6 +46,15 @@ def test_create_profile():
 
     profile.save()
     assert profile.exists
+
+
+def test_create_invalid_profile():
+    profile = Profile("__test_profile_2__")
+    profile.data.update({"yolo": "hi"})
+
+    with pytest.raises(ProfileError) as exc:
+        profile.save()
+    assert f"{exc.value}" == "The profile data has been improperly modified"
 
 
 def test_load_profile():
@@ -122,6 +131,8 @@ def test_update_profile_preferred_license():
     profile = Profile("__test_profile__")
     profile.update(preferred_license="BSD Zero Clause License")
     assert profile.data["preferred_license"] == "0bsd"
+    profile.update(preferred_license="mit")
+    assert profile.data["preferred_license"] == "mit"
 
     with pytest.raises(ProfileError) as exc:
         profile.update(preferred_license="test")
@@ -130,18 +141,26 @@ def test_update_profile_preferred_license():
     )
 
 
+def test_update_invalid():
+    profile1 = Profile("__test_profile__")
+    profile2 = Profile("__test_profile__")
+    assert profile1 == profile2
+    profile1.update(version="0.1.0")
+    assert profile1 == profile2
+
+
 def test_rename_profile():
     profile = Profile("__test_profile__")
     profile.rename("__test_profile__")
     # Intentionally explicit.
-    assert (PROFILE_DIR / "__test_profile__.nsp").is_file()
+    assert (PROFILE_DIR / "__test_profile__.nsp").exists()
 
 
 def test_delete_profile():
     profile = Profile("__test_profile__")
     profile.delete()
     # Again, intentionally explicit.
-    assert not (PROFILE_DIR / "__test_profile__.nsp").is_file()
+    assert not (PROFILE_DIR / "__test_profile__.nsp").exists()
 
 
 def test_create_from_legacy():

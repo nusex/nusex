@@ -27,15 +27,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+import os
 import re
 from pathlib import Path
 
-from nusex import Template
+import pytest  # type: ignore
+
+from nusex import TEMPLATE_DIR, Template
+from nusex.errors import BuildError
 
 TEST_DIR = Path(__file__).parent / "data/testarosa_py"
 
 
-def test_create_template():
+def test_create_valid_template():
     template = Template("__test_template__")
     assert template.data["files"] == {}
     assert template.data["installs"] == []
@@ -46,13 +50,70 @@ def test_create_template():
     assert template.exists
 
 
-def test_build_okay():
+# def test_create_invalid_template():
+#     template = Template("__test_template__")
+#     template.data.pop("language")
+
+#     with pytest.raises(TemplateError) as exc:
+#         template.save()
+#     assert f"{exc.value}" == "The template data has been improperly modified"
+
+
+def test_rename_template():
+    template = Template("__test_template__")
+    template.rename("__test_template__")
+    # Intentionally explicit.
+    assert (TEMPLATE_DIR / "__test_template__.nsx").exists()
+
+
+def test_delete_template():
+    template = Template("__test_template__")
+    template.delete()
+    # Again, intentionally explicit.
+    assert not (TEMPLATE_DIR / "__test_template__.nsx").exists()
+
+
+def test_build_okay_from_cwd():
+    os.chdir(Path(__file__).parent / "data/testarosa_py")
+
+    template = Template.from_cwd("__test_build_cwd__")
+    assert template.name == "__test_build_cwd__"
+    assert len(template.data["files"].keys()) == 21
+
+    template.save()
+    assert template.exists
+
+
+def test_build_okay_from_dir():
     template = Template.from_dir("__test_build__", TEST_DIR)
     assert template.name == "__test_build__"
     assert len(template.data["files"].keys()) == 21
 
     template.save()
     assert template.exists
+
+
+def test_build_okay_from_valid_repo():
+    template = Template.from_repo(
+        "__test_build_repo__",
+        "https://github.com/nusex/testapp",
+        ignore_dirs={".git"},
+    )
+    assert template.name == "__test_build_repo__"
+    assert len(template.data["files"].keys()) == 10
+
+    template.save()
+    assert template.exists
+
+
+def test_build_okay_from_invalid_repo():
+    with pytest.raises(BuildError) as exc:
+        template = Template.from_repo(
+            "__test_build_repo__",
+            "https://github.com/nusex/doesnt-exist",
+            ignore_dirs={".git"},
+        )
+    assert f"{exc.value}" == "Cloning the repo failed. Is Git installed? Is the URL correct?"
 
 
 def test_magic_methods():
@@ -128,13 +189,23 @@ def test_sphinx_conf_files_okay():
 def test_error_files_okay():
     template = Template("__test_build__")
 
-    for file in ("PROJECTNAME/error.py", "PROJECTNAME/errors.py"):
-        logging.info(f"File: {file}")
-        assert file in template.data["files"]
+    logging.info(f"File: PROJECTNAME/error.py")
+    assert "PROJECTNAME/error.py" in template.data["files"]
 
-        lines = re.split("\r\n|[\r\n]", template.data["files"][file].decode())
-        assert lines[0] == "class PROJECTBASEEXC(Exception):"
-        assert lines[4] == "class AnotherError(PROJECTBASEEXC):"
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["PROJECTNAME/error.py"].decode()
+    )
+    assert lines[0] == "class Error(Exception):"
+    assert lines[4] == "class AnotherError(Error):"
+
+    logging.info(f"File: PROJECTNAME/errors.py")
+    assert "PROJECTNAME/errors.py" in template.data["files"]
+
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["PROJECTNAME/errors.py"].decode()
+    )
+    assert lines[0] == "class PROJECTBASEEXC(Exception):"
+    assert lines[4] == "class AnotherError(PROJECTBASEEXC):"
 
 
 def test_manifest_file_okay():

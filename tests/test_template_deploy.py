@@ -40,6 +40,7 @@ from nusex import Profile, Template
 from nusex.constants import CONFIG_DIR, LICENSE_DIR
 
 DEPLOY_DIR = Path(__file__).parent / "my_app"
+CALVER_DEPLOY_DIR = Path(__file__).parent / "calver_check"
 
 
 def test_deploy_okay():
@@ -134,6 +135,25 @@ def test_pyproject_file_okay():
     assert lines[12] == 'extend-exclude = "my_app/__init__.py"'
 
 
+def test_init_file_okay_with_calver():
+    # This needs to be done such to not screw up the above test.
+    profile = Profile.current()
+    profile.update(starting_version="CALVER")
+    assert profile.data["starting_version"] == "CALVER"
+    profile.save()
+
+    os.makedirs(CALVER_DEPLOY_DIR, exist_ok=True)
+
+    template = Template("__test_deploy__")
+    template.deploy(destination=CALVER_DEPLOY_DIR)
+
+    with open(CALVER_DEPLOY_DIR / "calver_check/__init__.py", "r") as f:
+        lines = f.read().split("\n")
+
+    with open(CALVER_DEPLOY_DIR / "calver_check/__init__.py", "r") as f:
+        assert lines[1] == f'__version__ = "{dt.date.today().strftime("%Y.%m.%d")}"'
+
+
 def test_sphinx_conf_files_okay():
     profile = Profile.current()
 
@@ -154,14 +174,19 @@ def test_sphinx_conf_files_okay():
 
 
 def test_error_files_okay():
-    for file in ("my_app/error.py", "my_app/errors.py"):
-        logging.info(f"File: {file}")
+    logging.info(f"File: my_app/error.py")
+    with open(DEPLOY_DIR / "my_app/error.py", "r") as f:
+        lines = f.read().split("\n")
 
-        with open(DEPLOY_DIR / file, "r") as f:
-            lines = f.read().split("\n")
+    assert lines[0] == "class Error(Exception):"
+    assert lines[4] == "class AnotherError(Error):"
 
-        assert lines[0] == "class MyAppError(Exception):"
-        assert lines[4] == "class AnotherError(MyAppError):"
+    logging.info(f"File: my_app/errors.py")
+    with open(DEPLOY_DIR / "my_app/errors.py", "r") as f:
+        lines = f.read().split("\n")
+
+    assert lines[0] == "class MyAppError(Exception):"
+    assert lines[4] == "class AnotherError(MyAppError):"
 
 
 def test_manifest_file_okay():
@@ -227,7 +252,6 @@ def test_license_file_okay():
         assert lines[0] == header
 
 
-@t.no_type_check
 @pytest.mark.skipif(
     python_implementation() == "PyPy",
     reason="Dependency installs do not work with PyPy",
@@ -242,4 +266,5 @@ def test_installs_okay():
 
 
 def test_clean_up():
-    shutil.rmtree(Path(__file__).parent / "my_app")
+    shutil.rmtree(DEPLOY_DIR)
+    shutil.rmtree(CALVER_DEPLOY_DIR)
