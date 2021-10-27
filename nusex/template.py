@@ -339,14 +339,16 @@ class Template:
         os.chdir(TEMP_DIR)
 
         log.debug(f"[{name}] Cloning {url} into {TEMP_DIR}...")
-        output = run(f"git clone {url}")
-        if output.returncode == 1:
+        run(f"git clone {url}")
+
+        repo_dir = TEMP_DIR / url.split("/")[-1].replace(".git", "")
+        if not repo_dir.exists():
             raise BuildError(
                 "Cloning the repo failed. Is Git installed? Is the URL "
                 "correct?"
             )
 
-        os.chdir(TEMP_DIR / url.split("/")[-1].replace(".git", ""))
+        os.chdir(repo_dir)
         log.debug(f"[{name}] Building from {os.path.abspath(os.curdir)}...")
         return cls.from_cwd(
             name,
@@ -477,10 +479,10 @@ class Template:
         """
 
         def resolve_version(key):
-            if key != "CALVER":
-                return key
+            if key == "CALVER":
+                return dt.date.today().strftime("%Y.%m.%d")
 
-            return dt.date.today().strftime("%Y.%m.%d")
+            return key
 
         def resolve_license_info(key):
             with open(LICENSE_DIR / f"{key}.txt", encoding="utf-8") as f:

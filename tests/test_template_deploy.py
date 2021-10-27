@@ -30,7 +30,6 @@ import datetime as dt
 import logging
 import os
 import shutil
-import typing as t
 from pathlib import Path
 from platform import python_implementation
 
@@ -151,7 +150,10 @@ def test_init_file_okay_with_calver():
         lines = f.read().split("\n")
 
     with open(CALVER_DEPLOY_DIR / "calver_check/__init__.py", "r") as f:
-        assert lines[1] == f'__version__ = "{dt.date.today().strftime("%Y.%m.%d")}"'
+        assert (
+            lines[1]
+            == f'__version__ = "{dt.date.today().strftime("%Y.%m.%d")}"'
+        )
 
 
 def test_sphinx_conf_files_okay():

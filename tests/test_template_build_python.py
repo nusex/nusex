@@ -56,7 +56,8 @@ def test_create_valid_template():
 
 #     with pytest.raises(TemplateError) as exc:
 #         template.save()
-#     assert f"{exc.value}" == "The template data has been improperly modified"
+#     assert f"{exc.value}" ==
+#           "The template data has been improperly modified"
 
 
 def test_rename_template():
@@ -113,7 +114,10 @@ def test_build_okay_from_invalid_repo():
             "https://github.com/nusex/doesnt-exist",
             ignore_dirs={".git"},
         )
-    assert f"{exc.value}" == "Cloning the repo failed. Is Git installed? Is the URL correct?"
+    assert (
+        f"{exc.value}"
+        == "Cloning the repo failed. Is Git installed? Is the URL correct?"
+    )
 
 
 def test_magic_methods():
