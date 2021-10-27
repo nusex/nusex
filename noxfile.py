@@ -50,7 +50,7 @@ DEPS = {
     dep.split("~=")[0]: dep
     for dep in [
         *parse_requirements("./requirements-dev.txt"),
-        *parse_requirements("./requirements-test.txt"),
+        *parse_requirements("./requirements-nox.txt"),
     ]
 }
 
@@ -66,7 +66,7 @@ def tests(session):
     ) as z:
         z.extractall(test_config_dir)
 
-    session.install("-U", *parse_requirements("./requirements-test.txt"))
+    session.install("-U", *parse_requirements("./requirements-nox.txt"))
     session.run(
         "coverage",
         "run",
