@@ -43,12 +43,27 @@ The latter of these two options is the default behaviour in versions 0.x, though
 Installing dependencies
 -----------------------
 
-You can specify dependencies to install with a template. To do this, use one or both of the following flags:
+You can specify dependencies to install with a template. To do this, use one or both of the following options:
 
 - ``-i`` or ``--with-installs``
 - ``-I`` or ``--with-requirements-file``
 
 When manually specifying installs, they must be comma-separated. When providing a requirements file, it must exist in the directory you are building the template from (so the one you intend to include in the template itself, unless you manually ignore it). If you update this requirements file, the template is not automatically updated, and must be rebuilt with the new requirements.
+
+Building for languages other than Python
+----------------------------------------
+
+Python is assumed as the language of choice if no other language is specified. However, nusex does have dynamic templating support for multiple languages.
+
+You can select a language using the following option:
+
+- ``-l`` or ``--language``
+
+The currently supported languages are:
+
+- Python (the default)
+- Rust
+- None (this tells nusex to only modify language-agnostic files, such as the README)
 
 Deploying templates
 ===================
@@ -80,30 +95,37 @@ The basics
 
 Dynamic templating, when referring to nusex, is the process of dynamically altering template manifests to implant different information into generated files depending on context. For example, nusex can implant the project name into generated files without you needing to go and change it. When building templates, nusex is able to detect what information needs to be changed in the future, so you don't need to worry about making sure you've accounted for everything.
 
-The following files are altered when building templates, if present:
+The following files are altered when building generic templates, if present:
 
-- COPYING
-- COPYING.txt
-- LICENSE
-- LICENSE.txt
+- COPYING [#f1]_
+- LICENSE [#f1]_
+- README [#f1]_
+- docs/conf.py
+- docs/source/conf.py
+
+.. [#f1] Any files with this name in the template's root directory are modified, regardless of the file extension.
+
+The following files are altered along with the language-agnostic files when building Python templates:
+
 - MANIFEST.in
 - pyproject.toml
-- README.md
-- README.txt
 - setup.cfg
 - setup.py
 - [project_name]/\_\_init\_\_.py
 - [project_name]/error.py
 - [project_name]/errors.py
-- docs/conf.py
-- docs/source/conf.py
 
-These files are referred to internally as "special files".
+The following files are altered along with the language-agnostic files when building Rust templates:
+
+- Cargo.lock
+- Cargo.toml
+- src/error.rs
+- src/errors.rs
 
 Placeholder variable reference
 ------------------------------
 
-Here is a rundown of the placeholder variables nusex uses when creating manifests, and what they resolve to when deployed:
+Here is a rundown of the placeholder variables nusex uses when creating manifests and what they resolve to when deployed:
 
 .. list-table::
     :widths: 1 5
@@ -133,134 +155,3 @@ Here is a rundown of the placeholder variables nusex uses when creating manifest
       - The project name with the first letter capitalised, followed by "Error"
 
 You oftentimes don't need to worry about this, though you can open the template file in some text editors to make sure nusex has made the necessary modifications. Alternatively, you can pass the ``-c`` or ``--check`` options to output a preview to the terminal.
-
-File modification reference
----------------------------
-
-Here is a rundown of what gets modified in each file:
-
-.. list-table::
-    :widths: 1 5
-    :header-rows: 1
-
-    * - File
-      - Changes
-    * - COPYING
-      - The entire file is replaced by "LICENSEBODY"
-    * - COPYING.txt
-      - The entire file is replaced by "LICENSEBODY"
-    * - LICENSE
-      - The entire file is replaced by "LICENSEBODY"
-    * - LICENSE.txt
-      - The entire file is replaced by "LICENSEBODY"
-    * - MANIFEST.in
-      - All mentions of the project's name are replaced by "PROJECTNAME"
-    * - pyproject.toml
-      - *Outlined below*
-    * - README.md
-      - All mentions of the project's name are replaced by "PROJECTNAME", and an acknowledgement for nusex is added
-    * - README.txt
-      - All mentions of the project's name are replaced by "PROJECTNAME", and an acknowledgement for nusex is added
-    * - setup.cfg
-      - All mentions of the project's name are replaced by "PROJECTNAME"
-    * - setup.py
-      - All mentions of the project's name are replaced by "PROJECTNAME"
-    * - [project_name]/\_\_init\_\_.py
-      - *Outlined below*
-    * - [project_name]/error.py
-      - All mentions of the name of the first class found (assumed as the base error class) are replaced with "PROJECTBASEEXC"
-    * - [project_name]/errors.py
-      - All mentions of the name of the first class found (assumed as the base error class) are replaced with "PROJECTBASEEXC"
-    * - docs/conf.py
-      - *Outlined below*
-    * - docs/source/conf.py
-      - *Outlined below*
-
-Modifications to the [project_name]/\_\_init\_\_.py file
---------------------------------------------------------
-
-This file is normally where project information is held, more commonly in PyPI packages than general applications. Typically, this information is assigned to different `dunder variables <https://bic-berkeley.github.io/psych-214-fall-2016/two_dunders.html>`_.
-
-The following dunder variables are handled (any quotes are also written to the file):
-
-.. list-table::
-    :header-rows: 1
-
-    * - Variable name
-      - Assigned value
-    * - \_\_productname\_\_
-      - "PROJECTNAME"
-    * - \_\_version\_\_
-      - "PROJECTVERSION"
-    * - \_\_description\_\_
-      - "PROJECTDESCRIPTION"
-    * - \_\_url\_\_
-      - "PROJECTURL"
-    * - \_\_docs\_\_
-      - "https://PROJECTNAME.readthedocs.io/en/latest"
-    * - \_\_author\_\_
-      - "PROJECTAUTHOR"
-    * - \_\_author_email\_\_
-      - "PROJECTAUTHOREMAIL"
-    * - \_\_license\_\_
-      - "PROJECTLICENSE"
-    * - \_\_bugtracker\_\_
-      - "PROJECTURL/issues"
-    * - \_\_ci\_\_
-      - "PROJECTURL/actions
-
-Any number of dunder variables can be present in the \_\_init\_\_.py file, and they do not need to be in the above order, or in the same code block.
-
-Modifications to the pyproject.toml file
-----------------------------------------
-
-This file is generally used to store settings for various tools, including black and mypy. It can also be used as a replacement for any requirements files, or the \_\_init\_\_.py file with the use of the Poetry tool.
-
-The following variables are handled (any quotes are also written to the file):
-
-.. list-table::
-    :header-rows: 1
-
-    * - Variable name
-      - Assigned value
-    * - name
-      - "PROJECTNAME"
-    * - version
-      - "PROJECTVERSION"
-    * - description
-      - "PROJECTDESCRIPTION"
-    * - license
-      - "PROJECTLICENSE"
-    * - authors
-      - ["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]
-    * - maintainers
-      - ["PROJECTAUTHOR <PROJECTAUTHOREMAIL>"]
-    * - homepage
-      - "PROJECTURL"
-    * - repository
-      - "PROJECTURL"
-    * - documentation
-      - "https://PROJECTNAME.readthedocs.io/en/latest"
-
-Modifications to the docs[/source]/conf.py file
------------------------------------------------
-
-This file stores settings for rendering documentation using Sphinx.
-
-The following variables are handled (any quotes are also written to the file):
-
-.. list-table::
-    :header-rows: 1
-
-    * - Variable name
-      - Assigned value
-    * - project
-      - "PROJECTNAME"
-    * - copyright
-      - "PROJECTYEAR, PROJECTAUTHOR"
-    * - author
-      - "PROJECTAUTHOR"
-    * - release
-      - "PROJECTNAME.\_\_version\_\_"
-
-nusex also changes one of the import statements to "import PROJECTNAME".
