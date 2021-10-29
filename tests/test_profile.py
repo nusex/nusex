@@ -54,7 +54,7 @@ def test_create_invalid_profile():
 
     with pytest.raises(ProfileError) as exc:
         profile.save()
-    assert f"{exc.value}" == "The profile data has been improperly modified"
+    assert f"{exc.value}" == "Invalid profile data"
 
 
 def test_load_profile():

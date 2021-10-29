@@ -37,7 +37,7 @@ from platform import python_implementation
 from nusex import TEMP_DIR, TEMPLATE_DIR, Profile
 from nusex.blueprints import PythonBlueprint
 from nusex.constants import LICENSE_DIR
-from nusex.errors import BuildError, IncompatibilityError, TemplateError
+from nusex.errors import BuildError, IncompatibilityError
 from nusex.helpers import run, validate_name
 from nusex.spec import NSXSpecIO
 
@@ -158,13 +158,8 @@ class Template:
             :obj:`TemplateError`: The profile data has been improperly
                 modified.
         """
-        try:
-            NSXSpecIO().write(self.path, self.data)
-            log.info(f"[{self.name}] Saved to {self.path}")
-        except KeyError:
-            raise TemplateError(
-                "The template data has been improperly modified"
-            ) from None
+        NSXSpecIO().write(self.path, self.data)
+        log.info(f"[{self.name}] Saved to {self.path}")
 
     def delete(self):
         """Delete this template.

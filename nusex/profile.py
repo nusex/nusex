@@ -139,13 +139,8 @@ class Profile:
             :obj:`ProfileError`: The profile data has been improperly
                 modified.
         """
-        try:
-            NSPSpecIO().write(self.path, self.data)
-            log.info(f"[{self.name}] Saved to {self.path}")
-        except KeyError:
-            raise ProfileError(
-                "The profile data has been improperly modified"
-            ) from None
+        NSPSpecIO().write(self.path, self.data)
+        log.info(f"[{self.name}] Saved to {self.path}")
 
     def delete(self):
         """Delete this profile.

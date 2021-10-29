@@ -26,7 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex.errors import UnsupportedFile
+from nusex.errors import TemplateError, UnsupportedFile
 
 SPEC_ID = b"\x99\x78"
 
@@ -108,6 +108,9 @@ class NSXSpecIO:
         return data
 
     def write(self, path, data):
+        if set(self.defaults.keys()) != set(data.keys()):
+            raise TemplateError("Invalid template data")
+
         with open(path, "wb") as f:
             # Identify format.
             f.write(SPEC_ID)

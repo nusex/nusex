@@ -34,7 +34,7 @@ from pathlib import Path
 import pytest  # type: ignore
 
 from nusex import TEMPLATE_DIR, Template
-from nusex.errors import BuildError
+from nusex.errors import BuildError, TemplateError
 
 TEST_DIR = Path(__file__).parent / "data/testarosa_py"
 
@@ -50,14 +50,13 @@ def test_create_valid_template():
     assert template.exists
 
 
-# def test_create_invalid_template():
-#     template = Template("__test_template__")
-#     template.data.pop("language")
+def test_create_invalid_template():
+    template = Template("__test_template__")
+    template.data.pop("language")
 
-#     with pytest.raises(TemplateError) as exc:
-#         template.save()
-#     assert f"{exc.value}" ==
-#           "The template data has been improperly modified"
+    with pytest.raises(TemplateError) as exc:
+        template.save()
+    assert f"{exc.value}" == "Invalid template data"
 
 
 def test_rename_template():

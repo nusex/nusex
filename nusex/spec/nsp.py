@@ -26,7 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from nusex.errors import UnsupportedFile
+from nusex.errors import ProfileError, UnsupportedFile
 
 SPEC_ID = b"\x99\x70"
 
@@ -83,6 +83,9 @@ class NSPSpecIO:
         return data
 
     def write(self, path, data):
+        if set(self.defaults.keys()) != set(data.keys()):
+            raise ProfileError("Invalid profile data")
+
         with open(path, "wb") as f:
             # Identify format.
             f.write(SPEC_ID)
