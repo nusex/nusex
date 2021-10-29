@@ -448,9 +448,7 @@ class Template:
 
         log.info(f"[{self.name}] Using project name: {project_name}")
         log.info(f"[{self.name}] Using blueprint: {blueprint.__name__}")
-        log.info(
-            f"[{self.name}] As extension for: " + self.data["as_extension_for"]
-        )
+        log.info(f"[{self.name}] As addon for: " + self.data["as_addon_for"])
         log.info(f"[{self.name}] For language: " + self.data["language"])
         log.info(f"[{self.name}] With {len(files):,} files")
         log.debug(f"[{self.name}] With files: {files}")

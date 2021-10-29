@@ -62,7 +62,7 @@ def _migrate():
 
         for k, v in data["files"].items():
             data["files"][k] = v.encode()
-        data.update({"installs": [], "as_extension_for": ""})
+        data.update({"installs": [], "as_addon_for": ""})
         NSXSpecIO().write(TEMPLATE_DIR / f"{file.stem[:24]}.nsx", data)
 
     # Remove old files

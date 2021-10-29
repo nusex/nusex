@@ -38,7 +38,7 @@ class NSXSpecIO:
         self.defaults = {
             "files": {},
             "installs": [],
-            "as_extension_for": "",
+            "as_addon_for": "",
             "language": "python",
         }
 
@@ -90,7 +90,7 @@ class NSXSpecIO:
             # Read headers.
             ef = f.read(1)
             if ef == b"\x01":
-                data["as_extension_for"] = f.read(24).decode().strip()
+                data["as_addon_for"] = f.read(24).decode().strip()
 
             l = f.read(1)
             if l == b"\x01":
@@ -113,7 +113,7 @@ class NSXSpecIO:
             f.write(SPEC_ID)
 
             # Write headers.
-            ef = data["as_extension_for"]
+            ef = data["as_addon_for"]
             if ef:
                 f.write(b"\x01")
                 f.write(ef.ljust(24).encode())

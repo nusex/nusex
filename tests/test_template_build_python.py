@@ -43,7 +43,7 @@ def test_create_valid_template():
     template = Template("__test_template__")
     assert template.data["files"] == {}
     assert template.data["installs"] == []
-    assert template.data["as_extension_for"] == ""
+    assert template.data["as_addon_for"] == ""
     assert template.data["language"] == "python"
 
     template.save()
