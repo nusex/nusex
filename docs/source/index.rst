@@ -52,7 +52,7 @@ Unlike many alternatives, nusex has **no dependencies**. This means that when yo
 
 A profile system is also included for those who maintain personal and organisation-owned projects. You can create as many profiles as you want, and switch between them at any time.
 
-Despite nusex primarily being for initialising projects, that's not all it's useful for. In fact, it can be used throughout the whole development lifecycle of your project. This is possible through template extensions, which can be used to add new files when needed.
+Despite nusex primarily being for initialising projects, that's not all it's useful for. In fact, it can be used throughout the whole development lifecycle of your project. This is possible through template add-ons, which can be used to add new files when needed.
 
 nusex also has many other features which you can see on the `PyPI page <https://pypi.org/project/nusex/>`_, or the `GitHub repository <https://github.com/nusex/nusex>`_.
 
