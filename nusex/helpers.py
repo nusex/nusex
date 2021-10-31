@@ -86,3 +86,21 @@ def run(command):
 
     # Windows users will have to put up with the output for 3.6 tests.
     return sp.run(command, shell=True)
+
+
+def options_as_set(values):
+    s = set(values.split(","))
+
+    if s == {""}:
+        return {}
+
+    return s
+
+
+def options_as_list(values):
+    l = values.split(",")
+
+    if l == [""]:
+        return []
+
+    return l

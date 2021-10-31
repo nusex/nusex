@@ -30,25 +30,7 @@ import os
 
 from nusex import BLUEPRINT_MAPPING, TEMPLATE_DIR, Template
 from nusex.errors import AlreadyExists, DoesNotExist
-from nusex.helpers import cprint
-
-
-def _options_as_set(values):
-    s = set(values.split(","))
-
-    if s == {""}:
-        return {}
-
-    return s
-
-
-def _options_as_list(values):
-    l = values.split(",")
-
-    if l == [""]:
-        return []
-
-    return l
+from nusex.helpers import cprint, options_as_list, options_as_set
 
 
 def _check(template):
@@ -108,8 +90,6 @@ def run(
         raise DoesNotExist("That language is not supported")
     blueprint = BLUEPRINT_MAPPING[language]
 
-    # TODO: Make so when overwriting a template, it doesn't have to
-    # load the previous one first.
     if from_repo:
         template = Template.from_repo(
             name,
@@ -190,7 +170,7 @@ def setup(subparsers):
         ),
         metavar="DEPS",
         default="",
-        type=_options_as_list,
+        type=options_as_list,
     )
     s.add_argument(
         "-I",
@@ -210,7 +190,7 @@ def setup(subparsers):
         ),
         metavar="EXTS",
         default="pyc,pyd,pyo",
-        type=_options_as_set,
+        type=options_as_set,
     )
     s.add_argument(
         "--extend-ignore-exts",
@@ -220,7 +200,7 @@ def setup(subparsers):
         ),
         metavar="EXTS",
         default="",
-        type=_options_as_set,
+        type=options_as_set,
     )
     s.add_argument(
         "--ignore-dirs",
@@ -236,7 +216,7 @@ def setup(subparsers):
             ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,"
             "_build,build,dist,buck-out,.pytest-cache,.nusexmeta,*.egg-info"
         ),
-        type=_options_as_set,
+        type=options_as_set,
     )
     s.add_argument(
         "--extend-ignore-dirs",
@@ -246,6 +226,6 @@ def setup(subparsers):
         ),
         metavar="DIRS",
         default="",
-        type=_options_as_set,
+        type=options_as_set,
     )
     return subparsers
