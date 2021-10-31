@@ -38,7 +38,7 @@ from nusex import TEMP_DIR, TEMPLATE_DIR, Profile
 from nusex.blueprints import PythonBlueprint
 from nusex.constants import LICENSE_DIR
 from nusex.errors import BuildError, IncompatibilityError
-from nusex.helpers import run, validate_name
+from nusex.helpers import cprint, run, validate_name
 from nusex.spec import NSXSpecIO
 
 ATTRS = (
@@ -67,19 +67,26 @@ class Template:
 
     Keyword Args:
         installs (:obj:`list[str]`): A list of dependancies to be
-            installed when the template is deployed.
+            installed when the template is deployed. Defaults to an
+            empty list.
+        as_addon_for (:obj:`str`): The name of the template this
+            template is an add-on for. Defaults to an empty string.
 
     Attributes:
         path (:obj:`pathlib.Path`): The complete filepath to the
             template.
         data (:obj:`dict[str, Any]`): The data for the template.
+
+    .. versionchanged:: 1.2
+            Added ``as_addon_for`` keyword argument.
     """
 
-    __slots__ = ("path", "data", "_installs")
+    __slots__ = ("path", "data", "_installs", "_as_addon_for")
 
-    def __init__(self, name, *, installs=[]):
+    def __init__(self, name, *, installs=[], as_addon_for=""):
         self.path = TEMPLATE_DIR / f"{name}.nsx"
         self._installs = installs
+        self._as_addon_for = as_addon_for
 
         if not self.path.exists():
             log.info(f"[{name}] Not found; creating new...")
@@ -199,6 +206,7 @@ class Template:
         project_name=None,
         blueprint=None,
         installs=[],
+        as_addon_for="",
         ignore_exts=set(),
         ignore_dirs=set(),
     ):
@@ -218,6 +226,8 @@ class Template:
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
+            as_addon_for (:obj:`str`): The name of the template this
+                template is an add-on for. Defaults to an empty string.
             ignore_exts (:obj:`set[str]`): A set of file extensions to
                 ignore. Defaults to an empty set.
             ignore_dirs (:obj:`set[str]`): A set of directories to
@@ -228,8 +238,11 @@ class Template:
 
         .. versionchanged:: 1.1
             Added ``project_name`` and ``blueprint`` keyword arguments.
+
+        .. versionchanged:: 1.2
+            Added ``as_addon_for`` keyword argument.
         """
-        c = cls(name, installs=installs)
+        c = cls(name, installs=installs, as_addon_for=as_addon_for)
         c.build(
             project_name=project_name,
             blueprint=blueprint,
@@ -247,6 +260,7 @@ class Template:
         project_name=None,
         blueprint=None,
         installs=[],
+        as_addon_for="",
         ignore_exts=set(),
         ignore_dirs=set(),
     ):
@@ -267,6 +281,8 @@ class Template:
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
+            as_addon_for (:obj:`str`): The name of the template this
+                template is an add-on for. Defaults to an empty string.
             ignore_exts (:obj:`set[str]`): A set of file extensions to
                 ignore. Defaults to an empty set.
             ignore_dirs (:obj:`set[str]`): A set of directories to
@@ -277,8 +293,11 @@ class Template:
 
         .. versionchanged:: 1.1
             Added ``project_name`` and ``blueprint`` keyword arguments.
+
+        .. versionchanged:: 1.2
+            Added ``as_addon_for`` keyword argument.
         """
-        c = cls(name, installs=installs)
+        c = cls(name, installs=installs, as_addon_for=as_addon_for)
         c.build(
             project_name=project_name,
             root_dir=path,
@@ -297,6 +316,7 @@ class Template:
         project_name=None,
         blueprint=None,
         installs=[],
+        as_addon_for="",
         ignore_exts=set(),
         ignore_dirs=set(),
     ):
@@ -316,6 +336,8 @@ class Template:
             installs (:obj:`list[str]`): A list of dependencies to
                 install when this template is deployed. Defaults to an
                 empty list.
+            as_addon_for (:obj:`str`): The name of the template this
+                template is an add-on for. Defaults to an empty string.
             ignore_exts (:obj:`set[str]`): A set of file extensions to
                 ignore. Defaults to an empty set.
             ignore_dirs (:obj:`set[str]`): A set of directories to
@@ -329,6 +351,9 @@ class Template:
 
         .. versionchanged:: 1.1
             Added ``project_name`` and ``blueprint`` keyword arguments.
+
+        .. versionchanged:: 1.2
+            Added ``as_addon_for`` keyword argument.
         """
         os.makedirs(TEMP_DIR, exist_ok=True)
         os.chdir(TEMP_DIR)
@@ -350,6 +375,7 @@ class Template:
             project_name=project_name,
             blueprint=blueprint,
             installs=installs,
+            as_addon_for=as_addon_for,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
         )
@@ -441,6 +467,9 @@ class Template:
                 ignore_dirs=kwargs.pop("ignore_dirs", set()),
             )
 
+        self.data["installs"] = self._installs
+        self.data["as_addon_for"] = self._as_addon_for
+
         log.info(f"[{self.name}] Using project name: {project_name}")
         log.info(f"[{self.name}] Using blueprint: {blueprint.__name__}")
         log.info(f"[{self.name}] As add-on for: " + self.data["as_addon_for"])
@@ -450,7 +479,6 @@ class Template:
 
         nparts = len(Path(root_dir).resolve().parts)
         self.data["files"] = {resolve_key(f): f.read_bytes() for f in files}
-        self.data["installs"] = self._installs
 
         bp = blueprint(project_name, self.data)
         self.data = bp().data
@@ -535,8 +563,9 @@ class Template:
             "files": list(self.data["files"].keys()),
             "language": self.data["language"],
         }
-        with open(f"{destination}/.nusexmeta", "w") as f:
-            json.dump(meta, f)
+        if not self.data["as_addon_for"]:
+            with open(f"{destination}/.nusexmeta", "w") as f:
+                json.dump(meta, f)
 
         log.info(f"[{self.name}] Deployment successful")
 
@@ -550,10 +579,12 @@ class Template:
             )
 
         if self.data["language"] != "python":
-            raise IncompatibilityError(
+            cprint(
+                "war",
                 "Dependency installation is not supported on languages other "
-                "than Python"
+                "than Python",
             )
+            return
 
         installs = self.data["installs"]
 

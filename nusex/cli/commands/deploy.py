@@ -26,6 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
 import os
 
 from nusex import TEMPLATE_DIR, Template
@@ -37,10 +38,22 @@ def run(name, project_name, force, no_installs):
     if not os.path.isfile(TEMPLATE_DIR / f"{name}.nsx"):
         raise DoesNotExist("No template with that name exists")
 
-    if os.path.isfile("./.nusexmeta") and not force:
-        raise DeploymentError("A template has already been deployed here")
-
     template = Template(name)
+
+    if template.data["as_addon_for"]:
+        if not os.path.isfile(".nusexmeta"):
+            raise DeploymentError("No template has been deployed here")
+
+        with open(".nusexmeta") as f:
+            t = json.load(f)["template"]
+
+        if t != template.data["as_addon_for"]:
+            raise DeploymentError("This add-on is for a different template")
+
+    else:
+        if os.path.isfile(".nusexmeta") and not force:
+            raise DeploymentError("A template has already been deployed here")
+
     template.deploy(project_name=project_name)
     if not no_installs:
         template.install_dependencies()

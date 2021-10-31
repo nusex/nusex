@@ -65,6 +65,7 @@ def run(
     from_repo,
     project_name,
     language,
+    as_addon_for,
     with_installs,
     with_requirements_file,
     ignore_exts,
@@ -90,6 +91,13 @@ def run(
         raise DoesNotExist("That language is not supported")
     blueprint = BLUEPRINT_MAPPING[language]
 
+    if as_addon_for and not os.path.isfile(
+        TEMPLATE_DIR / f"{as_addon_for}.nsx"
+    ):
+        raise DoesNotExist(
+            "You cannot build an add-on for a template that does not exist"
+        )
+
     if from_repo:
         template = Template.from_repo(
             name,
@@ -97,6 +105,7 @@ def run(
             project_name=project_name,
             blueprint=blueprint,
             installs=with_installs,
+            as_addon_for=as_addon_for,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
         )
@@ -106,6 +115,7 @@ def run(
             project_name=project_name,
             blueprint=blueprint,
             installs=with_installs,
+            as_addon_for=as_addon_for,
             ignore_exts=ignore_exts,
             ignore_dirs=ignore_dirs,
         )
@@ -161,6 +171,13 @@ def setup(subparsers):
         metavar="LANGUAGE",
         default="python",
         type=lambda x: x.lower(),
+    )
+    s.add_argument(
+        "-a",
+        "--as-addon-for",
+        help="the template this template should be an add-on for",
+        metavar="TEMPLATE",
+        default="",
     )
     s.add_argument(
         "-i",
