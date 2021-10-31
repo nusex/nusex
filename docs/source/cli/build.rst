@@ -28,7 +28,10 @@ Options
     The repository URL to build a template from. This link can be for any repository provider, but Git must be installed before you can do this.
 
 ``-l LANGUAGE`` | ``--language LANGUAGE``
-    the language to assume the project is using. This changes which files are modified in the template, and how those files are modified. The default is "python".
+    The language to assume the project is using. This changes which files are modified in the template, and how those files are modified. The default is "python".
+
+``-a TEMPLATE`` | ``--as-addon-for TEMPLATE``
+    The template this template should be an add-on for. Add-ons work slightly differently to templates, in that they must be deployed within their assigned template, but can also be deployed where standard templates cannot, i.e. when there is a .nusexmeta file in the directory.
 
 ``-i DEPS`` | ``--with-installs DEPS``
     A comma-separated list of dependencies to install when deploying. This can include version restrictions, but will probably require quotes when doing so.
