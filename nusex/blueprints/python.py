@@ -95,6 +95,14 @@ class PythonBlueprint(GenericBlueprint):
         # https://docs.python.org/3/distutils/setupscript.html
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
+    @with_files("requirements.*\.txt$")
+    def modify_requirements_files(self, lines):
+        for i, line in enumerate(lines[:]):
+            if line.startswith("git+") and self.project_name in line:
+                lines[i] = "git+PROJECTURL"
+
+        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
+
     @with_files("PROJECTNAME/errors?.py$")
     def modify_error_files(self, lines):
         for line in lines[:]:

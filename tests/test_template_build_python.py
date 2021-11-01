@@ -78,7 +78,7 @@ def test_build_okay_from_cwd():
 
     template = Template.from_cwd("__test_build_cwd__")
     assert template.name == "__test_build_cwd__"
-    assert len(template.data["files"].keys()) == 21
+    assert len(template.data["files"].keys()) == 23
 
     template.save()
     assert template.exists
@@ -87,7 +87,7 @@ def test_build_okay_from_cwd():
 def test_build_okay_from_dir():
     template = Template.from_dir("__test_build__", TEST_DIR)
     assert template.name == "__test_build__"
-    assert len(template.data["files"].keys()) == 21
+    assert len(template.data["files"].keys()) == 23
 
     template.save()
     assert template.exists
@@ -124,7 +124,7 @@ def test_magic_methods():
     t2 = Template("__test_build__")
 
     assert t1.name == str(t1) == "__test_template__"
-    assert repr(t2) == "<Template name='__test_build__' files=21>"
+    assert repr(t2) == "<Template name='__test_build__' files=23>"
     assert t1 == t1
     assert t1 != t2
     assert t2.data["files"]["README.md"] == t2["README.md"]
@@ -284,6 +284,26 @@ def test_license_files_okay():
         assert lines[0] == "LICENSEBODY"
 
 
+def test_contributing_file_okay():
+    template = Template("__test_build__")
+    assert "CONTRIBUTING.md" in template.data["files"]
+
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["CONTRIBUTING.md"].decode()
+    )
+    assert lines[2] == "Thanks for considering contributing to PROJECTNAME!"
+
+
+def test_requirements_file_okay():
+    template = Template("__test_build__")
+    assert "requirements-test.txt" in template.data["files"]
+
+    lines = re.split(
+        "\r\n|[\r\n]", template.data["files"]["requirements-test.txt"].decode()
+    )
+    assert lines[0] == "git+PROJECTURL"
+
+
 def test_ignore_extensions():
     template = Template.from_dir(
         "__test_ignore_ext__",
@@ -291,7 +311,7 @@ def test_ignore_extensions():
         ignore_exts={"lol", "rofl"},
     )
     assert template.name == "__test_ignore_ext__"
-    assert len(template.data["files"].keys()) == 19
+    assert len(template.data["files"].keys()) == 21
 
 
 def test_ignore_directories():
@@ -301,7 +321,7 @@ def test_ignore_directories():
         ignore_dirs={"ignorethisdir"},
     )
     assert template.name == "__test_ignore_dir__"
-    assert len(template.data["files"].keys()) == 19
+    assert len(template.data["files"].keys()) == 21
 
 
 def test_ignore_wildmatch_directories():
@@ -311,4 +331,4 @@ def test_ignore_wildmatch_directories():
         ignore_dirs={"*setup"},
     )
     assert template.name == "__test_ignore_w_dir__"
-    assert len(template.data["files"].keys()) == 17
+    assert len(template.data["files"].keys()) == 19

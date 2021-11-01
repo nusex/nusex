@@ -255,6 +255,22 @@ def test_license_file_okay():
         assert lines[0] == header
 
 
+def test_contributing_file_okay():
+    with open(DEPLOY_DIR / "CONTRIBUTING.md", "r") as f:
+        lines = f.read().split("\n")
+
+    assert lines[2] == "Thanks for considering contributing to my_app!"
+
+
+def test_requirements_file_okay():
+    profile = Profile.current()
+
+    with open(DEPLOY_DIR / "requirements-test.txt", "r") as f:
+        lines = f.read().split("\n")
+
+    assert lines[0] == f"git+{profile['git_profile_url']}/my_app"
+
+
 @pytest.mark.skipif(
     python_implementation() == "PyPy",
     reason="Dependency installs do not work with PyPy",

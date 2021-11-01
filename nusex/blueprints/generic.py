@@ -66,9 +66,13 @@ class GenericBlueprint(Blueprint):
 
         return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
-    @with_files("LICENSE", "LICENCE", "COPYING")
+    @with_files("LICEN[SC]E", "COPYING")
     def modify_license(self, _):
         return "LICENSEBODY"
+
+    @with_files("CONTRIBUTING")
+    def modify_contributing(self, lines):
+        return "\n".join(lines).replace(self.project_name, "PROJECTNAME")
 
     @with_files("docs/(source/)?conf.py$")
     def modify_docs_conf(self, lines):
