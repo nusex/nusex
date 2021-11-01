@@ -46,7 +46,7 @@ Options
     A comma-separated list of file extensions to ignore on top of the defaults. This is useful if you just want to add file extensions.
 
 ``--ignore-dirs DIRS``
-    A comma-separated list of directories to ignore. You can prefix any directory with an asterisk (*) to ignore any files that contain that sequence of characters anywhere in the filepath. Otherwise, the default behaviour is to ignore files if the given value matches the name of any directory in the filepath. The default is ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,_build,build,dist,buck-out,.pytest-cache,.nusexmeta,*.egg-info".
+    A comma-separated list of directories to ignore. You can prefix any directory with an asterisk (*) to ignore any files that contain that sequence of characters anywhere in the filepath. Otherwise, the default behaviour is to ignore files if the given value matches the name of any directory in the filepath. The default is ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,_build,build,dist,buck-out,.pytest_cache,.coverage,.nusexmeta,*.egg-info".
 
 ``--extend-ignore-dirs DIRS``
     A comma-separated list of directories to ignore on top of the defaults. The same asterisk (*) syntax applies here.
