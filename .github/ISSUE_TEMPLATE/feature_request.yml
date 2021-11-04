@@ -1,0 +1,65 @@
+name: Feature request
+description: Request a new feature
+labels: ["feature"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to help make nusex better!
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A description of the feature you want to be implemented.
+      placeholder: "Example: Gitignore path matching."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: The problem this feature will solve, if any.
+      placeholder: "Example: Currently, you have to ignore files through options, which is a little cumbersome."
+
+  - type: checkboxes
+    id: winners
+    attributes:
+      label: Parts of nusex that will benefit
+      description: The parts of nusex that will benefit from this feature.
+      options:
+        - label: CLI
+        - label: API
+    validations:
+      required: true
+
+  - type: textarea
+    id: ideal-implementation
+    attributes:
+      label: Ideal implementation
+      description: How you think this should be implemented, if you have any idea at all.
+      placeholder: "Example: Althrough the `pathspec` module could easily do this, it would be a dependency, which is against nusex's ethos. Perhaps some custom parser?"
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: If there's anything else you feel is relevant, include it here.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I wish to contribute this feature.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Make sure all the following statements are true before continuing.
+      options:
+        - label: I have searched the issue tracker for duplicate issues and couldn't find any. If this is a follow-up issue, I have specified as such.
+          required: true

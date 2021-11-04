@@ -1,0 +1,89 @@
+name: Bug Report
+description: File a bug report
+labels: ["bug"]
+
+body:
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the bug. If you're using the scripting API, you can also include a code snippet.
+      value: |
+        1.
+        2.
+        3.
+        4.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: Expected behaviour
+      description: What should have happened.
+      placeholder: "Example: The .venv folder should have been ignored..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behaviour
+    attributes:
+      label: Current behaviour
+      description: What actually happened. If you were given an error, please provide it here.
+      placeholder: "Example: All files in the .venv folder were included, and I got an exception..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python-version
+    attributes:
+      label: Python version information
+      description: The version of Python you were using when the bug arose.
+      options:
+        - "3.11-dev"
+        - "3.10"
+        - "3.9"
+        - "3.8"
+        - "3.7"
+        - "3.6"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python-implementation
+    attributes:
+      label: Python implementation information
+      description: The implementation of Python you were using when the bug arose. If you don't know, select CPython.
+      options:
+        - "CPython"
+        - "PyPy"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os-information
+    attributes:
+      label: Operating system
+      description: The operating systems you were using when the bug arose.
+      options:
+        - "Windows"
+        - "macOS"
+        - "Linux (Debian/Ubuntu)"
+        - "Linux (Other)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: If there's anything else you feel is relevant, include it here.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Make sure all the following statements are true before continuing.
+      options:
+        - label: I have searched the issue tracker for duplicate issues and couldn't find any. If this is a follow-up issue, I have specified as such.
+          required: true
