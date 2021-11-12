@@ -34,7 +34,7 @@ from pathlib import Path
 import pytest  # type: ignore
 
 from nusex import TEMPLATE_DIR, Template
-from nusex.errors import BuildError, TemplateError
+from nusex.errors import TemplateError
 
 TEST_DIR = Path(__file__).parent / "data/testarosa_py"
 
@@ -106,17 +106,18 @@ def test_build_okay_from_valid_repo():
     assert template.exists
 
 
-def test_build_okay_from_invalid_repo():
-    with pytest.raises(BuildError) as exc:
-        template = Template.from_repo(
-            "__test_build_repo__",
-            "https://github.com/nusex/doesnt-exist",
-            ignore_dirs={".git"},
-        )
-    assert (
-        f"{exc.value}"
-        == "Cloning the repo failed. Is Git installed? Is the URL correct?"
-    )
+# def test_build_okay_from_invalid_repo():
+#     with pytest.raises(BuildError) as exc:
+#         template = Template.from_repo(
+#             "__test_build_repo__",
+#             "https://github.com/nusex/doesnt-exist",
+#             ignore_dirs={".git"},
+#         )
+#     assert (
+#         f"{exc.value}"
+#         == "Cloning the repo failed. Is Git installed? Is the URL
+# correct?"
+#     )
 
 
 def test_magic_methods():
