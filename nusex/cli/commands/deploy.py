@@ -27,14 +27,27 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
+import logging
 import os
 
 from nusex import TEMPLATE_DIR, Template
 from nusex.errors import DeploymentError, DoesNotExist
 from nusex.helpers import cprint
 
+log = logging.getLogger(__name__)
+
 
 def run(name, project_name, force, no_installs):
+    log.debug(
+        (
+            f"Using CLI values: "
+            f"{name=}; "
+            f"{project_name=}; "
+            f"{force=}; "
+            f"{no_installs=}"
+        )
+    )
+
     if not os.path.isfile(TEMPLATE_DIR / f"{name}.nsx"):
         raise DoesNotExist("No template with that name exists")
 

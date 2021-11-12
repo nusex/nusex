@@ -26,11 +26,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import logging
 import os
 
 from nusex import BLUEPRINT_MAPPING, TEMPLATE_DIR, Template
 from nusex.errors import AlreadyExists, DoesNotExist
 from nusex.helpers import cprint, options_as_list, options_as_set
+
+log = logging.getLogger(__name__)
 
 
 def _check(template):
@@ -73,6 +76,25 @@ def run(
     ignore_dirs,
     extend_ignore_dirs,
 ):
+    log.debug(
+        (
+            f"Using CLI values: "
+            f"{name=}; "
+            f"{overwrite=}; "
+            f"{check=}; "
+            f"{from_repo=}; "
+            f"{project_name=}; "
+            f"{language=}; "
+            f"{as_addon_for=}; "
+            f"{with_installs=}; "
+            f"{with_requirements_file=}; "
+            f"{ignore_exts=}; "
+            f"{extend_ignore_exts=}; "
+            f"{ignore_dirs=}; "
+            f"{extend_ignore_dirs=}"
+        )
+    )
+
     if os.path.isfile(TEMPLATE_DIR / f"{name}.nsx") and not overwrite:
         raise AlreadyExists(
             "That template already exists (use -o to overwrite)"
