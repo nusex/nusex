@@ -3,7 +3,7 @@ build~=0.7.0
 flake8~=4.0.0
 furo~=2021.10.9
 isort~=5.9.3
-len8~=0.3.0
+len8~=0.4.1
 mypy~=0.910
 nox~=2021.10.1
 git+https://github.com/pytest-dev/py; python_version == "3.11"
