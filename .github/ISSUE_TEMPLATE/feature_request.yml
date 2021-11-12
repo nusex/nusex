@@ -3,11 +3,6 @@ description: Request a new feature
 labels: ["feature"]
 
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to help make nusex better!
-
   - type: textarea
     id: summary
     attributes:
