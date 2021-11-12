@@ -232,7 +232,7 @@ def setup(subparsers):
         default=(
             ".direnv,.eggs,.git,.hg,.mypy_cache,.nox,.tox,.venv,venv,.svn,"
             "_build,build,dist,buck-out,.pytest_cache,.coverage,.nusexmeta,"
-            "*.egg-info",
+            "*.egg-info"
         ),
         type=options_as_set,
     )
