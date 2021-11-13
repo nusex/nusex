@@ -251,15 +251,24 @@ class Profile:
         log.info(f"[{self.name}] Selected")
 
     def _resolve_license(self, value):
+        def _sanitise(text):
+            return (
+                text.replace("License", "")
+                .replace("  ", "")
+                .replace("-", " ")
+                .replace("_", " ")
+                .strip()
+            )
+
+        value = value.lower()
+
         for file in LICENSE_DIR.glob("*.txt"):
             if value == file.stem:
-                log.debug(f"[{self.name}] License found: {value}")
-                return value
+                log.debug(f"[{self.name}] License found: {file.stem}")
+                return file.stem
 
             attrs = {}
             with open(LICENSE_DIR / file, encoding="utf-8") as f:
-                # This needs to be explicitly encoded as UTF-8 otherwise
-                # it won't work on Windows.
                 for line in f:
                     if line == "---\n":
                         continue
@@ -267,20 +276,18 @@ class Profile:
                         break
 
                     k, v = line.split(": ")
-                    attrs.update({k: v.strip()})
+                    attrs.update({k: v.strip().lower()})
 
-            # Provide as many chances for a match as possible.
+            nickname = attrs.get("nickname", "")
+            spdx_id = attrs.get("spdx-id", "")
+            title = attrs.get("title", "")
+
             if (
-                attrs.get("nickname", "") == value
-                or attrs.get("spdx-id", "") == value
-                or attrs.get("title", "") == value
-                or (
-                    attrs.get("title", "")
-                    .replace("License", "")
-                    .replace("  ", " ")
-                    .strip()
-                )
-                == value
+                title == value
+                or spdx_id == value
+                or title == value
+                or _sanitise(value)
+                in (_sanitise(nickname), _sanitise(spdx_id), _sanitise(title))
             ):
                 log.debug(f"[{self.name}] License attrs ({value}): {attrs}")
                 return file.stem
