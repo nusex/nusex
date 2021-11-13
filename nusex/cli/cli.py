@@ -29,6 +29,7 @@
 import argparse
 import datetime as dt
 import logging
+import platform
 import sys
 import traceback
 from importlib import import_module
@@ -59,8 +60,15 @@ parser.add_argument(
     action="store_true",
 )
 parser.add_argument(
+    "-V",
     "--version",
     help="show nusex's version and exit",
+    action="store_true",
+)
+parser.add_argument(
+    "-i",
+    "--info",
+    help="show detailed information for nusex exit",
     action="store_true",
 )
 subparsers = parser.add_subparsers(dest="subparser")
@@ -129,11 +137,41 @@ def _check_for_updates():
     NSCSpecIO().write(data)
 
 
+def _display_info():
+    py_impl = platform.python_implementation()
+    py_ver = platform.python_version()
+    py_comp = platform.python_compiler()
+    system = platform.system()
+    release = platform.release()
+
+    if system == "Linux":
+        with open("/etc/os-release") as f:
+            for line in f:
+                if line.startswith("PRETTY_NAME"):
+                    d = line.split("=")[1].strip().replace('"', "")
+                    distro = f"\n└──{d}"
+                    break
+    else:
+        distro = ""
+
+    cprint("inf", "Showing information for nusex:")
+    print(
+        (
+            f"nusex {__version__}\n"
+            f"{py_impl} {py_ver} {py_comp}\n"
+            f"{system} {release} {distro}"
+        )
+    )
+
+
 def main():
     args = parser.parse_args()
 
     if args.version:
         return print(__version__)
+
+    if args.info:
+        return _display_info()
 
     if not args.subparser:
         return parser.parse_args(("-h",))

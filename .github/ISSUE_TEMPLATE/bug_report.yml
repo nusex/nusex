@@ -34,42 +34,16 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: python-version
+  - type: textarea
+    id: system-info
     attributes:
-      label: Python version information
-      description: The version of Python you were using when the bug arose.
-      options:
-        - "3.11-dev"
-        - "3.10"
-        - "3.9"
-        - "3.8"
-        - "3.7"
-        - "3.6"
-    validations:
-      required: true
-
-  - type: dropdown
-    id: python-implementation
-    attributes:
-      label: Python implementation information
-      description: The implementation of Python you were using when the bug arose. If you don't know, select CPython.
-      options:
-        - "CPython"
-        - "PyPy"
-    validations:
-      required: true
-
-  - type: dropdown
-    id: os-information
-    attributes:
-      label: Operating system
-      description: The operating systems you were using when the bug arose.
-      options:
-        - "Windows"
-        - "macOS"
-        - "Linux (Debian/Ubuntu)"
-        - "Linux (Other)"
+      label: System information
+      description: The output of `nusex --info`.
+      placeholder: |
+        nusex 1.2.3
+        CPython 3.10.0 GCC 10.2.1 20210110
+        Linux 5.4.72-microsoft-standard-WSL2
+        └──Debian GNU/Linux 11 (bullseye)
     validations:
       required: true
 
