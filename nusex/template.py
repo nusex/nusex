@@ -572,6 +572,12 @@ class Template:
     def install_dependencies(self):
         """Install this template's dependencies. Note that this does not
         work on PyPy Python implementations."""
+        installs = self.data["installs"]
+
+        if not installs:
+            log.info(f"[{self.name}] No dependencies to install")
+            return
+
         if python_implementation() == "PyPy":
             raise IncompatibilityError(
                 "Dependency installation is not supported on PyPy "
@@ -582,14 +588,8 @@ class Template:
             cprint(
                 "war",
                 "Dependency installation is not supported on languages other "
-                "than Python",
+                "than Python.",
             )
-            return
-
-        installs = self.data["installs"]
-
-        if not installs:
-            log.info(f"[{self.name}] No dependencies to install")
             return
 
         log.info(f"[{self.name}] Installing {len(installs):,} dependencies...")
