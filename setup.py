@@ -28,9 +28,9 @@
 
 import sys
 
-if sys.version_info < (3, 6, 0):
+if sys.version_info < (3, 7, 0):
     print(
-        "nusex only supports Python versions 3.6.0 or greater.",
+        "nusex only supports Python versions 3.7.0 or greater.",
         file=sys.stderr,
     )
     sys.exit(1)
@@ -66,7 +66,6 @@ setuptools.setup(
     version=version,
     description=description,
     long_description=long_description,
-    long_description_content_type="text/markdown",
     url=url,
     author=author,
     author_email=email,
@@ -88,7 +87,6 @@ setuptools.setup(
         "Operating System :: Unix",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -106,8 +104,9 @@ setuptools.setup(
         "Bug Tracker": bug_tracker,
         "CI": ci,
     },
-    python_requires=">=3.6.0,<3.12",
-    packages=setuptools.find_packages(exclude=["tests*"]),
+    install_requires=parse_requirements("./requirements.txt"),
+    python_requires=">=3.7.0,<3.12",
+    packages=setuptools.find_packages(),
     entry_points={
         "console_scripts": [
             "nusex = nusex.cli.cli:main",

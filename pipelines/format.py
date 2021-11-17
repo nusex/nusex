@@ -26,65 +26,63 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import runpy
-import shutil
-from importlib import import_module
-from pathlib import Path
-
 import nox
-from nox import options
 
 from pipelines.config import *
 
-options.sessions = []
 
-for p in (Path(__file__).parent / "pipelines").glob("*.py"):
-    if p.stem == "config":
-        continue
-
-    mod = import_module(f"pipelines.{p.stem}")
-    for name in dir(mod):
-        if name.startswith("_"):
-            continue
-
-        attr = getattr(mod, name)
-        if isinstance(attr, nox._decorators.Func):
-            options.sessions.append(name)
-
-    runpy.run_path(p)
-
-
-# The following sessions are only ever run manually, as they are
-# generally either perform actions (which automatic checks shouldn't
-# do), or just display something to the console that isn't useful during
-# CI sessions.
+@nox.session(reuse_venv=True)
+def check_formatting(session):
+    session.install("-U", D["black"])
+    session.run("black", ".", "--check")
 
 
 @nox.session(reuse_venv=True)
-def show_coverage(session):
-    session.install("-U", D["coverage"])
+def check_imports(session):
+    session.install("-U", D["flake8"], D["isort"])
+    # flake8 doesn't use the gitignore so we have to be explicit.
+    session.run(
+        "flake8",
+        PROJECT_NAME,
+        "tests",
+        "--select",
+        "F4",
+        "--extend-ignore",
+        "E,F,W",
+        "--extend-exclude",
+        "__init__.py",
+    )
+    session.run("isort", ".", "-cq")
 
-    if not (Path(__file__).parent / ".coverage").is_file():
-        session.skip("No coverage to check")
 
-    session.run("coverage", "report", "-m")
+# @nox.session(reuse_venv=True)
+# def check_typing(session):
+#     session.install("-U", D["mypy"], "-r", "requirements.txt")
+#     session.run("mypy", *CHECK_PATHS)
 
 
 @nox.session(reuse_venv=True)
-def format(session):
-    session.install("-U", D["black"], D["isort"])
-    session.run("isort", ".")
-    session.run("black", ".")
+def check_line_lengths(session):
+    session.install("-U", D["len8"])
+    session.run("len8", *CHECK_PATHS, "-x", "data")
 
 
 @nox.session(reuse_venv=True)
-def build_docs(session):
-    session.install("-U", D["sphinx"], D["furo"], ".")
-    session.cd("./docs")
-    session.run("make", "html")
+def check_licensing(session):
+    missing = []
 
+    for p in [
+        *(PROJECT_DIR / PROJECT_NAME).rglob("*.py"),
+        *TEST_DIR.glob("*.py"),
+        *PIPELINE_DIR.glob("*.py"),
+        *PROJECT_DIR.glob("*.py"),
+    ]:
+        with open(p) as f:
+            if not f.read().startswith("# Copyright (c)"):
+                missing.append(p)
 
-@nox.session(reuse_venv=True)
-def build_package(session):
-    session.install("build==0.7.0")
-    session.run("python", "-m", "build")
+    if missing:
+        session.error(
+            f"\n{len(missing):,} file(s) are missing their licenses:\n"
+            + "\n".join(f" - {file}" for file in missing)
+        )

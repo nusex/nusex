@@ -26,65 +26,44 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import runpy
-import shutil
-from importlib import import_module
+import re
 from pathlib import Path
 
-import nox
-from nox import options
+PROJECT_DIR = Path(__file__).parent.parent
+TEST_DIR = PROJECT_DIR / "tests"
+PIPELINE_DIR = PROJECT_DIR / "pipelines"
 
-from pipelines.config import *
+PROJECT_NAME = Path(__file__).parent.parent.stem
 
-options.sessions = []
+CHECK_PATHS = (
+    str(PROJECT_DIR / PROJECT_NAME),
+    str(TEST_DIR),
+    str(PIPELINE_DIR),
+    str(PROJECT_DIR / "noxfile.py"),
+    str(PROJECT_DIR / "setup.py"),
+)
 
-for p in (Path(__file__).parent / "pipelines").glob("*.py"):
-    if p.stem == "config":
-        continue
-
-    mod = import_module(f"pipelines.{p.stem}")
-    for name in dir(mod):
-        if name.startswith("_"):
-            continue
-
-        attr = getattr(mod, name)
-        if isinstance(attr, nox._decorators.Func):
-            options.sessions.append(name)
-
-    runpy.run_path(p)
+DEP_PATTERN = re.compile("([a-zA-Z0-9-_]*)[=~<>,.0-9ab]*")
 
 
-# The following sessions are only ever run manually, as they are
-# generally either perform actions (which automatic checks shouldn't
-# do), or just display something to the console that isn't useful during
-# CI sessions.
+def resolve_requirements(*paths):
+    deps = {}
+
+    for p in paths:
+        with open(p) as f:
+            for line in f:
+                if line.startswith(("#", "git")):
+                    continue
+
+                if line.startswith("-r"):
+                    deps.update(resolve_requirements(line[3:-1]))
+                    continue
+
+                match = DEP_PATTERN.match(line)
+                if match:
+                    deps.update({match.group(1): match.group(0)})
+
+    return deps
 
 
-@nox.session(reuse_venv=True)
-def show_coverage(session):
-    session.install("-U", D["coverage"])
-
-    if not (Path(__file__).parent / ".coverage").is_file():
-        session.skip("No coverage to check")
-
-    session.run("coverage", "report", "-m")
-
-
-@nox.session(reuse_venv=True)
-def format(session):
-    session.install("-U", D["black"], D["isort"])
-    session.run("isort", ".")
-    session.run("black", ".")
-
-
-@nox.session(reuse_venv=True)
-def build_docs(session):
-    session.install("-U", D["sphinx"], D["furo"], ".")
-    session.cd("./docs")
-    session.run("make", "html")
-
-
-@nox.session(reuse_venv=True)
-def build_package(session):
-    session.install("build==0.7.0")
-    session.run("python", "-m", "build")
+D = resolve_requirements(*Path(__file__).parent.glob("*.txt"))

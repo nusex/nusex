@@ -26,65 +26,42 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import runpy
+import os
 import shutil
-from importlib import import_module
+import zipfile
 from pathlib import Path
 
 import nox
-from nox import options
 
-from pipelines.config import *
+import nusex
 
-options.sessions = []
-
-for p in (Path(__file__).parent / "pipelines").glob("*.py"):
-    if p.stem == "config":
-        continue
-
-    mod = import_module(f"pipelines.{p.stem}")
-    for name in dir(mod):
-        if name.startswith("_"):
-            continue
-
-        attr = getattr(mod, name)
-        if isinstance(attr, nox._decorators.Func):
-            options.sessions.append(name)
-
-    runpy.run_path(p)
-
-
-# The following sessions are only ever run manually, as they are
-# generally either perform actions (which automatic checks shouldn't
-# do), or just display something to the console that isn't useful during
-# CI sessions.
+TEST_CONFIG_DIR = nusex.CONFIG_DIR.parent / (
+    "nusex-test" if os.name != "nt" else ".nusex-test"
+)
+ZIP_PATH = Path(__file__).parent.parent / "tests/data/nusex-test.zip"
 
 
 @nox.session(reuse_venv=True)
-def show_coverage(session):
-    session.install("-U", D["coverage"])
+def tests(session):
+    with zipfile.ZipFile(ZIP_PATH) as z:
+        z.extractall(TEST_CONFIG_DIR)
 
-    if not (Path(__file__).parent / ".coverage").is_file():
-        session.skip("No coverage to check")
+    session.install("-Ur", "pipelines/requirements-tests.txt")
+    session.run(
+        "coverage",
+        "run",
+        "--omit",
+        "tests/*",
+        "-m",
+        "pytest",
+        "--testdox",
+        "--log-level=INFO",
+    )
 
-    session.run("coverage", "report", "-m")
-
-
-@nox.session(reuse_venv=True)
-def format(session):
-    session.install("-U", D["black"], D["isort"])
-    session.run("isort", ".")
-    session.run("black", ".")
-
-
-@nox.session(reuse_venv=True)
-def build_docs(session):
-    session.install("-U", D["sphinx"], D["furo"], ".")
-    session.cd("./docs")
-    session.run("make", "html")
-
-
-@nox.session(reuse_venv=True)
-def build_package(session):
-    session.install("build==0.7.0")
-    session.run("python", "-m", "build")
+    if TEST_CONFIG_DIR.is_dir():
+        try:
+            shutil.rmtree(TEST_CONFIG_DIR)
+        except PermissionError:
+            # Some weird permissions error with Windows we don't
+            # care about.
+            ...
