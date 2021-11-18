@@ -100,6 +100,7 @@ setuptools.setup(
         "Topic :: Software Development",
         "Topic :: Software Development :: Code Generators",
         "Topic :: Utilities",
+        "Typing :: Typed",
     ],
     project_urls={
         "Documentation": attrs["docs"],
