@@ -26,6 +26,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import annotations
+
 import re
 from pathlib import Path
 
@@ -46,7 +48,7 @@ CHECK_PATHS = (
 DEP_PATTERN = re.compile("([a-zA-Z0-9-_]*)[=~<>,.0-9ab]*")
 
 
-def resolve_requirements(*paths):
+def resolve_requirements(*paths: Path | str) -> dict[str, str]:
     deps = {}
 
     for p in paths:

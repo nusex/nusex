@@ -27,14 +27,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import runpy
-import shutil
 from importlib import import_module
 from pathlib import Path
 
 import nox
 from nox import options
 
-from pipelines.config import *
+from pipelines.config import D
 
 options.sessions = []
 
@@ -51,7 +50,7 @@ for p in (Path(__file__).parent / "pipelines").glob("*.py"):
         if isinstance(attr, nox._decorators.Func):
             options.sessions.append(name)
 
-    runpy.run_path(p)
+    runpy.run_path(f"{p}")
 
 
 # The following sessions are only ever run manually, as they are
@@ -61,7 +60,7 @@ for p in (Path(__file__).parent / "pipelines").glob("*.py"):
 
 
 @nox.session(reuse_venv=True)
-def show_coverage(session):
+def show_coverage(session: nox.Session) -> None:
     session.install("-U", D["coverage"])
 
     if not (Path(__file__).parent / ".coverage").is_file():
@@ -71,20 +70,20 @@ def show_coverage(session):
 
 
 @nox.session(reuse_venv=True)
-def format(session):
+def format(session: nox.Session) -> None:
     session.install("-U", D["black"], D["isort"])
     session.run("isort", ".")
     session.run("black", ".")
 
 
 @nox.session(reuse_venv=True)
-def build_docs(session):
+def build_docs(session: nox.Session) -> None:
     session.install("-U", D["sphinx"], D["furo"], ".")
     session.cd("./docs")
     session.run("make", "html")
 
 
 @nox.session(reuse_venv=True)
-def build_package(session):
+def build_package(session: nox.Session) -> None:
     session.install("build==0.7.0")
     session.run("python", "-m", "build")

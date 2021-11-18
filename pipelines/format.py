@@ -28,23 +28,29 @@
 
 import nox
 
-from pipelines.config import *
+from pipelines.config import (
+    CHECK_PATHS,
+    PIPELINE_DIR,
+    PROJECT_DIR,
+    PROJECT_NAME,
+    TEST_DIR,
+    D,
+)
 
 
 @nox.session(reuse_venv=True)
-def check_formatting(session):
+def check_formatting(session: nox.Session) -> None:
     session.install("-U", D["black"])
     session.run("black", ".", "--check")
 
 
 @nox.session(reuse_venv=True)
-def check_imports(session):
+def check_imports(session: nox.Session) -> None:
     session.install("-U", D["flake8"], D["isort"])
     # flake8 doesn't use the gitignore so we have to be explicit.
     session.run(
         "flake8",
-        PROJECT_NAME,
-        "tests",
+        *CHECK_PATHS,
         "--select",
         "F4",
         "--extend-ignore",
@@ -55,20 +61,20 @@ def check_imports(session):
     session.run("isort", ".", "-cq")
 
 
-# @nox.session(reuse_venv=True)
-# def check_typing(session):
-#     session.install("-U", D["mypy"], "-r", "requirements.txt")
-#     session.run("mypy", *CHECK_PATHS)
+@nox.session(reuse_venv=True)
+def check_typing(session: nox.Session) -> None:
+    session.install("-U", D["mypy"], "-r", "requirements.txt")
+    session.run("mypy", *CHECK_PATHS)
 
 
 @nox.session(reuse_venv=True)
-def check_line_lengths(session):
+def check_line_lengths(session: nox.Session) -> None:
     session.install("-U", D["len8"])
     session.run("len8", *CHECK_PATHS, "-x", "data")
 
 
 @nox.session(reuse_venv=True)
-def check_licensing(session):
+def check_licensing(session: nox.Session) -> None:
     missing = []
 
     for p in [

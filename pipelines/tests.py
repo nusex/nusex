@@ -33,16 +33,16 @@ from pathlib import Path
 
 import nox
 
-import nusex
+from nusex import CONFIG_DIR
 
-TEST_CONFIG_DIR = nusex.CONFIG_DIR.parent / (
+TEST_CONFIG_DIR = CONFIG_DIR.parent / (
     "nusex-test" if os.name != "nt" else ".nusex-test"
 )
 ZIP_PATH = Path(__file__).parent.parent / "tests/data/nusex-test.zip"
 
 
 @nox.session(reuse_venv=True)
-def tests(session):
+def tests(session: nox.Session) -> None:
     with zipfile.ZipFile(ZIP_PATH) as z:
         z.extractall(TEST_CONFIG_DIR)
 
