@@ -15,7 +15,7 @@ updates:
     rebase-strategy: auto
     reviewers:
         - "parafoxia"
-    target-branch: "task/version-2"
+    target-branch: "main"
 
   - package-ecosystem: github-actions
     directory: /
@@ -31,4 +31,4 @@ updates:
     rebase-strategy: auto
     reviewers:
         - "parafoxia"
-    target-branch: "task/version-2"
+    target-branch: "main"

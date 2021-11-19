@@ -35,6 +35,7 @@ from pathlib import Path
 import nox
 
 from nusex import CONFIG_DIR
+from pipelines.config import PROJECT_DIR
 
 TEST_CONFIG_DIR = CONFIG_DIR.parent / (
     "nusex-test" if os.name != "nt" else ".nusex-test"
@@ -47,7 +48,22 @@ def tests(session: nox.Session) -> None:
     # with zipfile.ZipFile(ZIP_PATH) as z:
     #     z.extractall(TEST_CONFIG_DIR)
 
-    # session.install("-Ur", "pipelines/requirements-tests.txt", ".")
+    installs = []
+    in_tests = False
+
+    with open(PROJECT_DIR / "requirements-nox.txt") as f:
+        for line in f:
+            if line == "# Tests\n":
+                in_tests = True
+                continue
+
+            if in_tests:
+                if line == "\n":
+                    break
+
+                installs.append(line.strip())
+
+    session.install("-U", *installs, ".")
     # session.run(
     #     "coverage",
     #     "run",
@@ -66,4 +82,3 @@ def tests(session: nox.Session) -> None:
     #         # Some weird permissions error with Windows we don't
     #         # care about.
     #         ...
-    ...

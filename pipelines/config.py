@@ -48,13 +48,13 @@ CHECK_PATHS = (
 DEP_PATTERN = re.compile("([a-zA-Z0-9-_]*)[=~<>,.0-9ab]*")
 
 
-def resolve_requirements(*paths: Path | str) -> dict[str, str]:
+def resolve_requirements(*paths: str) -> dict[str, str]:
     deps = {}
 
-    for p in paths:
-        with open(p) as f:
+    for path in paths:
+        with open(path) as f:
             for line in f:
-                if line.startswith(("#", "git")):
+                if line.startswith(("#", "git")) or line == "\n":
                     continue
 
                 if line.startswith("-r"):
@@ -68,4 +68,6 @@ def resolve_requirements(*paths: Path | str) -> dict[str, str]:
     return deps
 
 
-D = resolve_requirements(*Path(__file__).parent.glob("*.txt"))
+D = resolve_requirements(
+    PROJECT_DIR / "requirements-nox.txt", PROJECT_DIR / "requirements-rtd.txt"
+)

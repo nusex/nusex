@@ -35,23 +35,16 @@ from pipelines.config import PIPELINE_DIR, PROJECT_DIR
 
 @nox.session(reuse_venv=True)
 def check_safety(session: nox.Session) -> None:
-    # Needed due to https://github.com/pypa/pip/pull/9827.
-    paths = [
-        p
-        for p in [
-            *PROJECT_DIR.glob("requirements*.txt"),
-            *PIPELINE_DIR.glob("requirements*.txt"),
-        ]
-        if "docs" not in p.stem
-    ]
+    paths = [p for p in PROJECT_DIR.glob("requirements*.txt") if "rtd" not in p.stem]
     if not Path("nusex.egg-info").is_dir():
         # The git pull locally confuses safety somewhat.
-        paths.append(PIPELINE_DIR / "requirements-docs.txt")
+        paths.append(PIPELINE_DIR / "requirements-rtd.txt")
 
     installs = []
     for p in paths:
         installs.extend(["-r", f"{p}"])
 
+    # Needed due to https://github.com/pypa/pip/pull/9827.
     session.install("-U", "pip")
     session.install("-U", *installs)
     session.run("safety", "check", "--full-report")
