@@ -1,4 +1,5 @@
-black==21.11b0
+black==21.11b1
+codespell~=2.1.0
 flake8~=4.0
 isort~=5.9
 len8~=0.5

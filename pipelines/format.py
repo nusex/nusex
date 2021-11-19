@@ -70,7 +70,7 @@ def check_typing(session: nox.Session) -> None:
 @nox.session(reuse_venv=True)
 def check_line_lengths(session: nox.Session) -> None:
     session.install("-U", D["len8"])
-    session.run("len8", *CHECK_PATHS, "-x", "data")
+    session.run("len8", *CHECK_PATHS, "-lx", "data")
 
 
 @nox.session(reuse_venv=True)
@@ -92,3 +92,9 @@ def check_licensing(session: nox.Session) -> None:
             f"\n{len(missing):,} file(s) are missing their licenses:\n"
             + "\n".join(f" - {file}" for file in missing)
         )
+
+
+@nox.session(reuse_venv=True)
+def check_spelling(session: nox.Session) -> None:
+    session.install("-U", D["codespell"])
+    session.run("codespell", *CHECK_PATHS)
