@@ -13,9 +13,7 @@
 
 A dynamic, multi-language project templating utility.
 
-CPython versions 3.7 through 3.11-dev and PyPy version 3.7 are officially supported.
-
-Windows, MacOS, and Linux are all supported.
+CPython 3.7 through 3.11-dev and PyPy 3.7 are officially supported on all operating systems.
 
 ## Features
 
@@ -25,11 +23,11 @@ Windows, MacOS, and Linux are all supported.
 - A profile system for those who maintain personal and organisation-owned projects
 - Automatic dependency installation
 - Premade templates for applications and packages
-- No dependencies!
+- Minimal dependencies
 
 ## Installation
 
-**You need Python 3.7.0 or greater to run nusex.**
+**You need Python 3.7.0 or greater to run nusex.** If you need support for Python 3.6, you'll need to install nusex 1.2. No other Python versions were ever supported.
 
 To install the latest stable version of nusex, use the following command:
 ```sh
