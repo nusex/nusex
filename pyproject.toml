@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 extend-exclude = "nusex/__init__.py"
-line-length = 79
+line-length = 88
 
 [tool.isort]
 profile = "black"
