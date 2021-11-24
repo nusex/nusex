@@ -1,4 +1,40 @@
+# Generic
 -e .
 -r requirements.txt
-mypy==0.910
+
+# Sessions
 nox==2021.10.1
+
+# Docs
+furo==2021.10.9
+sphinx<5,>=4
+
+# Formatting
+black==21.11b1
+
+# Imports
+flake8~=4.0
+isort~=5.9
+
+# Typing
+mypy==0.910
+
+# Line lengths
+len8~=0.5
+
+# Spelling
+codespell~=2.1.0
+
+# Tests
+pytest~=6.2; python_version <= "3.10"
+git+https://github.com/pytest-dev/py; python_version == "3.11"
+pytest-testdox~=2.0
+
+# Coverage
+coverage~=6.0
+
+# Build
+build<1,>=0.7.0
+
+# Safety
+safety~=1.10.0
