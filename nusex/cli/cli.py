@@ -194,7 +194,7 @@ def main():
             **{
                 k: v
                 for k, v in args.__dict__.items()
-                if k not in ("subparser", "verbose", "version")
+                if k not in ("subparser", "verbose", "version", "info")
             }
         )
     except NusexUserError as exc:
