@@ -1,4 +1,4 @@
-# Generic
+# Meta
 -e .
 -r requirements.txt
 
@@ -10,11 +10,11 @@ furo==2021.10.9
 sphinx<5,>=4
 
 # Formatting
-black==21.11b1
+black==21.12b0
 
 # Imports
 flake8~=4.0
-isort~=5.9
+isort~=5.10
 
 # Typing
 mypy==0.910
@@ -23,18 +23,12 @@ mypy==0.910
 len8~=0.5
 
 # Spelling
-codespell~=2.1.0
+codespell~=2.1
 
 # Tests
+coverage~=6.0
 pytest~=6.2; python_version <= "3.10"
 git+https://github.com/pytest-dev/py; python_version == "3.11"
-pytest-testdox~=2.0
-
-# Coverage
-coverage~=6.0
-
-# Build
-build<1,>=0.7.0
 
 # Safety
-safety~=1.10.0
+safety~=1.10

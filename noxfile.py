@@ -84,16 +84,16 @@ def tests(session: nox.Session) -> None:
     #     z.extractall(TEST_CONFIG_DIR)
 
     session.install("-U", *fetch_installs("Tests"), ".")
-    # session.run(
-    #     "coverage",
-    #     "run",
-    #     "--omit",
-    #     "tests/*",
-    #     "-m",
-    #     "pytest",
-    #     "--testdox",
-    #     "--log-level=INFO",
-    # )
+    session.run(
+        "coverage",
+        "run",
+        "--omit",
+        "tests/*",
+        "-m",
+        "pytest",
+        "--log-level=INFO",
+    )
+    session.run("coverage", "report", "-m")
 
     # if TEST_CONFIG_DIR.is_dir():
     #     try:

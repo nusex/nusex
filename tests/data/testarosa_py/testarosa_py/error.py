@@ -1,6 +1,0 @@
-class Error(Exception):
-    ...
-
-
-class AnotherError(Error):
-    ...

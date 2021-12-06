@@ -1,6 +1,0 @@
-class TestarosaPyError(Exception):
-    ...
-
-
-class AnotherError(TestarosaPyError):
-    ...
