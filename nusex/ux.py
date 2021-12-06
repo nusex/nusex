@@ -47,13 +47,14 @@ def display_splash() -> None:
         f"{BANNER}"
         f"{nusex.__description__}\n\n"
         f"You're using version {nusex.__version__}.\n\n"
-        f"I've got nothing to do! Try one of the following:\n\n"
-        f"  - nusex init          • Initialise the nusex CLI\n"
-        f"  - nusex build <name>  • Build a template from the current directory\n"
-        f"  - nusex deploy <name> • Deploy a template to the current directory\n"
-        f"  - nusex --info        • Display useful information\n\n"
-        f"Visit {nusex.__docs__} to find out how to use nusex.\n\n"
-        f"Thanks for using nusex!"
+        "I've got nothing to do! Try one of the following:\n\n"
+        "  - nusex init          • Initialise the nusex CLI\n"
+        "  - nusex build <name>  • Build a template from the current directory\n"
+        "  - nusex deploy <name> • Deploy a template to the current directory\n"
+        "  - nusex --info        • Display useful information\n\n"
+        f"Visit {nusex.__docs__} or use `nusex --help` "
+        "to find out how to use nusex.\n\n"
+        "Thanks for using nusex!"
     )
 
 
