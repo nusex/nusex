@@ -77,7 +77,7 @@ def fetch_installs(*categories: str) -> list[str]:
     return installs
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def tests(session: nox.Session) -> None:
     # with zipfile.ZipFile(ZIP_PATH) as z:
     #     z.extractall(TEST_CONFIG_DIR)
@@ -103,13 +103,13 @@ def tests(session: nox.Session) -> None:
     #         ...
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_formatting(session: nox.Session) -> None:
     session.install("-U", *fetch_installs("Formatting"))
     session.run("black", ".", "--check")
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_imports(session: nox.Session) -> None:
     session.install("-U", *fetch_installs("Imports"))
     # flake8 doesn't use the gitignore so we have to be explicit.
@@ -126,19 +126,21 @@ def check_imports(session: nox.Session) -> None:
     session.run("isort", *CHECK_PATHS, "-cq")
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_typing(session: nox.Session) -> None:
     session.install("-U", *fetch_installs("Typing"), "-r", "requirements.txt")
     session.run("mypy", *CHECK_PATHS)
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_line_lengths(session: nox.Session) -> None:
+    check = [p for p in CHECK_PATHS if p != str(TEST_DIR)]
+
     session.install("-U", *fetch_installs("Line lengths"))
-    session.run("len8", *CHECK_PATHS, "-lx", "data")
+    session.run("len8", *check, "-lx", "data")
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_licensing(session: nox.Session) -> None:
     missing = []
 
@@ -158,13 +160,13 @@ def check_licensing(session: nox.Session) -> None:
         )
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_spelling(session: nox.Session) -> None:
     session.install("-U", *fetch_installs("Spelling"))
     session.run("codespell", *CHECK_PATHS)
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True)  # type: ignore
 def check_safety(session: nox.Session) -> None:
     paths = list(PROJECT_DIR.glob("requirements*.txt"))
     if not Path("nusex.egg-info").is_dir():
