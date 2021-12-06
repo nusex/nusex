@@ -59,7 +59,7 @@ from pathlib import Path
 from . import api, checks, errors, ux
 
 # Setup up extra logging stuff.
-TRACE: t.Final = 1
+TRACE = 1
 logging.addLevelName(TRACE, "TRACE")
 
 
@@ -76,20 +76,18 @@ def _suffix() -> str:
 
 
 # Done like this so Mypy will shut up.
-CONFIG_DIR: t.Final = Path.home() / (
+CONFIG_DIR = Path.home() / (
     f".{_suffix()}" if os.name == "nt" else f".config/{_suffix()}"
 )
-TEMP_DIR: t.Final = (
-    (CONFIG_DIR / "tmp") if os.name == "nt" else Path(f"/tmp/{_suffix()}")
-)
+TEMP_DIR = (CONFIG_DIR / "tmp") if os.name == "nt" else Path(f"/tmp/{_suffix()}")
 
-CONFIG_FILE: t.Final = CONFIG_DIR / "config.nsc"
-LICENSES_FILE: t.Final = CONFIG_DIR / "licenses.json"
-PROFILE_DIR: t.Final = CONFIG_DIR / "profiles"
-TEMPLATE_DIR: t.Final = CONFIG_DIR / "templates"
+CONFIG_FILE = CONFIG_DIR / "config.nsc"
+LICENSES_FILE = CONFIG_DIR / "licenses.json"
+PROFILE_DIR = CONFIG_DIR / "profiles"
+TEMPLATE_DIR = CONFIG_DIR / "templates"
 
 # Name validation.
-VALID_NAME_PATTERN: t.Final = re.compile("[a-z0-9_]{,32}$")
+VALID_NAME_PATTERN = re.compile("[a-z0-9_]{,32}$")
 
 # Excludes
 DEFAULT_EXCLUDE_PATTERNS = [

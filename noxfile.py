@@ -168,13 +168,10 @@ def check_spelling(session: nox.Session) -> None:
 
 @nox.session(reuse_venv=True)  # type: ignore
 def check_safety(session: nox.Session) -> None:
-    paths = list(PROJECT_DIR.glob("requirements*.txt"))
-    if not Path("nusex.egg-info").is_dir():
-        # The git pull locally confuses safety somewhat.
-        paths.append(PROJECT_DIR / "docs/requirements.txt")
+    with open(PROJECT_DIR / "docs/requirements.txt") as f:
+        installs = f.read().splitlines()[1:]
 
-    installs = []
-    for p in paths:
+    for p in list(PROJECT_DIR.glob("requirements*.txt")):
         installs.extend(["-r", f"{p}"])
 
     # Needed due to https://github.com/pypa/pip/pull/9827.
