@@ -178,3 +178,9 @@ def check_safety(session: nox.Session) -> None:
     session.install("-U", "pip")
     session.install("-U", *installs)
     session.run("safety", "check", "--full-report")
+
+
+@nox.session(reuse_venv=True)  # type: ignore
+def check_security(session: nox.Session) -> None:
+    session.install("-U", *fetch_installs("Security"))
+    session.run("bandit", "-qr", *CHECK_PATHS, "-s", "B101")

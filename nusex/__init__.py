@@ -75,12 +75,9 @@ def _suffix() -> str:
     return "nusex"
 
 
-# Done like this so Mypy will shut up.
 CONFIG_DIR = Path.home() / (
     f".{_suffix()}" if os.name == "nt" else f".config/{_suffix()}"
 )
-TEMP_DIR = (CONFIG_DIR / "tmp") if os.name == "nt" else Path(f"/tmp/{_suffix()}")
-
 CONFIG_FILE = CONFIG_DIR / "config.nsc"
 LICENSES_FILE = CONFIG_DIR / "licenses.json"
 PROFILE_DIR = CONFIG_DIR / "profiles"

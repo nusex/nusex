@@ -32,3 +32,6 @@ git+https://github.com/pytest-dev/py; python_version == "3.11"
 
 # Safety
 safety~=1.10
+
+# Security
+bandit~=1.7
