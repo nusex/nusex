@@ -45,7 +45,6 @@ CHECK_PATHS = (
     str(PROJECT_DIR / "noxfile.py"),
     str(PROJECT_DIR / "setup.py"),
 )
-print(CHECK_PATHS[0])
 
 DEP_PATTERN = re.compile("([a-zA-Z0-9-_]*)[=~<>,.0-9ab]*")
 

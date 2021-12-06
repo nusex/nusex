@@ -28,31 +28,4 @@
 
 from pathlib import Path
 
-import nusex
-
-
-def is_initialised() -> bool:
-    return (
-        nusex.CONFIG_DIR.is_dir()
-        and nusex.CONFIG_FILE.is_file()
-        and nusex.LICENSES_FILE.is_file()
-        and nusex.PROFILE_DIR.is_dir()
-        and nusex.TEMPLATE_DIR.is_dir()
-    )
-
-
-def name_is_valid(name: str) -> bool:
-    if not nusex.VALID_NAME_PATTERN.match(name):
-        return False
-
-    return True
-
-
-def does_not_conflict(name: str, in_dir: Path | str, extension: str) -> bool:
-    if not isinstance(in_dir, Path):
-        in_dir = Path(in_dir)
-
-    if name in (p.stem for p in in_dir.glob(f"*.{extension}")):
-        return False
-
-    return True
+DATA_DIR = Path(__file__).parent / "data"

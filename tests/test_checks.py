@@ -26,33 +26,28 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from pathlib import Path
+from nusex import checks
+from tests import DATA_DIR
 
-import nusex
+
+def test_is_initialised() -> None:
+    # Not a whole lot I can do here.
+    assert checks.is_initialised() == False
 
 
-def is_initialised() -> bool:
-    return (
-        nusex.CONFIG_DIR.is_dir()
-        and nusex.CONFIG_FILE.is_file()
-        and nusex.LICENSES_FILE.is_file()
-        and nusex.PROFILE_DIR.is_dir()
-        and nusex.TEMPLATE_DIR.is_dir()
+def test_name_is_valid() -> None:
+    assert checks.name_is_valid("valid_name") == True
+    assert checks.name_is_valid("CapitalName") == False
+    assert checks.name_is_valid("this_name_is_not_valid_because_its_long") == False
+    assert checks.name_is_valid("kebab-case") == False
+
+
+def test_does_not_conflict() -> None:
+    assert checks.does_not_conflict("free", in_dir=DATA_DIR, extension="json") == True
+    assert (
+        checks.does_not_conflict("free", in_dir=str(DATA_DIR), extension="json") == True
     )
-
-
-def name_is_valid(name: str) -> bool:
-    if not nusex.VALID_NAME_PATTERN.match(name):
-        return False
-
-    return True
-
-
-def does_not_conflict(name: str, in_dir: Path | str, extension: str) -> bool:
-    if not isinstance(in_dir, Path):
-        in_dir = Path(in_dir)
-
-    if name in (p.stem for p in in_dir.glob(f"*.{extension}")):
-        return False
-
-    return True
+    assert (
+        checks.does_not_conflict("stored_profile", in_dir=DATA_DIR, extension="json")
+        == False
+    )
