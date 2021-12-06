@@ -26,19 +26,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+__all__ = ("Profile",)
 
-class NusexException(Exception):
-    """The base exception class for nusex."""
-
-
-class NusexAPIException(NusexException):
-    """The base exception class for errors relating to the API."""
-
-
-class InvalidName(NusexAPIException):
-    """Exception thrown when attempting to save a template or profile
-    with an invalid name."""
-
-
-class NusexCLIException(NusexException):
-    """The base exception class for errors relating to the CLI."""
+from nusex.api.profile import Profile
