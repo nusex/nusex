@@ -26,34 +26,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import re
+import nusex
 
 
-def with_files(*exprs):
-    def decorator(func):
-        def wrapper(blueprint):
-            files = [
-                file
-                for file in blueprint.data["files"]
-                if re.match("|".join(exprs), file)
-            ]
-
-            for file in files:
-                input = blueprint.data["files"].get(file, None)
-
-                if not input:
-                    continue
-
-                input = input.decode()
-                lines = input.split("\n")
-                output = func(blueprint, lines)
-                blueprint.data["files"][file] = output.encode()
-
-        return wrapper
-
-    return decorator
-
-
-from .generic import GenericBlueprint
-from .python import PythonBlueprint
-from .rust import RustBlueprint
+def is_initialised() -> bool:
+    return (
+        nusex.CONFIG_DIR.is_dir()
+        and nusex.CONFIG_FILE.is_file()
+        and nusex.LICENSES_FILE.is_file()
+        and nusex.PROFILE_DIR.is_dir()
+        and nusex.TEMPLATE_DIR.is_dir()
+    )

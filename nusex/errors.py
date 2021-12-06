@@ -27,52 +27,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-class NusexError(Exception):
+class NusexException(Exception):
     """The base exception class for nusex."""
 
 
-class NusexUserError(NusexError):
-    """An error occurred due to user error."""
+class NusexAPIException(NusexException):
+    """The base exception class for errors relating to the API."""
 
 
-class ProfileError(NusexUserError):
-    """Something went wrong when working with a profile."""
-
-
-class TemplateError(NusexUserError):
-    """Something went wrong when working with a template."""
-
-
-class BuildError(TemplateError):
-    """A template failed to build."""
-
-
-class DeploymentError(TemplateError):
-    """A template failed to deploy."""
-
-
-class AlreadyExists(NusexUserError):
-    """A profile or template already exists."""
-
-
-class DoesNotExist(NusexUserError):
-    """A profile or template does not exist."""
-
-
-class MigrationError(NusexUserError):
-    """A migration or migration reversion failed."""
-
-
-class DownloadError(NusexError):
-    """A download failed to complete, or an invalid download request
-    was submitted."""
-
-
-class UnsupportedFile(NusexError):
-    """An invalid file has been passed to a decoder, or a file larger
-    than the file size limit has been included in a template."""
-
-
-class IncompatibilityError(NusexError):
-    """A operation is incompatible with your OS, Python version, or
-    Python implementation."""
+class NusexCLIException(NusexException):
+    """The base exception class for errors relating to the CLI."""

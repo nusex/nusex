@@ -26,17 +26,89 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+__all__ = (
+    "TRACE",
+    "CONFIG_DIR",
+    "TEMP_DIR",
+    "CONFIG_FILE",
+    "LICENSES_FILE",
+    "PROFILE_DIR",
+    "TEMPLATE_DIR",
+    "VALID_NAME_PATTERN",
+    "BLUEPRINT_MAPPING",
+)
+
 __productname__ = "nusex"
-__version__ = "1.2.3"
+__version__ = "2.0.0.dev0"
 __description__ = "A dynamic, multi-language project templating utility."
 __url__ = "https://github.com/nusex/nusex"
-__docs__ = "https://nusex.readthedocs.io/en/latest"
+__docs__ = "https://nusex.readthedocs.io"
 __author__ = "Ethan Henderson"
 __author_email__ = "ethan.henderson.1998@gmail.com"
-__license__ = "BSD-3-Clause"
+__license__ = "BSD 3-Clause 'New' or 'Revised' License"
 __bugtracker__ = "https://github.com/nusex/nusex/issues"
 __ci__ = "https://github.com/nusex/nusex/actions"
 
-from .constants import *
-from .profile import Profile
-from .template import Template
+import logging
+import os
+import re
+import sys
+import typing as t
+from pathlib import Path
+
+from . import api, checks, errors, ux
+
+# Setup up extra logging stuff.
+TRACE: t.Final = 1
+logging.addLevelName(TRACE, "TRACE")
+
+
+# Ger paths for important files and dirs.
+def _suffix() -> str:
+    # Determine whether this is a production copy or not. This
+    # prevents actual user configs from getting messed up.
+    parts = Path(__file__).parts
+    if "nox" in " ".join(sys.argv) or ".nox" in parts:
+        return "nusex-test"
+    if "site-packages" not in parts:
+        return "nusex-dev"
+    return "nusex"
+
+
+# Done like this so Mypy will shut up.
+CONFIG_DIR: t.Final = Path.home() / (
+    f".{_suffix()}" if os.name == "nt" else f".config/{_suffix()}"
+)
+TEMP_DIR: t.Final = (
+    (CONFIG_DIR / "tmp") if os.name == "nt" else Path(f"/tmp/{_suffix()}")
+)
+
+CONFIG_FILE: t.Final = CONFIG_DIR / "config.nsc"
+LICENSES_FILE: t.Final = CONFIG_DIR / "licenses.json"
+PROFILE_DIR: t.Final = CONFIG_DIR / "profiles"
+TEMPLATE_DIR: t.Final = CONFIG_DIR / "templates"
+
+# Name validation.
+VALID_NAME_PATTERN: t.Final = re.compile("[a-z0-9_]{,32}$")
+
+# Excludes
+DEFAULT_EXCLUDE_PATTERNS = [
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".tox",
+    ".venv",
+    "venv",
+    ".svn",
+    "_build",
+    "build",
+    "dist",
+    "buck-out",
+    ".pytest_cache",
+    ".coverage",
+    "*.egg-info",
+    ".nusexmeta",
+]
