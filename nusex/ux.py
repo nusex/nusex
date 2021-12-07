@@ -32,13 +32,13 @@ import platform
 import nusex
 
 BANNER = """
-      ::::    ::: :::    :::  ::::::::  :::::::::: :::    :::
-     :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:    :+:
-    :+:+:+  +:+ +:+    +:+ +:+        +:+         +:+  +:+
-   +#+ +:+ +#+ +#+    +:+ +#++:++#++ +#++:++#     +#++:+
-  +#+  +#+#+# +#+    +#+        +#+ +#+         +#+  +#+
- #+#   #+#+# #+#    #+# #+#    #+# #+#        #+#    #+#
-###    ####  ########   ########  ########## ###    ###
+\33[38;5;1m      ::::    ::: :::    :::  ::::::::  :::::::::: :::    :::  \33[0m
+\33[38;5;208m     :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:    :+: \33[0m
+\33[38;5;3m    :+:+:+  +:+ +:+    +:+ +:+        +:+         +:+  +:+     \33[0m
+\33[38;5;2m   +#+ +:+ +#+ +#+    +:+ +#++:++#++ +#++:++#     +#++:+       \33[0m
+\33[38;5;4m  +#+  +#+#+# +#+    +#+        +#+ +#+         +#+  +#+       \33[0m
+\33[38;5;135m #+#   #+#+# #+#    #+# #+#    #+# #+#        #+#    #+#     \33[0m
+\33[38;5;5m###    ####  ########   ########  ########## ###    ###        \33[0m
 
 """
 
@@ -89,29 +89,24 @@ logging.addLevelName(TRACE, "TRACE")
 
 
 def init_logger(level: int = logging.INFO) -> None:
-    FMT = "%(relativeCreated).5d [%(levelname)8s] %(name)s: %(message)s"
+    FMT = "{relativeCreated:>05.0f} [{levelname:^7}] {name}: {message}"
     FORMATS = {
         nusex.TRACE: f"\33[38;5;243m{FMT}\33[0m",
         logging.DEBUG: f"\33[38;5;246m{FMT}\33[0m",
-        logging.INFO: f"{FMT}\33[0m",
+        logging.INFO: FMT,
         logging.WARNING: f"\33[1m\33[38;5;178m{FMT}\33[0m",
         logging.ERROR: f"\33[1m\33[38;5;202m{FMT}\33[0m",
         logging.CRITICAL: f"\33[1m\33[38;5;196m{FMT}\33[0m",
     }
 
     class CustomFormatter(logging.Formatter):
-        def __init__(self, fmt: str) -> None:
-            super().__init__()
-            self.fmt = fmt
-
         def format(self, record: logging.LogRecord) -> str:
-            log_fmt = FORMATS.get(record.levelno)
-            formatter = logging.Formatter(log_fmt)
+            log_fmt = FORMATS[record.levelno]
+            formatter = logging.Formatter(log_fmt, style="{")
             return formatter.format(record)
 
     handler = logging.StreamHandler()
-    handler.setFormatter(CustomFormatter(format))
-
+    handler.setFormatter(CustomFormatter())
     logging.basicConfig(
         level=level,
         handlers=[handler],
