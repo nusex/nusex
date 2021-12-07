@@ -23,6 +23,7 @@ jobs:
           - check_licensing
           - check_spelling
           - check_safety
+          - check_security
 
     name: Check
     runs-on: ubuntu-latest
