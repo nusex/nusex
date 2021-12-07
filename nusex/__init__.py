@@ -57,10 +57,7 @@ import typing as t
 from pathlib import Path
 
 from . import api, checks, errors, ux
-
-# Setup up extra logging stuff.
-TRACE = 1
-logging.addLevelName(TRACE, "TRACE")
+from .ux import TRACE
 
 
 # Ger paths for important files and dirs.

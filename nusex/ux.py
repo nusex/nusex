@@ -26,6 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import logging
 import platform
 
 import nusex
@@ -79,4 +80,39 @@ def display_info() -> None:
         f"nusex {nusex.__version__}\n"
         f"{py_impl} {py_ver} {py_comp}\n"
         f"{system} {release} {distro}"
+    )
+
+
+# Logging stuff.
+TRACE = 1
+logging.addLevelName(TRACE, "TRACE")
+
+
+def init_logger(level: int = logging.INFO) -> None:
+    FMT = "%(relativeCreated).5d [%(levelname)8s] %(name)s: %(message)s"
+    FORMATS = {
+        nusex.TRACE: f"\33[38;5;243m{FMT}\33[0m",
+        logging.DEBUG: f"\33[38;5;246m{FMT}\33[0m",
+        logging.INFO: f"{FMT}\33[0m",
+        logging.WARNING: f"\33[1m\33[38;5;178m{FMT}\33[0m",
+        logging.ERROR: f"\33[1m\33[38;5;202m{FMT}\33[0m",
+        logging.CRITICAL: f"\33[1m\33[38;5;196m{FMT}\33[0m",
+    }
+
+    class CustomFormatter(logging.Formatter):
+        def __init__(self, fmt: str) -> None:
+            super().__init__()
+            self.fmt = fmt
+
+        def format(self, record: logging.LogRecord) -> str:
+            log_fmt = FORMATS.get(record.levelno)
+            formatter = logging.Formatter(log_fmt)
+            return formatter.format(record)
+
+    handler = logging.StreamHandler()
+    handler.setFormatter(CustomFormatter(format))
+
+    logging.basicConfig(
+        level=level,
+        handlers=[handler],
     )
