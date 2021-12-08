@@ -26,8 +26,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import annotations
+
 import logging
 import platform
+import typing as t
 
 import nusex
 
@@ -88,7 +91,7 @@ TRACE = 1
 logging.addLevelName(TRACE, "TRACE")
 
 
-def init_logger(level: int = logging.INFO) -> None:
+def init_logger(level: int = logging.INFO) -> logging.StreamHandler[t.TextIO]:
     FMT = "{relativeCreated:>05.0f} [{levelname:^7}] {name}: {message}"
     FORMATS = {
         nusex.TRACE: f"\33[38;5;243m{FMT}\33[0m",
@@ -111,3 +114,4 @@ def init_logger(level: int = logging.INFO) -> None:
         level=level,
         handlers=[handler],
     )
+    return handler

@@ -35,3 +35,7 @@ def test_splash() -> None:
 
 def test_info() -> None:
     ux.display_info()
+
+
+def test_logger() -> None:
+    ux.init_logger()
