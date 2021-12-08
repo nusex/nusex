@@ -27,11 +27,10 @@ codespell~=2.1
 
 # Tests
 coverage~=6.0
-pytest~=6.2; python_version <= "3.10"
-git+https://github.com/pytest-dev/py; python_version == "3.11"
+pytest==7.0.0rc1
 
 # Safety
-safety~=1.10
+safety~=1.10; python_version < "3.11"
 
 # Security
 bandit~=1.7

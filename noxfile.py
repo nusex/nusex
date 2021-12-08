@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 from pathlib import Path
 
 import nox
@@ -168,6 +169,9 @@ def check_spelling(session: nox.Session) -> None:
 
 @nox.session(reuse_venv=True)  # type: ignore
 def check_safety(session: nox.Session) -> None:
+    if sys.version_info >= (3, 11):
+        session.skip("Safety does not support Python 3.11")
+
     with open(PROJECT_DIR / "docs/requirements.txt") as f:
         installs = f.read().splitlines()[1:]
 
