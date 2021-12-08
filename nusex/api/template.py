@@ -295,11 +295,25 @@ class Template:
             log.debug(f"Profile data to be stored: {self._data.profile_data}")
 
         log.debug("Loading files into memory...")
-        cplen = len(f"{os.path.commonpath(files)}/")  # type: ignore
+        cplen = len(os.path.commonpath(files)) + 1  # type: ignore
         self._data.files = {
             f"{path}"[cplen:].replace(project_slug, "PROJECTSLUG"): path.read_bytes()
             for path in files
         }
+
+        if os.name == "nt":
+            # Do some stupid unifications to make this work on Windows.
+            log.debug("Converting template to work on POSIX systems...")
+            self._data.files = dict(
+                map(
+                    lambda kv: (
+                        kv[0].replace("\\", "/"),
+                        kv[1].replace(b"\r\n", b"\n"),
+                    ),
+                    self._data.files.items(),
+                )
+            )
+
         size = sum(len(v) for v in self._data.files.values())
         log.info(f"Loaded ~{size / 1_000_000:,.0f} MiB into memory")
         log.log(nusex.TRACE, f"Template manifest: {self._data.filenames}")

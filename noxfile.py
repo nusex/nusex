@@ -91,7 +91,7 @@ def tests(session: nox.Session) -> None:
         "tests/*",
         "-m",
         "pytest",
-        "--log-level=INFO",
+        "--log-level=1",
     )
     session.run("coverage", "report", "-m")
 
