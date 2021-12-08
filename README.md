@@ -13,7 +13,7 @@
 
 A dynamic, multi-language project templating utility.
 
-CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 and 3.7 are officially supported.
+CPython versions 3.6 through 3.11-dev and PyPy versions 3.6 through 3.8 are officially supported.
 
 Windows, MacOS, and Linux are all supported.
 

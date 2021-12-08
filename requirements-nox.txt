@@ -1,5 +1,4 @@
 coverage~=6.0.2
-pytest~=6.2.0; python_version <= "3.10"
-git+https://github.com/pytest-dev/py; python_version == "3.11"
+pytest==7.0.0rc1
 pytest-testdox~=2.0.0
 .

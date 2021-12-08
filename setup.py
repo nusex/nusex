@@ -107,7 +107,7 @@ setuptools.setup(
         "CI": ci,
     },
     python_requires=">=3.6.0,<3.12",
-    packages=setuptools.find_packages(exclude=["tests*"]),
+    packages=setuptools.find_packages(),
     entry_points={
         "console_scripts": [
             "nusex = nusex.cli.cli:main",
