@@ -32,13 +32,13 @@ import platform
 import nusex
 
 BANNER = """
-\33[38;5;1m      ::::    ::: :::    :::  ::::::::  :::::::::: :::    :::  \33[0m
-\33[38;5;208m     :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:    :+: \33[0m
-\33[38;5;3m    :+:+:+  +:+ +:+    +:+ +:+        +:+         +:+  +:+     \33[0m
-\33[38;5;2m   +#+ +:+ +#+ +#+    +:+ +#++:++#++ +#++:++#     +#++:+       \33[0m
-\33[38;5;4m  +#+  +#+#+# +#+    +#+        +#+ +#+         +#+  +#+       \33[0m
-\33[38;5;135m #+#   #+#+# #+#    #+# #+#    #+# #+#        #+#    #+#     \33[0m
-\33[38;5;5m###    ####  ########   ########  ########## ###    ###        \33[0m
+\33[38;5;1m      ::::    ::: :::    :::  ::::::::  :::::::::: :::    ::: \33[0m
+\33[38;5;208m     :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:    :+:\33[0m
+\33[38;5;3m    :+:+:+  +:+ +:+    +:+ +:+        +:+         +:+  +:+    \33[0m
+\33[38;5;2m   +#+ +:+ +#+ +#+    +:+ +#++:++#++ +#++:++#     +#++:+      \33[0m
+\33[38;5;4m  +#+  +#+#+# +#+    +#+        +#+ +#+         +#+  +#+      \33[0m
+\33[38;5;135m #+#   #+#+# #+#    #+# #+#    #+# #+#        #+#    #+#    \33[0m
+\33[38;5;5m###    ####  ########   ########  ########## ###    ###       \33[0m
 
 """
 
@@ -46,16 +46,16 @@ BANNER = """
 def display_splash() -> None:
     print(
         f"{BANNER}"
-        f"{nusex.__description__}\n\n"
-        f"You're using version {nusex.__version__}.\n\n"
-        "I've got nothing to do! Try one of the following:\n\n"
-        "  - nusex init          • Initialise the nusex CLI\n"
-        "  - nusex build <name>  • Build a template from the current directory\n"
-        "  - nusex deploy <name> • Deploy a template to the current directory\n"
-        "  - nusex --info        • Display useful information\n\n"
-        f"Visit {nusex.__docs__} or use `nusex --help` "
-        "to find out how to use nusex.\n\n"
-        "Thanks for using nusex!"
+        f"\33[3m{nusex.__description__}\33[0m\n\n"
+        f"You're using version \33[1m{nusex.__version__}\33[0m.\n\n"
+        "This is an alpha version of nusex v2, meaning it is still a "
+        "work in progress.\n"
+        f"If you encounter any issues, please open an issue at "
+        f"\33[4m{nusex.__bugtracker__}\33[0m.\n"
+        "If you need CLI functionality or additional features, try "
+        "`pip install nusex<2`.\n\n"
+        f"Visit \33[4m{nusex.__docs__}\33[0m to find out how to use nusex.\n\n"
+        "\33[1mThanks for using nusex!\33[0m"
     )
 
 
