@@ -304,7 +304,7 @@ class Profile:
                 Defaults to :obj:`None`.
 
         Returns:
-            Profile:
+            :obj:`Profile`:
                 The copied profile.
         """
         return Profile(name or f"{self.name}_copy", **self.to_dict())
