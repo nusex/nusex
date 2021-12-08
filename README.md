@@ -13,7 +13,7 @@
 
 A dynamic, multi-language project templating utility.
 
-CPython 3.7 through 3.11-dev and PyPy 3.7 are officially supported on all operating systems.
+CPython 3.7 through 3.11-dev and PyPy 3.7 and 3.8 are officially supported on all operating systems.
 
 ## Features
 
