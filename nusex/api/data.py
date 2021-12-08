@@ -26,10 +26,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import annotations
+
+import sys
 from dataclasses import dataclass, field
 
+if sys.version_info >= (3, 10):
+    # Gotta take advantage of it, right?
+    kwargs = {"slots": True}
+else:
+    kwargs = {}
 
-@dataclass(slots=True)
+
+@dataclass(**kwargs)
 class TemplateData:
     files: dict[str, bytes] = field(init=False, default_factory=dict)
     profile_data: dict[str, str] = field(init=False, default_factory=dict)
