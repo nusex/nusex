@@ -26,6 +26,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__all__ = ("Profile",)
+__all__ = ("Profile", "Template", "blueprints")
 
 from nusex.api.profile import Profile
+from nusex.api.template import Template
+
+from . import blueprints

@@ -74,7 +74,7 @@ class GenericBlueprint(blueprints.Blueprint):
 
     @blueprints.with_files("LICEN[SC]E", "COPYING")
     def modify_license(self, _: str) -> str:
-        return "LICENSEBODY"
+        return "PROJECTLICENSE"
 
     @blueprints.with_files("CONTRIBUTING")
     def modify_contributing(self, body: str) -> str:

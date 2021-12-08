@@ -39,7 +39,7 @@ from pathspec import PathSpec
 import nusex
 from nusex.api import blueprints
 from nusex.api.data import TemplateData
-from nusex.errors import InvalidBlueprint
+from nusex.errors import InvalidBlueprint, TemplateError
 
 if t.TYPE_CHECKING:
     from nusex.api.profile import Profile
@@ -59,7 +59,7 @@ class Template:
         return self.name
 
     def __repr__(self) -> str:
-        return f"Template(name={self.name})"
+        return f"Template(name={self.name!r})"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
@@ -154,7 +154,7 @@ class Template:
             in_dir = in_dir.resolve()
 
         files = set(filter(lambda p: p.is_file(), in_dir.rglob("*")))
-        log.info(f"Found {len(files):,} files")
+        log.info(f"Found {len(files):,} file(s)")
         return files
 
     def process_excludes(
@@ -178,7 +178,8 @@ class Template:
             use_defaults (:obj:`bool`):
                 Whether to use the default set of exclude patterns
                 employed by the command-line interface.
-            sources (:obj:`list[:obj:`Path` | :obj:`str`]` | :obj:`None`):
+            sources
+                (:obj:`list[:obj:`Path` | :obj:`str`]` | :obj:`None`):
                 A list of files containing glob exclude patterns.
             patterns (:obj:`list[:obj:`str`]`):
                 A list of glob exclude patterns.
@@ -207,12 +208,12 @@ class Template:
                 lines += f.read()
 
         all_patterns = [l for l in lines.splitlines() if not l.startswith("#")]
-        log.debug(f"Matching based on {len(all_patterns):,} patterns")
+        log.debug(f"Matching based on {len(all_patterns):,} pattern(s)")
         log.log(nusex.TRACE, f"Patterns: {all_patterns}")
 
         spec = PathSpec.from_lines("gitwildmatch", all_patterns)
         excludes = set(spec.match_files(files))
-        log.info(f"Found {len(excludes):,} files to exclude")
+        log.info(f"Found {len(excludes):,} file(s) to exclude")
         return excludes
 
     def build(
@@ -274,6 +275,9 @@ class Template:
                 "You're creating a large template -- this might use a lot of memory"
             )
 
+        if not nfiles:
+            raise TemplateError("No files provided")
+
         if not project_slug:
             log.debug("Setting project slug...")
             project_slug = re.sub(
@@ -300,23 +304,24 @@ class Template:
         log.info(f"Loaded ~{size / 1_000_000:,.0f} MiB into memory")
         log.log(nusex.TRACE, f"Template manifest: {self._data.filenames}")
 
+        # This is damn messy, yikes.
         if isinstance(blueprint, str):
             log.debug("Attempting to resolve blueprint...")
-            blueprint = blueprints.REGISTERED.get(blueprint, None)
-            if not blueprint:
-                raise InvalidBlueprint("Cannot resolve key to blueprint class")
+            blueprint = blueprints.REGISTERED.get(blueprint, blueprint)
+            if isinstance(blueprint, str):
+                raise InvalidBlueprint(
+                    f"{blueprint!r} is not a registered blueprint "
+                    "(choose between: " + ", ".join(blueprints.REGISTERED.keys()) + ")"
+                )
         elif isinstance(blueprint, type):
             if not issubclass(blueprint, blueprints.Blueprint):
-                raise InvalidBlueprint("Invalid blueprint class provided")
-        else:
-            raise InvalidBlueprint("Invalid object as blueprint")
+                raise InvalidBlueprint(
+                    "Blueprint class must be a subclass of `Blueprint`"
+                )
+        elif blueprint:
+            raise InvalidBlueprint("Invalid blueprint object")
 
         if blueprint:
-            # Mypy is bugged -- by this point, blueprint can only be
-            # a Blueprint class or subclass, but Mypy still thinks it
-            # can be a string.
-            blueprint = t.cast(type[blueprints.Blueprint], blueprint)
-
             log.debug("Modifying files...")
             bp = blueprint(
                 self._data.files,
