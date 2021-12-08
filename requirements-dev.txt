@@ -17,7 +17,7 @@ flake8~=4.0
 isort~=5.10
 
 # Typing
-mypy==0.910
+git+https://github.com/python/mypy
 
 # Line lengths
 len8~=0.5

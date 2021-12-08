@@ -36,10 +36,14 @@ __all__ = (
     "TEMPLATE_DIR",
     "VALID_NAME_PATTERN",
     "BLUEPRINT_MAPPING",
+    "api",
+    "checks",
+    "errors",
+    "ux",
 )
 
 __productname__ = "nusex"
-__version__ = "2.0.0.dev0"
+__version__ = "2.0.0a1"
 __description__ = "A dynamic, multi-language project templating utility."
 __url__ = "https://github.com/nusex/nusex"
 __docs__ = "https://nusex.readthedocs.io"
@@ -49,11 +53,9 @@ __license__ = "BSD 3-Clause 'New' or 'Revised' License"
 __bugtracker__ = "https://github.com/nusex/nusex/issues"
 __ci__ = "https://github.com/nusex/nusex/actions"
 
-import logging
 import os
 import re
 import sys
-import typing as t
 from pathlib import Path
 
 from . import api, checks, errors, ux

@@ -113,7 +113,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         "console_scripts": [
-            "nusex = nusex.cli.core:nsxcore",
+            "nusex = nusex.ux:display_splash",
         ]
     },
 )
