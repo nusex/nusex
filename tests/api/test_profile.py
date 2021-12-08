@@ -33,7 +33,7 @@ import pytest
 
 from nusex import errors
 from nusex.api import Profile
-from tests import DATA_DIR
+from tests import DATA_DIR, as_relative
 
 
 @pytest.fixture()  # type: ignore
@@ -103,8 +103,11 @@ def test_edit_attrs(blank_profile: Profile) -> None:
     assert blank_profile.ci_url is None
 
 
-def test_dunders(blank_profile: Profile, loaded_profile: Profile) -> None:
+def test_str(blank_profile: Profile) -> None:
     assert str(blank_profile) == "blank"
+
+
+def test_repr(blank_profile: Profile) -> None:
     assert repr(blank_profile) == (
         "Profile("
         "name='blank', "
@@ -120,27 +123,40 @@ def test_dunders(blank_profile: Profile, loaded_profile: Profile) -> None:
         ")"
     )
 
+
+def test_equal(blank_profile: Profile, loaded_profile: Profile) -> None:
+    assert blank_profile == blank_profile
     assert not blank_profile == loaded_profile
-    assert blank_profile != loaded_profile
     assert not blank_profile == object()
+
+
+def test_not_equal(blank_profile: Profile, loaded_profile: Profile) -> None:
+    assert not blank_profile != blank_profile
+    assert blank_profile != loaded_profile
     assert blank_profile != object()
 
 
-def test_from_disk() -> None:
+def test_from_disk_absolute() -> None:
     profile = Profile.from_disk("stored_profile", from_dir=DATA_DIR)
     assert profile.name == "stored_profile"
 
-    profile = Profile.from_disk("stored_profile", from_dir=str(DATA_DIR))
+
+def test_from_disk_relative() -> None:
+    profile = Profile.from_disk("stored_profile", from_dir=as_relative(DATA_DIR))
     assert profile.name == "stored_profile"
 
-    with pytest.raises(NotADirectoryError) as exc1:
-        Profile.from_disk("stored_profile", from_dir=Path(__file__))
-    assert f"{exc1.value}" == "Not a directory"
 
-    with pytest.raises(FileNotFoundError) as exc2:
+def test_from_disk_not_directory() -> None:
+    with pytest.raises(NotADirectoryError) as exc:
+        Profile.from_disk("stored_profile", from_dir=Path(__file__))
+    assert f"{exc.value}" == "Not a directory"
+
+
+def test_from_disk_not_found() -> None:
+    with pytest.raises(FileNotFoundError) as exc:
         Profile.from_disk("doesnt_exist", from_dir=DATA_DIR)
     assert (
-        f"{exc2.value}"
+        f"{exc.value}"
         == "No profile named 'doesnt_exist' exists in the given directory"
     )
 
@@ -168,39 +184,56 @@ def test_as_dict(loaded_profile: Profile) -> None:
     }
 
 
-def test_save(loaded_profile: Profile) -> None:
+def test_save_absolute(loaded_profile: Profile) -> None:
     loaded_profile.save(to_dir=DATA_DIR)
     assert isinstance(loaded_profile.path, Path)
     assert loaded_profile.path.is_file()
 
-    # TODO: Test conflictions
 
-    with pytest.raises(FileExistsError) as exc1:
-        loaded_profile.save(to_dir=str(DATA_DIR))
-    assert (
-        f"{exc1.value}"
-        == "A profile called 'loaded' already exists in the given directory"
-    )
+def test_save_overwrite(loaded_profile: Profile) -> None:
+    loaded_profile.save(to_dir=DATA_DIR, overwrite=True)
+    assert isinstance(loaded_profile.path, Path)
+    assert loaded_profile.path.is_file()
 
+
+def test_save_relative(loaded_profile: Profile) -> None:
     loaded_profile.save(to_dir=str(DATA_DIR), overwrite=True)
     assert isinstance(loaded_profile.path, Path)
     assert loaded_profile.path.is_file()
 
-    with pytest.raises(NotADirectoryError) as exc2:
-        loaded_profile.save(to_dir=Path(__file__))
-    assert f"{exc2.value}" == "Not a directory"
 
+def test_save_conflictions(loaded_profile: Profile) -> None:
+    # TODO: Test conflictions
+    ...
+
+
+def test_save_exists(loaded_profile: Profile) -> None:
+    with pytest.raises(FileExistsError) as exc:
+        loaded_profile.save(to_dir=str(DATA_DIR))
+    assert (
+        f"{exc.value}"
+        == "A profile called 'loaded' already exists in the given directory"
+    )
+
+
+def test_save_not_directory(loaded_profile: Profile) -> None:
+    with pytest.raises(NotADirectoryError) as exc:
+        loaded_profile.save(to_dir=Path(__file__))
+    assert f"{exc.value}" == "Not a directory"
+
+
+def test_save_invalid_name(loaded_profile: Profile) -> None:
     loaded_profile.name = "InvalidName"
-    with pytest.raises(errors.InvalidName) as exc3:
+    with pytest.raises(errors.InvalidName) as exc:
         loaded_profile.save(to_dir=DATA_DIR)
     assert (
-        f"{exc3.value}"
+        f"{exc.value}"
         == "Profile names cannot be longer than 32 characters, which all must be lower-case letters, numbers, or underscores"
     )
 
 
 def test_delete() -> None:
-    # We have to load it in like this.
+    # We have to load it in like this for this one.
     profile = Profile.from_disk("loaded", from_dir=DATA_DIR)
     assert isinstance(profile.path, Path)
     assert profile.path.is_file()
@@ -208,22 +241,29 @@ def test_delete() -> None:
     assert profile.path is None
     assert not os.path.isfile(DATA_DIR / "loaded.json")
 
-    with pytest.raises(FileNotFoundError) as exc1:
-        profile.delete()
-    assert f"{exc1.value}" == "This profile has not been saved"
-    profile.delete(missing_ok=True)
 
+def test_delete_doesnt_exist(loaded_profile: Profile) -> None:
+    with pytest.raises(FileNotFoundError) as exc1:
+        loaded_profile.delete()
+    assert f"{exc1.value}" == "This profile has not been saved"
+    loaded_profile.delete(missing_ok=True)
+
+
+def test_delete_not_found(loaded_profile: Profile) -> None:
     # Just ignore the crime I'm about to commit.
-    profile._path = Path(__file__).parent
+    loaded_profile._path = Path(__file__).parent
     with pytest.raises(FileNotFoundError) as exc2:
-        profile.delete()
+        loaded_profile.delete()
     assert f"{exc2.value}" == "This profile was saved, but could not be found"
-    profile._path = Path(__file__).parent
-    profile.delete(missing_ok=True)
+
+
+def test_delete_not_found_ok(loaded_profile: Profile) -> None:
+    loaded_profile._path = Path(__file__).parent
+    loaded_profile.delete(missing_ok=True)
 
 
 def test_copy(loaded_profile: Profile) -> None:
-    profile = loaded_profile.copy()
-    assert profile.name == "loaded_copy"
-    assert profile != loaded_profile
-    assert profile.to_dict() == loaded_profile.to_dict()
+    profile_copy = loaded_profile.copy()
+    assert profile_copy.name == "loaded_copy"
+    assert profile_copy != loaded_profile
+    assert profile_copy.to_dict() == loaded_profile.to_dict()

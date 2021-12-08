@@ -35,18 +35,24 @@ def test_is_initialised() -> None:
     assert checks.is_initialised() == False
 
 
-def test_name_is_valid() -> None:
+def test_name_is_valid_pass() -> None:
     assert checks.name_is_valid("valid_name") == True
+
+
+def test_name_is_valid_fail() -> None:
     assert checks.name_is_valid("CapitalName") == False
     assert checks.name_is_valid("this_name_is_not_valid_because_its_long") == False
     assert checks.name_is_valid("kebab-case") == False
 
 
-def test_does_not_conflict() -> None:
+def test_does_not_conflict_pass() -> None:
     assert checks.does_not_conflict("free", in_dir=DATA_DIR, extension="json") == True
     assert (
         checks.does_not_conflict("free", in_dir=str(DATA_DIR), extension="json") == True
     )
+
+
+def test_does_not_conflict_fail() -> None:
     assert (
         checks.does_not_conflict("stored_profile", in_dir=DATA_DIR, extension="json")
         == False

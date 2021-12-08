@@ -26,6 +26,12 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
+
+
+def as_relative(path: Path) -> str:
+    common = os.path.commonpath((Path.cwd(), path))
+    return f"{path}"[len(f"{common}/") :]
