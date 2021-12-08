@@ -26,28 +26,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-class NusexException(Exception):
-    """The base exception class for nusex."""
+from dataclasses import dataclass, field
 
 
-class NusexAPIException(NusexException):
-    """The base exception class for errors relating to the API."""
+@dataclass(slots=True)
+class TemplateData:
+    files: dict[str, bytes] = field(init=False, default_factory=dict)
+    profile_data: dict[str, str] = field(init=False, default_factory=dict)
+    dependencies: list[str] = field(init=False, default_factory=list)
+    language: str = field(init=False, default_factory=lambda: "none")
 
-
-class InvalidName(NusexAPIException):
-    """Exception thrown when attempting to save a template or profile
-    with an invalid name."""
-
-
-class TemplateError(NusexAPIException):
-    """Exception thrown when something goes wrong with a template."""
-
-
-class InvalidBlueprint(TemplateError):
-    """Exception thrown when attempting to use an invalid blueprint
-    when building a template."""
-
-
-class NusexCLIException(NusexException):
-    """The base exception class for errors relating to the CLI."""
+    @property
+    def filenames(self) -> list[str]:
+        return list(self.files.keys())
