@@ -132,6 +132,25 @@ class Template:
         """
         return self._data.language
 
+    def _to_slug(self, text: str) -> str:
+        return re.sub(
+            "[^a-z0-9_]",
+            "",
+            re.sub("[- ]", "_", text.casefold()),
+        )
+
+    def _to_absolute_path(self, path: Path | str) -> Path:
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        if not path.is_dir():
+            raise NotADirectoryError("Not a directory")
+
+        if not path.is_absolute():
+            path = path.resolve()
+
+        return path
+
     def find_files(self, in_dir: Path | str) -> set[Path]:
         """Recursively search the given directory for files to
         potentially include in the template.
@@ -145,15 +164,7 @@ class Template:
                 The files to potentially include in the template.
         """
         log.debug("Searching for files")
-        if not isinstance(in_dir, Path):
-            in_dir = Path(in_dir)
-
-        if not in_dir.is_dir():
-            raise NotADirectoryError("Not a directory")
-
-        if not in_dir.is_absolute():
-            in_dir = in_dir.resolve()
-
+        in_dir = self._to_absolute_path(in_dir)
         files = set(filter(lambda p: p.is_file(), in_dir.rglob("*")))
         log.info(f"Found {len(files):,} file(s)")
         return files
@@ -216,13 +227,6 @@ class Template:
         excludes = set(spec.match_files(files))
         log.info(f"Found {len(excludes):,} file(s) to exclude")
         return excludes
-
-    def _slugify(self, text: str) -> str:
-        return re.sub(
-            "[^a-z0-9_]",
-            "",
-            re.sub("[- ]", "_", text.casefold()),
-        )
 
     def build(
         self,
@@ -288,7 +292,7 @@ class Template:
 
         if not project_slug:
             log.debug("Setting project slug")
-            project_slug = self._slugify(project_name)
+            project_slug = self._to_slug(project_name)
             log.info(f"Using {project_slug!r} as project slug")
 
         if profile and store_profile:
@@ -401,14 +405,7 @@ class Template:
                 Whether to forcibly deploy this template, overwriting
                 any existing files.
         """
-        if not isinstance(to_dir, Path):
-            to_dir = Path(to_dir)
-
-        if not to_dir.is_dir():
-            raise NotADirectoryError("Not a directory")
-
-        if not to_dir.is_absolute():
-            to_dir = to_dir.resolve()
+        to_dir = self._to_absolute_path(to_dir)
 
         if not project_name:
             if project_slug:
@@ -421,7 +418,7 @@ class Template:
 
         if not project_slug:
             log.debug("Setting project slug")
-            project_slug = self._slugify(project_name)
+            project_slug = self._to_slug(project_name)
             log.info(f"Using {project_slug!r} as project slug")
 
         log.debug("Setting final filenames")
