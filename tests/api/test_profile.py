@@ -124,6 +124,13 @@ def test_repr(blank_profile: Profile) -> None:
     )
 
 
+def test_hash(blank_profile: Profile, loaded_profile: Profile) -> None:
+    assert isinstance(hash(blank_profile), int)
+    assert hash(blank_profile) != hash(loaded_profile)
+
+    assert {blank_profile: "Blank profile", loaded_profile: "Loaded profile"}
+
+
 def test_equal(blank_profile: Profile, loaded_profile: Profile) -> None:
     assert blank_profile == blank_profile
     assert not blank_profile == loaded_profile

@@ -132,6 +132,9 @@ class Profile:
         attrs = (f"{s}={getattr(self, s)!r}" for s in Profile.__slots__ if s != "_path")
         return "Profile(" + ", ".join(attrs) + ")"
 
+    def __hash__(self) -> int:
+        return hash(self.name)
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return NotImplemented

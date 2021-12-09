@@ -126,6 +126,12 @@ def test_repr(template: Template) -> None:
     assert repr(template) == "Template(name='noxtest')"
 
 
+def test_hash(template: Template) -> None:
+    assert isinstance(hash(template), int)
+
+    assert {template: "Template"}
+
+
 def test_equal(template: Template) -> None:
     template2 = Template("another_template")
     assert template == template
