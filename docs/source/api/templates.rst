@@ -3,5 +3,5 @@
 Template reference
 ##################
 
-.. autoclass:: nusex.Template
+.. autoclass:: nusex.api.Template
     :members:

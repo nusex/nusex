@@ -3,5 +3,5 @@
 Profile reference
 #################
 
-.. autoclass:: nusex.Profile
+.. autoclass:: nusex.api.Profile
     :members:

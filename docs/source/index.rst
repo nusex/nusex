@@ -39,67 +39,13 @@ nusex
    :target: https://codeclimate.com/github/nusex/nusex/test_coverage
    :alt: Test Coverage
 
-
-What is nusex?
-==============
-
-nusex is a dynamic, multi-language project templating utility written in Python. While nusex does not support :doc:`dynamic templating <./guide/templates>` for all languages, nusex can work with any files, including images, audio, and executables.
-
-Why use it?
-===========
-
-Unlike many alternatives, nusex has **no dependencies**. This means that when you install it, you won't be faced with a wall of installs cluttering your environment.
-
-A profile system is also included for those who maintain personal and organisation-owned projects. You can create as many profiles as you want, and switch between them at any time.
-
-Despite nusex primarily being for initialising projects, that's not all it's useful for. In fact, it can be used throughout the whole development lifecycle of your project. This is possible through template add-ons, which can be used to add new files when needed.
-
-nusex also has many other features which you can see on the `PyPI page <https://pypi.org/project/nusex/>`_, or the `GitHub repository <https://github.com/nusex/nusex>`_.
-
 Contents
 ========
 
 .. toctree::
    :maxdepth: 1
-   :caption: Getting started
-
-   starting/install
-   starting/init
-
-.. toctree::
-   :maxdepth: 1
-   :caption: A guide to nusex
-
-   guide/profiles
-   guide/templates
-
-.. toctree::
-   :maxdepth: 1
-   :caption: CLI reference
-
-   cli/init
-   cli/config
-   cli/profile
-   cli/build
-   cli/deploy
-   cli/delete
-   cli/rename
-   cli/list
-   cli/download
-   cli/migrate
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Scripting API reference
+   :caption: API reference
 
    api/library
    api/profiles
    api/templates
-   api/utils
-
-.. toctree::
-    :maxdepth: 1
-    :caption: Information
-
-    info/changelog
-    info/migrate
