@@ -13,57 +13,83 @@
 
 A dynamic, multi-language project templating utility.
 
-CPython 3.7 through 3.11-dev and PyPy 3.7 and 3.8 are officially supported on all operating systems.
-
-## Features
-
-- An easy-to-use CLI (command-line interface)
-- Dynamic templating using placeholder variables
-- Template add-ons for use during the whole development lifecycle
-- A profile system for those who maintain personal and organisation-owned projects
-- Automatic dependency installation
-- Premade templates for applications and packages
-- Minimal dependencies
-
 ## Installation
 
-**You need Python 3.7.0 or greater to run nusex.** If you need support for Python 3.6, you'll need to install nusex 1.2. No other Python versions were ever supported.
+*nusex* is officially supported on:
 
-To install the latest stable version of nusex, use the following command:
+* CPython 3.7 and up (incl. 3.11 development versions)
+* PyPy 3.7 and up
+* Windows, macOS, and Linux
+
+To install the latest stable version of *nusex*:
+
 ```sh
 pip install nusex
 ```
 
-You can also install the latest development version using the following command:
+To install the latest development version:
+
 ```sh
 pip install git+https://github.com/nusex/nusex
 ```
 
-You may need to prefix these commands with a call to the Python interpreter depending on your OS and Python configuration.
+You may need to prefix these commands with a call to the Python interpreter
+depending on your OS and Python configuration.
 
-## Quickstart
+## Using the CLI
 
-Before you can build and deploy templates with nusex, you need to initialise it. You only need to do this once, and not for every new project. To initialise nusex, use the following command:
+The CLI provides a simple and user-friendly way to use *nusex*, and is ideal for
+those wishing to use *nusex* to enhance their own development experience. It
+abstracts a fair amount away from you, so you may wish to use the API if you
+want something more powerful.
 
-```sh
-nusex init
+**The CLI is not available in version 2 yet.**
+
+## Using the API
+
+The API provides a more powerful interface to build templates and profiles
+with, and is ideal for those wishing to utilise *nusex*'s capabilities in their
+own applications.
+
+Building a basic template would look something like this:
+
+```py
+from nusex.api import Template
+
+template = Template("template_name")
+files = template.find_files(".")
+excludes = template.process_excludes(files, sources=[".gitignore"])
+template.build(files - excludes, "Project Name", blueprint="generic")
 ```
 
-Some premade templates will be downloaded for you to experiment with. You can deploy these templates with the following command(s):
-```sh
-# For general applications
-nusex deploy nsx_simple_app
+From there, you can create a profile to deploy the template with:
 
-# For PyPI packages
-nusex deploy nsx_simple_pkg
+```py
+from nusex.api import Profile
+
+profile = Profile(
+    "profile_name",
+    author_name="Author Name",
+    author_email="author@email.com",
+    ...
+)
 ```
 
-To learn how to build templates of your own, [read the documentation](https://nusex.readthedocs.io/en/latest/).
+Finally, you can deploy the template:
+
+```py
+template.deploy("/path/to/deploy", "New Project", profile=profile)
+```
+
+Have a look at the [documentation](https://nusex.readthedocs.io) to find out more.
 
 ## Contributing
 
-nusex is open to contributions. To find out where to get started, have a look at the [contributing guide](https://github.com/nusex/nusex/blob/main/CONTRIBUTING.md).
+Contributions are very much welcome! To get started:
+
+* Familiarise yourself with the [code of conduct](https://github.com/nusex/nusex/blob/main/CODE_OF_CONDUCT.md)
+* Have a look at the [contributing guide](https://github.com/nusex/nusex/blob/main/CONTRIBUTING.md)
 
 ## License
 
-The nusex module for Python is licensed under the [BSD 3-Clause License](https://github.com/nusex/nusex/blob/main/LICENSE).
+The *nusex* module for Python is licensed under the [BSD 3-Clause License](https://github.com/nusex/nusex/blob/main/LICENSE).

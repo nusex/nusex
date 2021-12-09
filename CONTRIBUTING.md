@@ -4,12 +4,13 @@ Thanks for considering contributing to nusex! Before you begin, take a minute to
 
 ## Expectations
 
-- All code should follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) standards.
-- All code should support the Python versions nusex already supported, unless there's a good reason otherwise.
-- Commit messages should be clear and easy to understand.
-- Issue and PR descriptions should be much the same.
-- New features and fixes should be properly tested before committing.
-- All PRs should correspond to at least one issue.
+* All code should follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) standards
+* All code should support the Python versions nusex already supported, unless there's a good reason otherwise
+* Commit messages should be clear and easy to understand
+* Issue and PR descriptions should be much the same
+* New features and fixes should be properly tested before committing
+
+And of course, always follow the [code of conduct](https://github.com/nusex/nusex/blob/main/CODE_OF_CONDUCT.md).
 
 ## First time contributing?
 
@@ -23,7 +24,7 @@ If you are making a very small change (one or two lines), it would be better to 
 2. Clone your fork.
 3. Run `pip install -r requirements-dev.txt` to install the cloned library and its development dependencies.
 4. Make your changes/additions.
-5. Run `nox -s format` in the project root to format the code properly.
+5. Run `isort . && black .` in the project root to format the code properly.
 6. Run `nox` to run all checks. If they all pass, advance to step 7, otherwise, go back to step 4.
 7. Create a PR with your changes, making sure to provide the issue number(s) it relates to.
 
