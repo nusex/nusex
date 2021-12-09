@@ -120,7 +120,7 @@ def resolve_mapping(mapping: dict[str, str], profile: Profile | None) -> dict[st
 
     keep = []
     for k, v in mapping.items():
-        if any(i in v for i in ("PROJECTNAME", "PROJECTSLUG")):
+        if any(i in v for i in ("$:project_name:", "$:project_slug:")):
             keep.append(k)
 
     for kp, vp in profile.to_dict().items():
