@@ -39,43 +39,28 @@ Data attributes
 Exceptions
 ==========
 
-.. autoexception:: nusex.errors.NusexError
+.. autoexception:: nusex.errors.NusexException
 
-.. autoexception:: nusex.errors.NusexUserError
+.. autoexception:: nusex.errors.NusexAPIException
 
-.. autoexception:: nusex.errors.ProfileError
+.. autoexception:: nusex.errors.NusexCLIException
+
+.. autoexception:: nusex.errors.NotSupported
+
+.. autoexception:: nusex.errors.InvalidName
 
 .. autoexception:: nusex.errors.TemplateError
 
-.. autoexception:: nusex.errors.BuildError
-
-.. autoexception:: nusex.errors.DeploymentError
-
-.. autoexception:: nusex.errors.AlreadyExists
-
-.. autoexception:: nusex.errors.DoesNotExist
-
-.. autoexception:: nusex.errors.DownloadError
-
-.. autoexception:: nusex.errors.UnsupportedFile
-
-.. autoexception:: nusex.errors.IncompatibilityError
-
-.. autoexception:: nusex.errors.MigrationError
+.. autoexception:: nusex.errors.InvalidBlueprint
 
 Exception hierarchy
 -------------------
 
 - :exc:`Exception`
-    - :exc:`NusexError`
-        - :exc:`NusexUserError`
-            - :exc:`ProfileError`
+    - :exc:`NusexException`
+        - :exc:`NusexAPIException`
+            - :exc:`InvalidName`
             - :exc:`TemplateError`
-                - :exc:`BuildError`
-                - :exc:`DeploymentError`
-            - :exc:`AlreadyExists`
-            - :exc:`DoesNotExist`
-            - :exc:`MigrationError
-        - :exc:`DownloadError`
-        - :exc:`UnsupportedFile`
-        - :exc:`IncompatibilityError``
+                - :exc:`InvalidBlueprint`
+        - :exc:`NusexCLIException`
+        - :exc:`NotSupported`

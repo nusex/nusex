@@ -49,3 +49,4 @@ Contents
    api/library
    api/profiles
    api/templates
+   api/blueprints

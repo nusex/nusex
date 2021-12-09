@@ -30,6 +30,7 @@ from __future__ import annotations
 
 __all__ = ("Blueprint", "GenericBlueprint")
 
+import functools
 import logging
 import re
 import typing as t
@@ -44,6 +45,24 @@ log = logging.getLogger(__name__)
 
 
 class Blueprint:
+    """The base class for all blueprints.
+
+    Args:
+        files (:obj:`dict` [:obj:`str`, :obj:`bytes`]):
+            The list of files built by the template.
+        project_name (:obj:`str`):
+            The project name the template is using.
+        project_slug (:obj:`str`):
+            The project slug the template is using.
+
+    Keyword Args:
+        profile (:obj:`Profile` | :obj:`None`):
+            The profile to use. This should *only* be passed when you
+            only want to replace data present in the profile. Not
+            passing it will cause the blueprint to replace everything
+            it would normally.
+    """
+
     __slots__ = ("files", "project_name", "project_slug", "profile", "language")
 
     def __init__(
@@ -51,6 +70,7 @@ class Blueprint:
         files: dict[str, bytes],
         project_name: str,
         project_slug: str,
+        *,
         profile: Profile | None = None,
     ) -> None:
         self.files = files
@@ -89,6 +109,7 @@ _DT = t.Callable[[_FT[BlueprintT]], _WT[BlueprintT]]
 
 def with_files(*exprs: str) -> _DT[BlueprintT]:
     def decorator(func: _FT[BlueprintT]) -> _WT[BlueprintT]:
+        @functools.wraps(func)
         def wrapper(blueprint: BlueprintT) -> None:
             files = [
                 file for file in blueprint.files if re.match("|".join(exprs), file)

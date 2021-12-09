@@ -49,6 +49,13 @@ log = logging.getLogger(__name__)
 
 
 class Template:
+    """A class representing a template.
+
+    Args:
+        name (:obj:`str`):
+            The name of the template.
+    """
+
     __slots__ = ("name", "_path", "_data")
 
     def __init__(self, name: str) -> None:
@@ -83,10 +90,9 @@ class Template:
         template has not been saved.
 
         Returns:
-            :obj:`Path`:
-                The filepath to this template.
-            :obj:`None`:
-                This profile has not been saved.
+            :obj:`pathlib.Path`:
+                The filepath to this template, or :obj:`None` if it has
+                not been saved.
         """
         return self._path
 
@@ -96,7 +102,7 @@ class Template:
         is an empty dict.
 
         Returns:
-            :obj:`dict[:obj:`str`, :obj:`bytes`]`:
+            :obj:`dict` [:obj:`str`, :obj:`bytes`]:
                 This template's files, with the filename as the key, and
                 the file's contents as the value.
         """
@@ -107,12 +113,12 @@ class Template:
         """The profile data stored in this template. If there is none,
         this is an empty dict.
 
-        .. note ::
+        .. warning::
             This returns the profile data, *not* a profile instance. To
             get a profile instance, use :obj:`Profile.from_template`.
 
         Returns:
-            :obj:`dict[:obj:`str`, :obj:`str`]`:
+            :obj:`dict` [:obj:`str`, :obj:`str`]:
                 This template's profile data.
         """
         return self._data.profile_data
@@ -123,15 +129,20 @@ class Template:
         are none, this is an empty list.
 
         Returns:
-            :obj:`list[:obj:`str`]`:
+            :obj:`list` [:obj:`str`]:
                 This template's dependencies.
         """
         return self._data.dependencies
 
     @property
     def language(self) -> str | None:
-        """The language this template is for. If no language was set,
-        this will return :obj:`None`.
+        """The language this template is for, or :obj:`None` if it has
+        not been set.
+
+        Returns:
+            :obj:`str`:
+                The language this template is for, or :obj:`None` if it
+                has not been set.
         """
         return self._data.language
 
@@ -159,12 +170,12 @@ class Template:
         potentially include in the template.
 
         Args:
-            in_dir (:obj:`Path` | :obj:`str`):
+            in_dir (:obj:`pathlib.Path` | :obj:`str`):
                 The directory to search through.
 
         Returns:
-            :obj:`set[:obj:`Path`]`:
-                The files to potentially include in the template.
+            :obj:`set` [:obj:`pathlib.Path`]:
+                The set of all files found.
         """
         log.debug("Searching for files")
         in_dir = self._to_absolute_path(in_dir)
@@ -184,7 +195,7 @@ class Template:
         and expressions.
 
         Args:
-            files (:obj:`set[:obj:`Path`]`):
+            files (:obj:`set` [:obj:`pathlib.Path`]):
                 A list of files to compare against exclude patterns.
                 This should generally be obtained through
                 :obj:`find_files`.
@@ -193,14 +204,13 @@ class Template:
             use_defaults (:obj:`bool`):
                 Whether to use the default set of exclude patterns
                 employed by the command-line interface.
-            sources
-                (:obj:`list[:obj:`Path` | :obj:`str`]` | :obj:`None`):
+            sources (:obj:`list` [:obj:`pathlib.Path` | :obj:`str`] | :obj:`None`):
                 A list of files containing glob exclude patterns.
             patterns (:obj:`list[:obj:`str`]`):
                 A list of glob exclude patterns.
 
         Returns:
-            :obj:`set[:obj:`Path`]`:
+            :obj:`set` [:obj:`pathlib.Path`]:
                 The files to exclude from the template.
         """
         log.debug("Processing exclude patterns")
@@ -245,7 +255,7 @@ class Template:
         """Build this template.
 
         Args:
-            files (:obj:`set[:obj:`Path`]`):
+            files (:obj:`set` [:obj:`pathlib.Path`]):
                 The files to include in the template. This should
                 generally obtained using :obj:`file_files` and
                 :obj:`process_excludes`.
@@ -258,9 +268,9 @@ class Template:
                 :obj:`None`, a project slug is automatically created. In
                 the vast majority of cases, it's best to leave this
                 alone.
-            blueprint (:obj:`type[:obj:`Blueprint`]`):
+            blueprint (:obj:`type` [:obj:`Blueprint`]):
                 The blueprint class to use when building this template.
-                This must be either :obj:`type[:obj:`Blueprint`]` or a
+                This must be either :obj:`type` [:obj:`Blueprint`] or a
                 subclass thereof. If no blueprint is passed, nusex will
                 use the default blueprint, which builds a static
                 template.
@@ -356,6 +366,16 @@ class Template:
         log.info("Build successful!")
 
     def set_dependencies(self, *args: str) -> None:
+        """Set the dependencies for this template.
+
+        .. note::
+            Dependency installations are only supported for Python
+            projects.
+
+        Args:
+            *args (:obj:`str`):
+                A sequence of libraries to store as dependencies.
+        """
         if self._data.language != "python":
             raise NotSupported(
                 "Dependency installations are only supported for Python projects"
@@ -376,7 +396,7 @@ class Template:
         """Deploy this template.
 
         Args:
-            to_dir (:obj:`Path` | :obj:`str`):
+            to_dir (:obj:`pathlib.Path` | :obj:`str`):
                 The directory to deploy this template into.
 
         Keyword Args:

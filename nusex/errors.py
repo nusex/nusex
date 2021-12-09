@@ -39,7 +39,7 @@ class NusexCLIException(NusexException):
     """The base exception class for errors relating to the CLI."""
 
 
-class NotSupported(Exception):
+class NotSupported(NusexException):
     """Exception thrown when something is not supported."""
 
 

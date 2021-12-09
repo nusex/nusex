@@ -44,8 +44,31 @@ ACK = (
 
 
 class GenericBlueprint(blueprints.Blueprint):
+    """A blueprint for building generic templates.
+
+    This should generally be used when you only want to include root
+    files (such as the README) in the template, or when there is not a
+    suitable blueprint for the language you are using.
+    """
+
     @blueprints.with_files("README")
     def modify_readme(self, body: str) -> str:
+        """Modify all files starting with "README".
+
+        Args:
+            body (:obj:`str`):
+                The raw contents of the file.
+
+        Operations:
+            * Replaces the project name with ``$:project_name:``
+            * Replaces the project slug with ``$:project_slug:``
+            * Adds an acknowledgement to either the end of the file or
+              to an existing acknowledgements section.
+
+        Returns:
+            :obj:`str`:
+                The new file contents.
+        """
         lines = body.split("\n")
         last_line = len(lines) - 1
         found_acks = False
@@ -74,16 +97,65 @@ class GenericBlueprint(blueprints.Blueprint):
 
     @blueprints.with_files("LICEN[SC]E", "COPYING")
     def modify_license(self, _: str) -> str:
-        return "PROJECTLICENSE"
+        """Modify all files starting with "COPYING", "LICENCE", or
+        "LICENSE".
+
+        Args:
+            _ (:obj:`str`):
+                The raw contents of the file.
+
+        Operations:
+            * Replaces the file contents with ``$:project_license:``.
+
+        Returns:
+            :obj:`str`:
+                The new file contents.
+        """
+        return "$:project_license:"
 
     @blueprints.with_files("CONTRIBUTING")
     def modify_contributing(self, body: str) -> str:
+        """Modify all files starting with "CONTRIBUTING".
+
+        Args:
+            body (:obj:`str`):
+                The raw contents of the file.
+
+        Operations:
+            * Replaces the project name with ``$:project_name:``
+            * Replaces the project slug with ``$:project_slug:``
+
+        Returns:
+            :obj:`str`:
+                The new file contents.
+        """
         return body.replace(self.project_name, "$:project_name:").replace(
             self.project_slug, "$:project_slug:"
         )
 
     @blueprints.with_files("docs/(source/)?conf.py$")
     def modify_docs_conf(self, body: str) -> str:
+        """Modify "docs/conf.py" and "docs/source/conf.py" files.
+
+        Args:
+            body (:obj:`str`):
+                The raw contents of the file.
+
+        Operations:
+            Within the `Project information` section:
+                * Replaces the line starting with ``project =`` with
+                  ``project = "$:project_name:"``
+                * Replaces the line starting with ``copyright =`` with
+                  ``copyright = "$:project_year:, $:author_name:"``
+                * Replaces the line starting with ``author =`` with
+                  ``author = "$:author_name:"``
+                * Replaces the line starting with ``release =`` with
+                  ``release = $:project_slug:.__version__``
+
+        Returns:
+            :obj:`str`:
+                The new file contents.
+        """
         lines = body.split("\n")
         docs_mapping = blueprints.resolve_mapping(DOCS_ATTR_MAPPING, self.profile)
 

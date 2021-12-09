@@ -156,7 +156,7 @@ class Profile:
                 The name of the profile to load.
 
         Keyword Args:
-            from_dir (:obj:`Path` | :obj:`str`):
+            from_dir (:obj:`pathlib.Path` | :obj:`str`):
                 The directory to load the profile from.
 
         Returns:
@@ -190,10 +190,9 @@ class Profile:
         profile has not been saved.
 
         Returns:
-            :obj:`Path`:
-                The filepath to this profile.
-            :obj:`None`:
-                This profile has not been saved.
+            :obj:`pathlib.Path`:
+                The filepath to this profile, or :obj:`None` is this
+                profile has not been saved.
         """
         return self._path
 
@@ -201,7 +200,7 @@ class Profile:
         """Export this profile's attributes to a dict object.
 
         Returns:
-            :obj:`dict[:obj:`str`, :obj:`str`]`:
+            :obj:`dict` [:obj:`str`, :obj:`str` | :obj:`None`]:
                 This profile's attributes, with the attribute name as
                 the key, and the attribute value as the value.
         """
@@ -211,16 +210,16 @@ class Profile:
         """Save this profile to disk.
 
         Keyword Args:
-            to_dir (:obj:`Path`, :obj:`str`):
+            to_dir (:obj:`pathlib.Path`, :obj:`str`):
                 The directory to save the profile to.
             overwrite (:obj:`bool`):
                 Whether to overwrite an existing profile. If this is
-                ``False``, an :obj:`AlreadyExists` error will be raised
-                if a profile with the same name already exists. Defaults
-                to ``False``.
+                :obj:`False`, an :obj:`AlreadyExists` error will be
+                raised if a profile with the same name already exists.
+                Defaults to :obj:`False`.
 
         Returns:
-            :obj:`Path`:
+            :obj:`pathlib.Path`:
                 A :obj:`pathlib.Path` object with the full path to the
                 profile.
         """
@@ -263,17 +262,14 @@ class Profile:
         Keyword Args:
             missing_ok (:obj:`bool`):
                 Whether to ignore errors upon a missing profile. If this
-                is ``False``, an :obj:`DoesNotExist` error will be
+                is :obj:`False`, an :obj:`DoesNotExist` error will be
                 raised if the profile has not been saved. Defaults to
-                ``False``.
+                :obj:`False`.
 
         Returns:
-            :obj:`Path`:
+            :obj:`pathlib.Path`:
                 A :obj:`pathlib.Path` object with the full path to the
-                profile.
-            :obj:`None`:
-                The profile was not saved and :obj:`missing_ok` is
-                ``True``.
+                profile, or :obj:`None` if it was not saved.
         """
         if not self._path:
             if not missing_ok:
