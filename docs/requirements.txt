@@ -1,3 +1,3 @@
-git+https://github.com/nusex/nusex
+git+https://github.com/nusex/nusex@task/version-2
 furo==2021.10.9
 sphinx<5,>=4
