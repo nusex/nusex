@@ -41,7 +41,7 @@ else:
 @dataclass(**kwargs)
 class TemplateData:
     files: dict[str, bytes] = field(init=False, default_factory=dict)
-    profile_data: dict[str, str] = field(init=False, default_factory=dict)
+    profile_data: dict[str, str | None] = field(init=False, default_factory=dict)
     dependencies: list[str] = field(init=False, default_factory=list)
     language: str = field(init=False, default_factory=lambda: "none")
 

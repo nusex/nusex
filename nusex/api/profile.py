@@ -111,7 +111,7 @@ class Profile:
         "ci_url",
     )
 
-    def __init__(self, name: str, **kwargs: str) -> None:
+    def __init__(self, name: str, **kwargs: str | None) -> None:
         self.name = name
         self._path: Path | None = None
 
@@ -197,7 +197,7 @@ class Profile:
         """
         return self._path
 
-    def to_dict(self, *, default: str = "None") -> dict[str, str]:
+    def to_dict(self) -> dict[str, str | None]:
         """Export this profile's attributes to a dict object.
 
         Returns:
@@ -205,7 +205,7 @@ class Profile:
                 This profile's attributes, with the attribute name as
                 the key, and the attribute value as the value.
         """
-        return {s: getattr(self, s) or default for s in Profile.__slots__[2:]}
+        return {s: getattr(self, s) for s in Profile.__slots__[2:]}
 
     def save(self, *, to_dir: Path | str, overwrite: bool = False) -> Path:
         """Save this profile to disk.

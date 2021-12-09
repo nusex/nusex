@@ -103,7 +103,7 @@ class Template:
         return self._data.files
 
     @property
-    def profile_data(self) -> dict[str, str]:
+    def profile_data(self) -> dict[str, str | None]:
         """The profile data stored in this template. If there is none,
         this is an empty dict.
 
@@ -237,11 +237,10 @@ class Template:
         project_name: str,
         *,
         project_slug: str | None = None,
+        blueprint: type[blueprints.Blueprint] | str | None = None,
         profile: Profile | None = None,
         store_profile: bool = False,
         only_replace_profile_data: bool = False,
-        dependencies: list[str] | None = None,
-        blueprint: type[blueprints.Blueprint] | str | None = None,
     ) -> None:
         """Build this template.
 
@@ -259,11 +258,21 @@ class Template:
                 :obj:`None`, a project slug is automatically created. In
                 the vast majority of cases, it's best to leave this
                 alone.
+            blueprint (:obj:`type[:obj:`Blueprint`]`):
+                The blueprint class to use when building this template.
+                This must be either :obj:`type[:obj:`Blueprint`]` or a
+                subclass thereof. If no blueprint is passed, nusex will
+                use the default blueprint, which builds a static
+                template.
             profile (:obj:`Profile`):
                 A profile instance.
             store_profile (:obj:`bool`):
                 Whether to store the given profile's attributes within
-                the template. A profile must be passed to use this.
+                the template. This effectively provides a series of
+                default profile attributes that can be used if a profile
+                is not provided during deployment, or if the profile is
+                missing some attributes. A profile must be passed to use
+                this.
             only_replace_profile_data (:obj:`bool`):
                 Whether to only replace variables explicitly set as
                 attributes in the given profile. If this is :obj:`True`,
@@ -271,27 +280,16 @@ class Template:
                 replaced with placeholder variables when building. This
                 is only really useful when storing the profile in the
                 template itself. A profile must be passed to use this.
-            dependencies (:obj:`list[:obj:`str`]` | :obj:`None`):
-                A list of dependencies to include in the template. If
-                this is not :obj:`None`, then the dependencies will be
-                installed during this template's deployment. Dependency
-                installations are only supported for Python projects.
-            blueprint (:obj:`type[:obj:`Blueprint`]`):
-                The blueprint class to use when building this template.
-                This must be either :obj:`type[:obj:`Blueprint`]` or a
-                subclass thereof. If no blueprint is passed, nusex will
-                use the default blueprint, which builds a static
-                template.
         """
         nfiles = len(files)
+        if not nfiles:
+            raise TemplateError("No files provided")
+
         log.info(f"Template will contain {nfiles:,} file(s)")
         if nfiles > 1000:
             log.warning(
                 "You're creating a large template -- this might use a lot of memory"
             )
-
-        if not nfiles:
-            raise TemplateError("No files provided")
 
         if not project_slug:
             log.debug("Setting project slug")
@@ -300,7 +298,7 @@ class Template:
 
         if profile and store_profile:
             log.info(f"Storing profile '{profile}' in this template")
-            self._data.profile_data = profile.to_dict(default="$:NULL:")
+            self._data.profile_data = profile.to_dict()
             log.debug(f"Profile data to be stored: {self._data.profile_data}")
 
         log.debug("Loading files into memory")
@@ -355,17 +353,10 @@ class Template:
             self._data.language = bp.language
             self._data.files = bp().files
 
-        if dependencies:
-            self._data.dependencies = dependencies
-            log.info(
-                f"Storing these dependencies: " + ", ".join(self._data.dependencies)
-            )
-            if not blueprint or str(blueprint) != "python":
-                log.warning(
-                    "Dependency installations are currently only supported on Python"
-                )
-
         log.info("Build successful!")
+
+    def set_dependecies(self, *args: str, from_file: Path | str | None = None) -> None:
+        ...
 
     def deploy(
         self,
@@ -374,8 +365,6 @@ class Template:
         project_name: str | None = None,
         project_slug: str | None = None,
         profile: Profile | None = None,
-        use_stored_data: bool = False,
-        dependencies: list[str] | None = None,
         force: bool = False,
     ) -> None:
         """Deploy this template.
@@ -395,15 +384,9 @@ class Template:
                 the vast majority of cases, it's best to leave this
                 alone.
             profile (:obj:`Profile` | :obj:`None`):
-                The profile to use when deploying this template. If this
-                is :obj:`None`, profile attributes stores within the
-                template itself will be used, if present.
-            dependencies (:obj:`list[:obj:`str`]` | None):
-                A list of dependencies to install during deployment. If
-                this is :obj:`None`, any dependencies stored within the
-                template will be installed. Passing an empty list will
-                mean no dependencies are installed regardless of any
-                other factors.
+                The profile to use when deploying this template.
+                Attributes in this profile will override any profile
+                attributes stored within the template.
             force (:obj:`bool`):
                 Whether to forcibly deploy this template, overwriting
                 any existing files.
@@ -445,22 +428,14 @@ class Template:
                 "Some existing files will be overwritten during this deployment"
             )
 
-        profile_data: dict[str, str] = {}
+        profile_data = self._data.profile_data
         if profile:
             log.info("Using data from provided profile")
-            profile_data.update(
-                {
-                    k: v
-                    for k, v in profile.to_dict(default="$:NULL:").items()
-                    if v is not None
-                }
-            )
-        if use_stored_data:
-            log.info("Using data stored within this template")
-            profile_data.update(self._data.profile_data)
+            profile_data.update(profile.to_dict())
+        log.log(nusex.TRACE, f"Profile data being used: {profile_data}")
 
         def _calver(key: str) -> str:
-            v = profile_data.get(key, "$:NULL:")
+            v = profile_data.get(key, None) or "$:NULL:"
             if v == "$:NULL:":
                 return v
             if v == "CALVER":
@@ -468,7 +443,7 @@ class Template:
             return v
 
         def _url(key: str) -> str:
-            v = profile_data.get(key, "$:NULL:")
+            v = profile_data.get(key, None) or "$:NULL:"
             if v == "$:NULL:":
                 return v
 
@@ -485,7 +460,10 @@ class Template:
             b"$:project_year:": f"{dt.date.today().year}",
             b"$:project_license:": "LICENSE",
             b"$:project_error:": f"{project_error}Error",
-            **{f"$:{k}:".encode(): v for k, v in list(profile_data.items())[:5]},
+            **{
+                f"$:{k}:".encode(): v or "$:NULL:"
+                for k, v in list(profile_data.items())[:5]
+            },
             b"$:starting_version:": _calver("starting_version"),
             b"$:version_control_url:": _url("version_control_url"),
             b"$:docs_url:": _url("docs_url"),
@@ -515,6 +493,9 @@ class Template:
                 f.write(data)
 
         log.info("Deployment successful!")
+
+    def install_dependencies(self) -> None:
+        ...
 
     def copy(self, *, name: str | None = None) -> Template:
         """Create a new instance of this template with the same data.

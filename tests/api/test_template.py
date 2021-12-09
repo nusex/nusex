@@ -300,14 +300,14 @@ def test_build_store_profile(
     )
     assert template.profile_data == {
         "author_name": "Barney",
-        "author_nick": "$:NULL:",
+        "author_nick": None,
         "author_email": "purplebarney@example.com",
-        "preferred_language": "$:NULL:",
-        "starting_version": "$:NULL:",
-        "preferred_license": "$:NULL:",
-        "version_control_url": "$:NULL:",
-        "docs_url": "$:NULL:",
-        "ci_url": "$:NULL:",
+        "preferred_language": None,
+        "starting_version": None,
+        "preferred_license": None,
+        "version_control_url": None,
+        "docs_url": None,
+        "ci_url": None,
     }
 
 
@@ -337,12 +337,12 @@ def test_build_invalid_blueprint_object(
     assert str(exc.value) == "Invalid blueprint object"
 
 
-def test_build_with_dependencies(template: Template, generic_files: set[Path]) -> None:
-    d = ["nusex", "analytix", "len8"]
-    template.build(
-        generic_files, "Testarossa Generic", blueprint="generic", dependencies=d
-    )
-    assert template.dependencies == d
+# def test_build_with_dependencies(template: Template, generic_files: set[Path]) -> None:
+#     d = ["nusex", "analytix", "len8"]
+#     template.build(
+#         generic_files, "Testarossa Generic", blueprint="generic", dependencies=d
+#     )
+#     assert template.dependencies == d
 
 
 def test_deploy_no_slug(template: Template, generic_files: set[Path]) -> None:
@@ -472,9 +472,7 @@ def test_deploy_generic_stored_profile(
         profile=profile,
         store_profile=True,
     )
-    template.deploy(
-        to_dir=DEPLOY_DIR, project_name="Test Deploy", use_stored_data=True, force=True
-    )
+    template.deploy(to_dir=DEPLOY_DIR, project_name="Test Deploy", force=True)
 
     for key in ("README", "README.md", "README.txt"):
         lines = Path(DEPLOY_DIR / key).read_text().splitlines()
