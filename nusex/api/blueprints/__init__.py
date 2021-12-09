@@ -105,9 +105,9 @@ def with_files(*exprs: str) -> _DT[BlueprintT]:
                     )
                     continue
 
+                log.debug(f"Processing {file!r}")
                 output = func(blueprint, contents.decode())
                 blueprint.files[file] = output.encode()
-                log.debug(f"Processed {file!r}")
 
         return wrapper
 

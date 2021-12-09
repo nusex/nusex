@@ -66,16 +66,16 @@ class Profile:
         preferred_language (:obj:`str` | :obj:`None`):
             The language you would normally be developing using when
             using this profile.
-        starting_version (:obj:`str` | :obj:`None`):
-            The version to deploy projects with. By default nusex will
-            use this value as-is, but if you set this to "CALVER" nusex
-            will use the current date in YYYY.MM.DD format when
-            deploying the project.
         preferred_license (:obj:`str` | :obj:`None`):
             The name which you wish to be attributed in new projects.
             When deploying a project nusex will use this as a key, and
             attempt to resolve it against a list of open-source
             licenses.
+        starting_version (:obj:`str` | :obj:`None`):
+            The version to deploy projects with. By default nusex will
+            use this value as-is, but if you set this to "CALVER" nusex
+            will use the current date in YYYY.MM.DD format when
+            deploying the project.
         version_control_url (:obj:`str` | :obj:`None`):
             The URL of your version control host (i.e. GitHub),
             including your username. By default nusex will append the
@@ -104,8 +104,8 @@ class Profile:
         "author_nick",
         "author_email",
         "preferred_language",
-        "starting_version",
         "preferred_license",
+        "starting_version",
         "version_control_url",
         "docs_url",
         "ci_url",
@@ -119,8 +119,8 @@ class Profile:
         self.author_nick = kwargs.pop("author_nick", None)
         self.author_email = kwargs.pop("author_email", None)
         self.preferred_language = kwargs.pop("preferred_language", None)
-        self.starting_version = kwargs.pop("starting_version", None)
         self.preferred_license = kwargs.pop("preferred_license", None)
+        self.starting_version = kwargs.pop("starting_version", None)
         self.version_control_url = kwargs.pop("version_control_url", None)
         self.docs_url = kwargs.pop("docs_url", None)
         self.ci_url = kwargs.pop("ci_url", None)
@@ -194,7 +194,7 @@ class Profile:
         """
         return self._path
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self, *, default: str = "None") -> dict[str, str]:
         """Export this profile's attributes to a dict object.
 
         Returns:
@@ -202,7 +202,7 @@ class Profile:
                 This profile's attributes, with the attribute name as
                 the key, and the attribute value as the value.
         """
-        return {s: getattr(self, s) for s in Profile.__slots__[2:]}
+        return {s: getattr(self, s) or default for s in Profile.__slots__[2:]}
 
     def save(self, *, to_dir: Path | str, overwrite: bool = False) -> Path:
         """Save this profile to disk.

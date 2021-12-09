@@ -233,20 +233,20 @@ def test_build_blueprint_class(
 
     for key in ("README", "README.md", "README.txt"):
         lines = template.files[key].decode().splitlines()
-        assert lines[0] == "# PROJECTNAME"
+        assert lines[0] == "# $:project_name:"
         assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
 
     for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
         body = template.files[key].decode()
-        assert body == "Thanks for contributing to PROJECTNAME!\n"
+        assert body == "Thanks for contributing to $:project_name:!\n"
 
     for key in ("docs/conf.py", "docs/source/conf.py"):
         lines = template.files[key].decode().splitlines()
-        assert lines[15] == "import PROJECTSLUG"
-        assert lines[22] == 'project = "PROJECTNAME"'
-        assert lines[23] == 'copyright = "PROJECTYEAR, AUTHORNAME"'
-        assert lines[24] == 'author = "AUTHORNAME"'
-        assert lines[27] == "release = PROJECTSLUG.__version__"
+        assert lines[15] == "import $:project_slug:"
+        assert lines[22] == 'project = "$:project_name:"'
+        assert lines[23] == 'copyright = "$:project_year:, $:author_name:"'
+        assert lines[24] == 'author = "$:author_name:"'
+        assert lines[27] == "release = $:project_slug:.__version__"
 
 
 def test_build_blueprint_string(
@@ -259,20 +259,20 @@ def test_build_blueprint_string(
 
     for key in ("README", "README.md", "README.txt"):
         lines = template.files[key].decode().splitlines()
-        assert lines[0] == "# PROJECTNAME"
+        assert lines[0] == "# $:project_name:"
         assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
 
     for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
         body = template.files[key].decode()
-        assert body == "Thanks for contributing to PROJECTNAME!\n"
+        assert body == "Thanks for contributing to $:project_name:!\n"
 
     for key in ("docs/conf.py", "docs/source/conf.py"):
         lines = template.files[key].decode().splitlines()
-        assert lines[15] == "import PROJECTSLUG"
-        assert lines[22] == 'project = "PROJECTNAME"'
-        assert lines[23] == 'copyright = "PROJECTYEAR, AUTHORNAME"'
-        assert lines[24] == 'author = "AUTHORNAME"'
-        assert lines[27] == "release = PROJECTSLUG.__version__"
+        assert lines[15] == "import $:project_slug:"
+        assert lines[22] == 'project = "$:project_name:"'
+        assert lines[23] == 'copyright = "$:project_year:, $:author_name:"'
+        assert lines[24] == 'author = "$:author_name:"'
+        assert lines[27] == "release = $:project_slug:.__version__"
 
 
 def test_build_no_files(template: Template) -> None:
@@ -289,7 +289,14 @@ def test_build_store_profile(
     )
     assert template.profile_data == {
         "author_name": "Barney",
+        "author_nick": "$:NULL:",
         "author_email": "purplebarney@example.com",
+        "preferred_language": "$:NULL:",
+        "starting_version": "$:NULL:",
+        "preferred_license": "$:NULL:",
+        "version_control_url": "$:NULL:",
+        "docs_url": "$:NULL:",
+        "ci_url": "$:NULL:",
     }
 
 

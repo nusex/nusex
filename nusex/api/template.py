@@ -28,6 +28,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import logging
 import os
 import re
@@ -143,7 +144,7 @@ class Template:
             :obj:`set[:obj:`Path`]`:
                 The files to potentially include in the template.
         """
-        log.debug("Searching for files...")
+        log.debug("Searching for files")
         if not isinstance(in_dir, Path):
             in_dir = Path(in_dir)
 
@@ -188,7 +189,7 @@ class Template:
             :obj:`set[:obj:`Path`]`:
                 The files to exclude from the template.
         """
-        log.debug("Processing exclude patterns...")
+        log.debug("Processing exclude patterns")
         lines = ""
 
         if use_defaults:
@@ -215,6 +216,13 @@ class Template:
         excludes = set(spec.match_files(files))
         log.info(f"Found {len(excludes):,} file(s) to exclude")
         return excludes
+
+    def _slugify(self, text: str) -> str:
+        return re.sub(
+            "[^a-z0-9_]",
+            "",
+            re.sub("[- ]", "_", text.casefold()),
+        )
 
     def build(
         self,
@@ -269,7 +277,7 @@ class Template:
                 template.
         """
         nfiles = len(files)
-        log.info(f"Template will contain {nfiles:,} files")
+        log.info(f"Template will contain {nfiles:,} file(s)")
         if nfiles > 1000:
             log.warning(
                 "You're creating a large template -- this might use a lot of memory"
@@ -279,22 +287,16 @@ class Template:
             raise TemplateError("No files provided")
 
         if not project_slug:
-            log.debug("Setting project slug...")
-            project_slug = re.sub(
-                "[^a-z0-9_]",
-                "",
-                re.sub("[- ]", "_", project_name.casefold()),
-            )
+            log.debug("Setting project slug")
+            project_slug = self._slugify(project_name)
             log.info(f"Using {project_slug!r} as project slug")
 
         if profile and store_profile:
             log.info(f"Storing profile '{profile}' in this template")
-            self._data.profile_data = {
-                k: v for k, v in profile.to_dict().items() if v is not None
-            }
+            self._data.profile_data = profile.to_dict(default="$:NULL:")
             log.debug(f"Profile data to be stored: {self._data.profile_data}")
 
-        log.debug("Loading files into memory...")
+        log.debug("Loading files into memory")
         cplen = len(os.path.commonpath(files)) + 1  # type: ignore
         self._data.files = {
             f"{path}"[cplen:].replace(project_slug, "PROJECTSLUG"): path.read_bytes()
@@ -303,7 +305,7 @@ class Template:
 
         if os.name == "nt":
             # Do some stupid unifications to make this work on Windows.
-            log.debug("Converting template to work on POSIX systems...")
+            log.debug("Converting template to work on POSIX systems")
             self._data.files = dict(
                 map(
                     lambda kv: (
@@ -320,7 +322,7 @@ class Template:
 
         # This is damn messy, yikes.
         if isinstance(blueprint, str):
-            log.debug("Attempting to resolve blueprint...")
+            log.debug("Attempting to resolve blueprint")
             blueprint = blueprints.REGISTERED.get(blueprint, blueprint)
             if isinstance(blueprint, str):
                 raise InvalidBlueprint(
@@ -336,7 +338,7 @@ class Template:
             raise InvalidBlueprint("Invalid blueprint object")
 
         if blueprint:
-            log.debug("Modifying files...")
+            log.debug("Modifying files")
             bp = blueprint(
                 self._data.files,
                 project_name,
@@ -357,6 +359,162 @@ class Template:
                 )
 
         log.info("Build successful!")
+
+    def deploy(
+        self,
+        to_dir: Path | str,
+        *,
+        project_name: str | None = None,
+        project_slug: str | None = None,
+        profile: Profile | None = None,
+        use_stored_data: bool = False,
+        dependencies: list[str] | None = None,
+        force: bool = False,
+    ) -> None:
+        """Deploy this template.
+
+        Args:
+            to_dir (:obj:`Path` | :obj:`str`):
+                The directory to deploy this template into.
+
+        Keyword Args:
+            project_name (:obj:`str` | :obj:`None`):
+                The name of the project. If this is :obj:`None`, the
+                project name is set to the name of the directory the
+                template is being deployed to.
+            project_slug (:obj:`str` | :obj:`None`):
+                The name to use as the project slug. If this is
+                :obj:`None`, a project slug is automatically created. In
+                the vast majority of cases, it's best to leave this
+                alone.
+            profile (:obj:`Profile` | :obj:`None`):
+                The profile to use when deploying this template. If this
+                is :obj:`None`, profile attributes stores within the
+                template itself will be used, if present.
+            dependencies (:obj:`list[:obj:`str`]` | None):
+                A list of dependencies to install during deployment. If
+                this is :obj:`None`, any dependencies stored within the
+                template will be installed. Passing an empty list will
+                mean no dependencies are installed regardless of any
+                other factors.
+            force (:obj:`bool`):
+                Whether to forcibly deploy this template, overwriting
+                any existing files.
+        """
+        if not isinstance(to_dir, Path):
+            to_dir = Path(to_dir)
+
+        if not to_dir.is_dir():
+            raise NotADirectoryError("Not a directory")
+
+        if not to_dir.is_absolute():
+            to_dir = to_dir.resolve()
+
+        if not project_name:
+            if project_slug:
+                raise TemplateError(
+                    "You cannot specify a project slug without a project name"
+                )
+            log.debug("Setting project slug")
+            project_name = to_dir.parts[-1]
+            log.info(f"Using {project_name!r} as project name")
+
+        if not project_slug:
+            log.debug("Setting project slug")
+            project_slug = self._slugify(project_name)
+            log.info(f"Using {project_slug!r} as project slug")
+
+        log.debug("Setting final filenames")
+        self._data.files = dict(
+            map(
+                lambda kv: (
+                    kv[0].replace("PROJECTSLUG", project_slug),  # type: ignore
+                    kv[1],
+                ),
+                self._data.files.items(),
+            )
+        )
+
+        tdlen = len(f"{to_dir}") + 1
+        present_files = [f"{p}"[tdlen:] for p in Path(to_dir).rglob("*")]
+        if any(f in present_files for f in self._data.files):
+            if not force:
+                raise FileExistsError("Template would overwrite existing files")
+
+            log.warning(
+                "Some existing files will be overwritten during this deployment"
+            )
+
+        profile_data: dict[str, str] = {}
+        if profile:
+            log.info("Using data from provided profile")
+            profile_data.update(
+                {
+                    k: v
+                    for k, v in profile.to_dict(default="$:NULL:").items()
+                    if v is not None
+                }
+            )
+        if use_stored_data:
+            log.info("Using data stored within this template")
+            profile_data.update(self._data.profile_data)
+
+        def _calver(key: str) -> str:
+            v = profile_data.get(key, "$:NULL:")
+            if v == "$:NULL:":
+                return v
+            if v == "CALVER":
+                return dt.date.today().strftime("%Y.%m.%d")
+            return v
+
+        def _url(key: str) -> str:
+            v = profile_data.get(key, "$:NULL:")
+            if v == "$:NULL:":
+                return v
+
+            iv = v
+            v = v.replace("PROJECTNAME", t.cast(str, project_name))
+            if v == iv:
+                return v.rstrip("/") + f"/{project_name}"
+            return v
+
+        project_error = project_slug.replace("_", "").title().replace(" ", "")
+        var_mapping = {
+            b"$:project_name:": project_name,
+            b"$:project_slug:": project_slug,
+            b"$:project_year:": f"{dt.date.today().year}",
+            b"$:project_license:": "LICENSE",
+            b"$:project_error:": f"{project_error}Error",
+            **{f"$:{k}:".encode(): v for k, v in list(profile_data.items())[:5]},
+            b"$:starting_version:": _calver("starting_version"),
+            b"$:version_control_url:": _url("version_control_url"),
+            b"$:docs_url:": _url("docs_url"),
+            b"$:ci_url:": _url("ci_url"),
+        }
+        log.debug(f"Variable mapping: {var_mapping}")
+
+        log.info(f"Deploying {len(self._data.files):,} file(s)")
+        for file, data in self._data.files.items():
+            log.debug(f"Processing {file!r}")
+            subdirs = file.split("/")[:-1]
+            if subdirs:
+                log.log(nusex.TRACE, "File has subdirs -- creating if necessary")
+                os.makedirs(to_dir / "/".join(subdirs), exist_ok=True)
+
+            for k, v in var_mapping.items():
+                data = data.replace(k, v.encode())
+
+            if b"$:NULL:" in data:
+                log.warning(
+                    f"File {file!r} deployed with null data -- make sure your profile "
+                    "has all the attributes it needs"
+                )
+
+            with open(to_dir / file, "wb") as f:
+                log.log(nusex.TRACE, f"Writing to {to_dir / file}")
+                f.write(data)
+
+        log.info("Deployment successful!")
 
     def copy(self, *, name: str | None = None) -> Template:
         """Create a new instance of this template with the same data.

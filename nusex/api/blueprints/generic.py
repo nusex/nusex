@@ -32,10 +32,10 @@ import nusex
 from nusex.api import blueprints
 
 DOCS_ATTR_MAPPING = {
-    "project": '"PROJECTNAME"',
-    "copyright": '"PROJECTYEAR, AUTHORNAME"',
-    "author": '"AUTHORNAME"',
-    "release": "PROJECTSLUG.__version__",
+    "project": '"$:project_name:"',
+    "copyright": '"$:project_year:, $:author_name:"',
+    "author": '"$:author_name:"',
+    "release": "$:project_slug:.__version__",
 }
 ACK = (
     "This project was created in part by the [nusex project templating utility]"
@@ -68,8 +68,8 @@ class GenericBlueprint(blueprints.Blueprint):
 
         return (
             "\n".join(lines)
-            .replace(self.project_name, "PROJECTNAME")
-            .replace(self.project_slug, "PROJECTSLUG")
+            .replace(self.project_name, "$:project_name:")
+            .replace(self.project_slug, "$:project_slug:")
         )
 
     @blueprints.with_files("LICEN[SC]E", "COPYING")
@@ -78,8 +78,8 @@ class GenericBlueprint(blueprints.Blueprint):
 
     @blueprints.with_files("CONTRIBUTING")
     def modify_contributing(self, body: str) -> str:
-        return body.replace(self.project_name, "PROJECTNAME").replace(
-            self.project_slug, "PROJECTSLUG"
+        return body.replace(self.project_name, "$:project_name:").replace(
+            self.project_slug, "$:project_slug:"
         )
 
     @blueprints.with_files("docs/(source/)?conf.py$")
@@ -101,6 +101,6 @@ class GenericBlueprint(blueprints.Blueprint):
                 in_project_info = True
 
             elif line.strip() == f"import {self.project_slug}":
-                lines[i] = "import PROJECTSLUG"
+                lines[i] = "import $:project_slug:"
 
         return "\n".join(lines)
