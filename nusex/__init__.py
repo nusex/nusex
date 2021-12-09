@@ -43,7 +43,7 @@ __all__ = (
 )
 
 __productname__ = "nusex"
-__version__ = "2.0.0a1"
+__version__ = "2.0.0a2"
 __description__ = "A dynamic, multi-language project templating utility."
 __url__ = "https://github.com/nusex/nusex"
 __docs__ = "https://nusex.readthedocs.io"
