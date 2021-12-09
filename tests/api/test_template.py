@@ -28,6 +28,8 @@
 
 from __future__ import annotations
 
+import datetime as dt
+import os
 from pathlib import Path
 
 import pytest
@@ -39,6 +41,7 @@ from tests import DATA_DIR, as_relative
 
 TEMPLATE_DATA_DIR = DATA_DIR / "templates"
 GENERIC_DATA_DIR = TEMPLATE_DATA_DIR / "testarossa_generic"
+DEPLOY_DIR = DATA_DIR / "test_deploy"
 
 FILENAMES = set(
     (
@@ -78,6 +81,8 @@ EXCLUDES = set(
         "ignore_file.txt",
     )
 )
+
+YEAR = dt.date.today().year
 
 
 @pytest.fixture()  # type: ignore
@@ -332,3 +337,159 @@ def test_build_with_dependencies(template: Template, generic_files: set[Path]) -
         generic_files, "Testarossa Generic", blueprint="generic", dependencies=d
     )
     assert template.dependencies == d
+
+
+def test_deploy_no_slug(template: Template, generic_files: set[Path]) -> None:
+    template.build(generic_files, "Testarossa Generic")
+    template.deploy(to_dir=DEPLOY_DIR)
+
+    for fn in FILENAMES:
+        if "testarossa_generic" in fn:
+            fn = fn.replace("testarossa_generic", "test_deploy")
+
+        assert (DEPLOY_DIR / fn).is_file()
+        os.remove(DEPLOY_DIR / fn)
+
+
+def test_deploy_set_slug(template: Template, generic_files: set[Path]) -> None:
+    template.build(generic_files, "Testarossa Generic")
+    template.deploy(
+        to_dir=DEPLOY_DIR, project_name="Test Deploy", project_slug="my_testing_app"
+    )
+
+    for fn in FILENAMES:
+        if "testarossa_generic" in fn:
+            fn = fn.replace("testarossa_generic", "my_testing_app")
+
+        assert (DEPLOY_DIR / fn).is_file()
+        # We don't remove here because the next test requires the files
+        # there there.
+        # os.remove(DEPLOY_DIR / fn)
+
+
+def test_deploy_set_slug_no_name(template: Template, generic_files: set[Path]) -> None:
+    template.build(generic_files, "Testarossa Generic")
+    with pytest.raises(errors.TemplateError) as exc:
+        template.deploy(to_dir=DEPLOY_DIR, project_slug="my_testing_app")
+    assert str(exc.value) == "You cannot specify a project slug without a project name"
+
+
+def test_deploy_exists(template: Template, generic_files: set[Path]) -> None:
+    template.build(generic_files, "Testarossa Generic")
+    with pytest.raises(FileExistsError) as exc:
+        template.deploy(to_dir=DEPLOY_DIR)
+    assert str(exc.value) == "Template would overwrite existing files"
+
+
+def test_deploy_exists_force(template: Template, generic_files: set[Path]) -> None:
+    template.build(generic_files, "Testarossa Generic")
+    template.deploy(to_dir=DEPLOY_DIR, force=True)
+
+    for fn in FILENAMES:
+        if "testarossa_generic" in fn:
+            fn = fn.replace("testarossa_generic", "test_deploy")
+
+        assert (DEPLOY_DIR / fn).is_file()
+        os.remove(DEPLOY_DIR / fn)
+
+
+def test_deploy_static(template: Template, generic_files: set[Path]) -> None:
+    template.build(generic_files, "Testarossa Generic")
+    template.deploy(to_dir=DEPLOY_DIR)
+
+    for fn in FILENAMES:
+        if "testarossa_generic" in fn:
+            fn = fn.replace("testarossa_generic", "test_deploy")
+
+        assert (DEPLOY_DIR / fn).is_file()
+
+    for key in ("README", "README.md", "README.txt"):
+        lines = template.files[key].decode().splitlines()
+        assert lines[0] == "# Testarossa Generic"
+        assert lines[6 if key == "README" else -1] != blueprints.generic.ACK
+
+    for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
+        body = template.files[key].decode()
+        assert body == "Thanks for contributing to Testarossa Generic!\n"
+
+    for key in ("docs/conf.py", "docs/source/conf.py"):
+        lines = template.files[key].decode().splitlines()
+        assert lines[15] == "import testarossa_generic"
+        assert lines[22] == 'project = "Testarossa Generic"'
+        assert lines[23] == f'copyright = "2021, Barney"'
+        assert lines[24] == 'author = "Barney"'
+        assert lines[27] == "release = testarossa_generic.__version__"
+
+
+def test_deploy_generic_given_profile(
+    template: Template, generic_files: set[Path]
+) -> None:
+    profile = Profile("test", author_name="Barney")
+    template.build(generic_files, "Testarossa Generic", blueprint="generic")
+    template.deploy(
+        to_dir=DEPLOY_DIR, project_name="Test Deploy", profile=profile, force=True
+    )
+
+    for key in ("README", "README.md", "README.txt"):
+        lines = Path(DEPLOY_DIR / key).read_text().splitlines()
+        assert lines[0] == "# Test Deploy"
+        assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
+
+    for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
+        body = Path(DEPLOY_DIR / key).read_text()
+        assert body == "Thanks for contributing to Test Deploy!\n"
+
+    for key in ("docs/conf.py", "docs/source/conf.py"):
+        lines = Path(DEPLOY_DIR / key).read_text().splitlines()
+        assert lines[15] == "import test_deploy"
+        assert lines[22] == 'project = "Test Deploy"'
+        assert lines[23] == f'copyright = "{YEAR}, Barney"'
+        assert lines[24] == 'author = "Barney"'
+        assert lines[27] == "release = test_deploy.__version__"
+
+    for fn in FILENAMES:
+        if "testarossa_generic" in fn:
+            fn = fn.replace("testarossa_generic", "test_deploy")
+
+        assert (DEPLOY_DIR / fn).is_file()
+        os.remove(DEPLOY_DIR / fn)
+
+
+def test_deploy_generic_stored_profile(
+    template: Template, generic_files: set[Path]
+) -> None:
+    profile = Profile("test", author_name="Barney")
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint="generic",
+        profile=profile,
+        store_profile=True,
+    )
+    template.deploy(
+        to_dir=DEPLOY_DIR, project_name="Test Deploy", use_stored_data=True, force=True
+    )
+
+    for key in ("README", "README.md", "README.txt"):
+        lines = Path(DEPLOY_DIR / key).read_text().splitlines()
+        assert lines[0] == "# Test Deploy"
+        assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
+
+    for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
+        body = Path(DEPLOY_DIR / key).read_text()
+        assert body == "Thanks for contributing to Test Deploy!\n"
+
+    for key in ("docs/conf.py", "docs/source/conf.py"):
+        lines = Path(DEPLOY_DIR / key).read_text().splitlines()
+        assert lines[15] == "import test_deploy"
+        assert lines[22] == 'project = "Test Deploy"'
+        assert lines[23] == f'copyright = "{YEAR}, Barney"'
+        assert lines[24] == 'author = "Barney"'
+        assert lines[27] == "release = test_deploy.__version__"
+
+    for fn in FILENAMES:
+        if "testarossa_generic" in fn:
+            fn = fn.replace("testarossa_generic", "test_deploy")
+
+        assert (DEPLOY_DIR / fn).is_file()
+        os.remove(DEPLOY_DIR / fn)
