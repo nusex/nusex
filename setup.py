@@ -69,6 +69,7 @@ setuptools.setup(
     version=attrs["version"],
     description=attrs["description"],
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url=attrs["url"],
     author=attrs["author"],
     author_email=attrs["email"],
