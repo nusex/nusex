@@ -337,12 +337,19 @@ def test_build_invalid_blueprint_object(
     assert str(exc.value) == "Invalid blueprint object"
 
 
-# def test_build_with_dependencies(template: Template, generic_files: set[Path]) -> None:
-#     d = ["nusex", "analytix", "len8"]
-#     template.build(
-#         generic_files, "Testarossa Generic", blueprint="generic", dependencies=d
-#     )
-#     assert template.dependencies == d
+def test_set_dependencies(template: Template) -> None:
+    template._data.language = "python"
+    template.set_dependencies("analytix", "len8", "piston_rspy")
+    assert template.dependencies == ["analytix", "len8", "piston_rspy"]
+
+
+def test_set_dependencies_non_python(template: Template) -> None:
+    with pytest.raises(errors.NotSupported) as exc:
+        template.set_dependencies("analytix", "len8", "piston_rspy")
+    assert (
+        str(exc.value)
+        == "Dependency installations are only supported for Python projects"
+    )
 
 
 def test_deploy_no_slug(template: Template, generic_files: set[Path]) -> None:

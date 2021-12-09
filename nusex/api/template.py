@@ -40,7 +40,7 @@ from pathspec import PathSpec
 import nusex
 from nusex.api import blueprints
 from nusex.api.data import TemplateData
-from nusex.errors import InvalidBlueprint, TemplateError
+from nusex.errors import InvalidBlueprint, NotSupported, TemplateError
 
 if t.TYPE_CHECKING:
     from nusex.api.profile import Profile
@@ -355,8 +355,14 @@ class Template:
 
         log.info("Build successful!")
 
-    def set_dependecies(self, *args: str, from_file: Path | str | None = None) -> None:
-        ...
+    def set_dependencies(self, *args: str) -> None:
+        if self._data.language != "python":
+            raise NotSupported(
+                "Dependency installations are only supported for Python projects"
+            )
+
+        self._data.dependencies = list(args)
+        log.info("Dependencies set")
 
     def deploy(
         self,

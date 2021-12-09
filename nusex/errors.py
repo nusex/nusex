@@ -35,6 +35,14 @@ class NusexAPIException(NusexException):
     """The base exception class for errors relating to the API."""
 
 
+class NusexCLIException(NusexException):
+    """The base exception class for errors relating to the CLI."""
+
+
+class NotSupported(Exception):
+    """Exception thrown when something is not supported."""
+
+
 class InvalidName(NusexAPIException):
     """Exception thrown when attempting to save a template or profile
     with an invalid name."""
@@ -47,7 +55,3 @@ class TemplateError(NusexAPIException):
 class InvalidBlueprint(TemplateError):
     """Exception thrown when attempting to use an invalid blueprint
     when building a template."""
-
-
-class NusexCLIException(NusexException):
-    """The base exception class for errors relating to the CLI."""
