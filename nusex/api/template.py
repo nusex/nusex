@@ -166,8 +166,7 @@ class Template:
         return path
 
     def find_files(self, in_dir: Path | str) -> set[Path]:
-        """Recursively search the given directory for files to
-        potentially include in the template.
+        """Recursively search the given directory for files.
 
         Args:
             in_dir (:obj:`pathlib.Path` | :obj:`str`):
@@ -206,7 +205,7 @@ class Template:
                 employed by the command-line interface.
             sources (:obj:`list` [:obj:`pathlib.Path` | :obj:`str`] | :obj:`None`):
                 A list of files containing glob exclude patterns.
-            patterns (:obj:`list[:obj:`str`]`):
+            patterns (:obj:`list` [:obj:`str`]):
                 A list of glob exclude patterns.
 
         Returns:
@@ -257,7 +256,7 @@ class Template:
         Args:
             files (:obj:`set` [:obj:`pathlib.Path`]):
                 The files to include in the template. This should
-                generally obtained using :obj:`file_files` and
+                generally obtained using :obj:`find_files` and
                 :obj:`process_excludes`.
             project_name (:obj:`str`):
                 The name of the project.
@@ -268,12 +267,11 @@ class Template:
                 :obj:`None`, a project slug is automatically created. In
                 the vast majority of cases, it's best to leave this
                 alone.
-            blueprint (:obj:`type` [:obj:`Blueprint`]):
+            blueprint (:obj:`type` [:obj:`blueprints.Blueprint`]):
                 The blueprint class to use when building this template.
                 This must be either :obj:`type` [:obj:`Blueprint`] or a
                 subclass thereof. If no blueprint is passed, nusex will
-                use the default blueprint, which builds a static
-                template.
+                build a static template.
             profile (:obj:`Profile`):
                 A profile instance.
             store_profile (:obj:`bool`):

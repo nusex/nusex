@@ -45,8 +45,7 @@ class Profile:
 
     All keyword arguments are different attributes which nusex will use
     when deploying templates. They all default to :obj:`None` if not
-    passed, which means nusex will not replace these values when
-    building or deploying templates.
+    passed.
 
     Args:
         name (:obj:`str`):
@@ -54,8 +53,8 @@ class Profile:
 
     Keyword Arguments:
         author_name (:obj:`str` | :obj:`None`):
-            The name which you wish to be attributed in new projects.
-            This should be your real name, a nickname, or your
+            The name with which you wish to be attributed in new
+            projects. This should be your real name, a nickname, or your
             organisation's name.
         author_nick (:obj:`str` | :obj:`None`):
             The username you normally use for services related to your
@@ -64,18 +63,18 @@ class Profile:
             The email address through which users can contact you or
             your organisation.
         preferred_language (:obj:`str` | :obj:`None`):
-            The language you would normally be developing using when
+            The language you would normally be developing with when
             using this profile.
         preferred_license (:obj:`str` | :obj:`None`):
-            The name which you wish to be attributed in new projects.
-            When deploying a project nusex will use this as a key, and
+            The license you would normally use when using this profile.
+            When deploying a template nusex will use this as a key, and
             attempt to resolve it against a list of open-source
             licenses.
         starting_version (:obj:`str` | :obj:`None`):
-            The version to deploy projects with. By default nusex will
+            The version to deploy templates with. By default nusex will
             use this value as-is, but if you set this to "CALVER" nusex
             will use the current date in YYYY.MM.DD format when
-            deploying the project.
+            deploying the template.
         version_control_url (:obj:`str` | :obj:`None`):
             The URL of your version control host (i.e. GitHub),
             including your username. By default nusex will append the
@@ -84,7 +83,7 @@ class Profile:
             "PROJECTNAME" anywhere in this URL.
         docs_url (:obj:`str` | :obj:`None`):
             The URL of the documentation hosting service you normally
-            use. Different documentation hosting services handles URLs
+            use. Different documentation hosting services handle URLs
             differently -- by default nusex will append the name of the
             project to the end of the URL, but you can override this
             behaviour by inserting "PROJECTNAME" anywhere in the URL. If
@@ -214,7 +213,7 @@ class Profile:
                 The directory to save the profile to.
             overwrite (:obj:`bool`):
                 Whether to overwrite an existing profile. If this is
-                :obj:`False`, an :obj:`AlreadyExists` error will be
+                :obj:`False`, an :obj:`FileExistsError` error will be
                 raised if a profile with the same name already exists.
                 Defaults to :obj:`False`.
 
@@ -262,8 +261,8 @@ class Profile:
         Keyword Args:
             missing_ok (:obj:`bool`):
                 Whether to ignore errors upon a missing profile. If this
-                is :obj:`False`, an :obj:`DoesNotExist` error will be
-                raised if the profile has not been saved. Defaults to
+                is :obj:`False`, an :obj:`FileNotFoundError` error will
+                be raised if the profile has not been saved. Defaults to
                 :obj:`False`.
 
         Returns:

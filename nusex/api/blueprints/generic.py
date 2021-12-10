@@ -59,12 +59,6 @@ class GenericBlueprint(blueprints.Blueprint):
             body (:obj:`str`):
                 The raw contents of the file.
 
-        Operations:
-            * Replaces the project name with ``$:project_name:``
-            * Replaces the project slug with ``$:project_slug:``
-            * Adds an acknowledgement to either the end of the file or
-              to an existing acknowledgements section.
-
         Returns:
             :obj:`str`:
                 The new file contents.
@@ -104,9 +98,6 @@ class GenericBlueprint(blueprints.Blueprint):
             _ (:obj:`str`):
                 The raw contents of the file.
 
-        Operations:
-            * Replaces the file contents with ``$:project_license:``.
-
         Returns:
             :obj:`str`:
                 The new file contents.
@@ -120,10 +111,6 @@ class GenericBlueprint(blueprints.Blueprint):
         Args:
             body (:obj:`str`):
                 The raw contents of the file.
-
-        Operations:
-            * Replaces the project name with ``$:project_name:``
-            * Replaces the project slug with ``$:project_slug:``
 
         Returns:
             :obj:`str`:
@@ -140,17 +127,6 @@ class GenericBlueprint(blueprints.Blueprint):
         Args:
             body (:obj:`str`):
                 The raw contents of the file.
-
-        Operations:
-            Within the `Project information` section:
-                * Replaces the line starting with ``project =`` with
-                  ``project = "$:project_name:"``
-                * Replaces the line starting with ``copyright =`` with
-                  ``copyright = "$:project_year:, $:author_name:"``
-                * Replaces the line starting with ``author =`` with
-                  ``author = "$:author_name:"``
-                * Replaces the line starting with ``release =`` with
-                  ``release = $:project_slug:.__version__``
 
         Returns:
             :obj:`str`:
