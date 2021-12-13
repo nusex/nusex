@@ -13,13 +13,17 @@
 
 A dynamic, multi-language project templating utility.
 
+## Features
+
+* An easy-to-use command-line interface
+* A powerful API for application developers
+* Smart templating to populate projects with relevant information
+* A profile system for those who maintain personal and organisation-owned projects
+* Premade templates to get started with
+* Minimal dependencies, unlike many other templating utilities
+* Support for CPython and PyPy 3.7 and up on all OSes
+
 ## Installation
-
-*nusex* is officially supported on:
-
-* CPython 3.7 and up (incl. 3.11 development versions)
-* PyPy 3.7 and up
-* Windows, macOS, and Linux
 
 To install the latest stable version of *nusex*:
 
@@ -78,10 +82,38 @@ profile = Profile(
 Finally, you can deploy the template:
 
 ```py
-template.deploy("/path/to/deploy", "New Project", profile=profile)
+template.deploy("/path/to/deploy", project_name="New Project", profile=profile)
 ```
 
 Have a look at the [documentation](https://nusex.readthedocs.io) to find out more.
+
+## What is "smart templating"?
+
+When building templates, *nusex* replaces various parts of specific files with placeholder variables, which are then replaced with profile data when deployed. The files checked are dependent on the blueprint used, so for example, using the Python blueprint would give different results than using the Rust one.
+
+It is important to note that the source files are **not** modified; the files are loaded into memory beforehand.
+
+Consider the following file:
+
+```py
+# mymodule/__init__.py
+
+__productname__ = "My Module"
+__version__ = "1.0.0"
+__author__ = "Barney the Dinosaur"
+```
+
+*nusex* checks the main \_\_init\_\_.py file of the project, and looks out for specific dunder variables, such as the three above. Each dunder variable that has a suitable placeholder variable (things like \_\_all\_\_ do not have one, and so are left alone) has its value replaced. The above file would become this:
+
+```py
+# mymodule/__init__.py
+
+__productname__ = "$:project_name:"
+__version__ = "$:starting_version:"
+__author__ = "$:author_name:"
+```
+
+When deploying, *nusex* simply replaces these placeholder variables with data from the given profile, or data it infers from the current environment.
 
 ## Contributing
 
