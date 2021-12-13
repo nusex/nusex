@@ -68,7 +68,7 @@ parser.add_argument(
 parser.add_argument(
     "-i",
     "--info",
-    help="show detailed information for nusex exit",
+    help="show detailed information for nusex and exit",
     action="store_true",
 )
 subparsers = parser.add_subparsers(dest="subparser")
