@@ -203,7 +203,9 @@ class Template:
             use_defaults (:obj:`bool`):
                 Whether to use the default set of exclude patterns
                 employed by the command-line interface.
-            sources (:obj:`list` [:obj:`pathlib.Path` | :obj:`str`] | :obj:`None`):
+            sources \
+            (:obj:`list` [:obj:`pathlib.Path` | :obj:`str`] \
+            | :obj:`None`):
                 A list of files containing glob exclude patterns.
             patterns (:obj:`list` [:obj:`str`]):
                 A list of glob exclude patterns.
