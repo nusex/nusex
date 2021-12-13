@@ -29,6 +29,7 @@
 import os
 
 from nusex import PROFILE_DIR, Profile
+from nusex.cli.commands.list import run as list_run
 from nusex.errors import AlreadyExists, DoesNotExist
 from nusex.helpers import cprint
 
@@ -45,6 +46,9 @@ def _build_profile(name):
 
 
 def run(show_current, create_new, switch, **kwargs):
+    if kwargs.get("list"):
+        return list_run(True, False)
+
     if show_current:
         return print(Profile.current().name)
 
@@ -136,5 +140,11 @@ def setup(subparsers):
         help="change the preferred license for this profile",
         metavar="LICENSE",
         default="",
+    )
+    s.add_argument(
+        "--list",
+        help="list existing profiles",
+        action="store_true",
+        default=False,
     )
     return subparsers
