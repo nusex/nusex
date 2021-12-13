@@ -51,15 +51,17 @@ class GenericBlueprint(Blueprint):
         for i, line in enumerate(lines[:]):
             if line.startswith("#"):
                 if found_acks:
-                    lines.insert(i, ack)
-                    lines.insert(i + 1, "")
+                    if ack not in lines[i - 2]:
+                        lines.insert(i, ack)
+                        lines.insert(i + 1, "")
                     break
 
                 if "acknowledgements" in line.lower():
                     found_acks = True
 
             elif i == last_line and found_acks:
-                lines.extend([ack, ""])
+                if ack not in lines[i - 1]:
+                    lines.extend([ack, ""])
 
         if not found_acks:
             lines.extend(["## Acknowledgements", "", ack, ""])
