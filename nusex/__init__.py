@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __productname__ = "nusex"
-__version__ = "1.2.4"
+__version__ = "1.3.0"
 __description__ = "A dynamic, multi-language project templating utility."
 __url__ = "https://github.com/nusex/nusex"
 __docs__ = "https://nusex.readthedocs.io/en/latest"
