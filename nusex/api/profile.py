@@ -228,13 +228,6 @@ class Profile:
                 "must be lower-case letters, numbers, or underscores"
             )
 
-        if to_dir == nusex.PROFILE_DIR:
-            if not checks.does_not_conflict(self.name, nusex.TEMPLATE_DIR, "nsx"):
-                raise InvalidName(
-                    "This profile cannot be saved here while a template with the same "
-                    "name exists in nusex's template directory"
-                )
-
         if not isinstance(to_dir, Path):
             to_dir = Path(to_dir)
 
