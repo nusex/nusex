@@ -63,31 +63,7 @@ class GenericBlueprint(blueprints.Blueprint):
             :obj:`str`:
                 The new file contents.
         """
-        lines = body.split("\n")
-        last_line = len(lines) - 1
-        found_acks = False
-
-        for i, line in enumerate(lines[:]):
-            if line.startswith("#"):
-                if found_acks:
-                    lines.insert(i, ACK)
-                    lines.insert(i + 1, "")
-                    break
-
-                if "acknowledgements" in line.lower():
-                    found_acks = True
-
-            elif i == last_line and found_acks:
-                lines.extend([ACK, ""])
-
-        if not found_acks:
-            lines.extend(["## Acknowledgements", "", ACK, ""])
-
-        return (
-            "\n".join(lines)
-            .replace(self.project_name, "$:project_name:")
-            .replace(self.project_slug, "$:project_slug:")
-        )
+        return self.replace_names(body)
 
     @blueprints.with_files("LICEN[SC]E", "COPYING")
     def modify_license(self, _: str) -> str:
@@ -116,9 +92,7 @@ class GenericBlueprint(blueprints.Blueprint):
             :obj:`str`:
                 The new file contents.
         """
-        return body.replace(self.project_name, "$:project_name:").replace(
-            self.project_slug, "$:project_slug:"
-        )
+        return self.replace_names(body)
 
     @blueprints.with_files("docs/(source/)?conf.py$")
     def modify_docs_conf(self, body: str) -> str:
@@ -132,8 +106,8 @@ class GenericBlueprint(blueprints.Blueprint):
             :obj:`str`:
                 The new file contents.
         """
-        lines = body.split("\n")
-        docs_mapping = blueprints.resolve_mapping(DOCS_ATTR_MAPPING, self.profile)
+        lines = body.splitlines()
+        mapping = blueprints.resolve_mapping(DOCS_ATTR_MAPPING, self.profile)
 
         in_project_info = False
 
@@ -143,7 +117,7 @@ class GenericBlueprint(blueprints.Blueprint):
                     in_project_info = False
                     continue
 
-                lines[i] = blueprints.apply_line_mapping(line, docs_mapping)
+                lines[i] = blueprints.apply_line_mapping(line, mapping)
 
             elif line.startswith("# -- Project information"):
                 in_project_info = True
@@ -151,4 +125,4 @@ class GenericBlueprint(blueprints.Blueprint):
             elif line.strip() == f"import {self.project_slug}":
                 lines[i] = "import $:project_slug:"
 
-        return "\n".join(lines)
+        return self.replace_names("\n".join(lines))

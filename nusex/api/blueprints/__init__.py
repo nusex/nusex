@@ -100,6 +100,11 @@ class Blueprint:
 
         return self
 
+    def replace_names(self, body: str) -> str:
+        return body.replace(self.project_name, "$:project_name:").replace(
+            self.project_slug, "$:project_slug:"
+        )
+
 
 BlueprintT = t.TypeVar("BlueprintT", bound=Blueprint)
 _WT = t.Callable[[BlueprintT], None]
@@ -175,7 +180,9 @@ def apply_line_mapping(
 
 
 from .generic import GenericBlueprint
+from .python import PythonBlueprint
 
 REGISTERED: dict[str, type[Blueprint]] = {
     "generic": GenericBlueprint,
+    "python": PythonBlueprint,
 }
