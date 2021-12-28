@@ -42,6 +42,7 @@ from tests import DATA_DIR, as_relative
 TEMPLATE_DATA_DIR = DATA_DIR / "templates"
 GENERIC_DATA_DIR = TEMPLATE_DATA_DIR / "testarossa_generic"
 DEPLOY_DIR = DATA_DIR / "test_deploy"
+IO_DIR = DATA_DIR / "test_io"
 
 FILENAMES = set(
     (
@@ -504,3 +505,125 @@ def test_deploy_generic_stored_profile(
 
         assert (DEPLOY_DIR / fn).is_file()
         os.remove(DEPLOY_DIR / fn)
+
+
+def test_save_template(template: Template, generic_files: set[Path]) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+    )
+    template.name = "noxsave"
+    template.save(to_dir=IO_DIR)
+    assert template.path
+    assert template.path.is_file()
+
+    t2 = Template.from_disk("noxsave", from_dir=IO_DIR)
+    assert template.files == t2.files
+    assert template.language == t2.language
+    assert template.dependencies == t2.dependencies
+    assert template.profile_data == t2.profile_data
+
+
+# def test_save_template_dependencies(template: Template, generic_files: set[Path]) -> None:
+#     template.build(
+#         generic_files,
+#         "Testarossa Generic",
+#         blueprint=blueprints.GenericBlueprint,
+#     )
+#     template.set_dependencies("analytix", "len8")
+#     template.name = "noxsavedeps"
+#     template.save(to_dir=IO_DIR)
+#     assert template.path
+#     assert template.path.is_file()
+#     assert template.dependencies == Template.from_disk("noxsavedeps", from_dir=IO_DIR).dependencies
+
+
+def test_save_template_profile(template: Template, generic_files: set[Path], profile: Profile) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+        profile=profile,
+        store_profile=True,
+    )
+    template.name = "noxsaveprofile"
+    template.save(to_dir=IO_DIR)
+    assert template.path
+    assert template.path.is_file()
+
+    t2 = Template.from_disk("noxsaveprofile", from_dir=IO_DIR)
+    assert template.files == t2.files
+    assert template.language == t2.language
+    assert template.dependencies == t2.dependencies
+    assert template.profile_data == t2.profile_data
+
+
+def test_save_template_bad_name(template: Template, generic_files: set[Path]) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+    )
+    template.name = "NoxWontSave"
+    with pytest.raises(errors.InvalidName) as exc:
+        template.save(to_dir=IO_DIR)
+    assert str(exc.value) == "Template names must comprise entirely of lower-case letters, numbers, and underscores"
+
+
+def test_save_template_string_path(template: Template, generic_files: set[Path]) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+    )
+    template.name = "noxsave_stringpath"
+    template.save(to_dir=f"{IO_DIR}")
+
+    t2 = Template.from_disk("noxsave_stringpath", from_dir=f"{IO_DIR}")
+    assert template.files == t2.files
+    assert template.language == t2.language
+    assert template.dependencies == t2.dependencies
+    assert template.profile_data == t2.profile_data
+
+
+def test_save_template_not_dir(template: Template, generic_files: set[Path]) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+    )
+    template.name = "noxsave"
+    with pytest.raises(NotADirectoryError) as exc:
+        template.save(to_dir=__file__)
+    assert str(exc.value) == "Not a directory"
+
+
+def test_save_template_conflict(template: Template, generic_files: set[Path]) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+    )
+    template.name = "noxsave"
+    with pytest.raises(FileExistsError) as exc:
+        template.save(to_dir=IO_DIR)
+    assert str(exc.value) == "A template called 'noxsave' already exists in the given directory"
+
+
+def test_save_template_overwrite(template: Template, generic_files: set[Path]) -> None:
+    template.build(
+        generic_files,
+        "Testarossa Generic",
+        blueprint=blueprints.GenericBlueprint,
+    )
+    template.name = "noxsave"
+    template.save(to_dir=IO_DIR, overwrite=True)
+    assert template.path
+    assert template.path.is_file()
+
+    t2 = Template.from_disk("noxsave", from_dir=IO_DIR)
+    assert template.files == t2.files
+    assert template.language == t2.language
+    assert template.dependencies == t2.dependencies
+    assert template.profile_data == t2.profile_data

@@ -82,6 +82,7 @@ def fetch_installs(*categories: str) -> list[str]:
 @nox.session(reuse_venv=True)  # type: ignore
 def tests(session: nox.Session) -> None:
     os.makedirs(TEST_DIR / "data/test_deploy", exist_ok=True)
+    os.makedirs(TEST_DIR / "data/test_io", exist_ok=True)
 
     try:
         session.install("-U", *fetch_installs("Tests"), ".")
@@ -98,6 +99,7 @@ def tests(session: nox.Session) -> None:
     finally:
         # Clean-up
         shutil.rmtree(TEST_DIR / "data/test_deploy")
+        shutil.rmtree(TEST_DIR / "data/test_io")
 
 
 @nox.session(reuse_venv=True)  # type: ignore
