@@ -246,7 +246,6 @@ def test_build_blueprint_class(
     for key in ("README", "README.md", "README.txt"):
         lines = template.files[key].decode().splitlines()
         assert lines[0] == "# $:project_name:"
-        assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
 
     for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
         body = template.files[key].decode()
@@ -272,7 +271,6 @@ def test_build_blueprint_string(
     for key in ("README", "README.md", "README.txt"):
         lines = template.files[key].decode().splitlines()
         assert lines[0] == "# $:project_name:"
-        assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
 
     for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
         body = template.files[key].decode()
@@ -447,7 +445,6 @@ def test_deploy_generic_given_profile(
     for key in ("README", "README.md", "README.txt"):
         lines = Path(DEPLOY_DIR / key).read_text().splitlines()
         assert lines[0] == "# Test Deploy"
-        assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
 
     for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
         body = Path(DEPLOY_DIR / key).read_text()
@@ -485,7 +482,6 @@ def test_deploy_generic_stored_profile(
     for key in ("README", "README.md", "README.txt"):
         lines = Path(DEPLOY_DIR / key).read_text().splitlines()
         assert lines[0] == "# Test Deploy"
-        assert lines[6 if key == "README" else -1] == blueprints.generic.ACK
 
     for key in ("CONTRIBUTING", "CONTRIBUTING.md"):
         body = Path(DEPLOY_DIR / key).read_text()
