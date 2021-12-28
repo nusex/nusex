@@ -95,7 +95,7 @@ def tests(session: nox.Session) -> None:
             "pytest",
             "--log-level=1",
         )
-        session.run("coverage", "report", "-m")
+        session.run("coverage", "report", "-mi")
     finally:
         # Clean-up
         shutil.rmtree(TEST_DIR / "data/test_deploy")

@@ -539,7 +539,9 @@ def test_save_template(template: Template, generic_files: set[Path]) -> None:
 #     assert template.dependencies == Template.from_disk("noxsavedeps", from_dir=IO_DIR).dependencies
 
 
-def test_save_template_profile(template: Template, generic_files: set[Path], profile: Profile) -> None:
+def test_save_template_profile(
+    template: Template, generic_files: set[Path], profile: Profile
+) -> None:
     template.build(
         generic_files,
         "Testarossa Generic",
@@ -568,10 +570,15 @@ def test_save_template_bad_name(template: Template, generic_files: set[Path]) ->
     template.name = "NoxWontSave"
     with pytest.raises(errors.InvalidName) as exc:
         template.save(to_dir=IO_DIR)
-    assert str(exc.value) == "Template names must comprise entirely of lower-case letters, numbers, and underscores"
+    assert (
+        str(exc.value)
+        == "Template names must comprise entirely of lower-case letters, numbers, and underscores"
+    )
 
 
-def test_save_template_string_path(template: Template, generic_files: set[Path]) -> None:
+def test_save_template_string_path(
+    template: Template, generic_files: set[Path]
+) -> None:
     template.build(
         generic_files,
         "Testarossa Generic",
@@ -608,7 +615,10 @@ def test_save_template_conflict(template: Template, generic_files: set[Path]) ->
     template.name = "noxsave"
     with pytest.raises(FileExistsError) as exc:
         template.save(to_dir=IO_DIR)
-    assert str(exc.value) == "A template called 'noxsave' already exists in the given directory"
+    assert (
+        str(exc.value)
+        == "A template called 'noxsave' already exists in the given directory"
+    )
 
 
 def test_save_template_overwrite(template: Template, generic_files: set[Path]) -> None:
