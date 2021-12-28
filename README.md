@@ -64,6 +64,9 @@ template = Template("template_name")
 files = template.find_files(".")
 excludes = template.process_excludes(files, sources=[".gitignore"])
 template.build(files - excludes, "Project Name", blueprint="generic")
+
+# You can then save it for later use.
+template.save(to_dir="/path/to/save")
 ```
 
 From there, you can create a profile to deploy the template with:
