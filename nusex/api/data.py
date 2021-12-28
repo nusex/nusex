@@ -43,7 +43,7 @@ if sys.version_info >= (3, 10):
     # Gotta take advantage of it, right?
     kwargs = {"slots": True}
 else:
-    kwargs = {}
+    kwargs: dict[str, t.Any] = {}
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class TemplateData:
 class TemplateIO:
     __slots__ = ("_path", "_mode", "_file")
 
-    def __init__(self, path: Path, mode: t.Literal["rb", "wb"] = "rb") -> None:
+    def __init__(self, path: Path, mode: str = "rb") -> None:
         if path.is_dir():
             raise IsADirectoryError("Template path cannot be a directory")
 
@@ -137,10 +137,12 @@ class TemplateIO:
         # Files.
         nfiles = int(f.read(4), base=16)
         log.debug(f"Reading {nfiles:,} files")
-        data.files = {
-            f.read(int(f.read(4), base=16)).decode(): f.read(int(f.read(8), base=16))
+
+        # Can't use dict comp here due to a weird bug(?) in Python 3.7.
+        data.files = dict(
+            (f.read(int(f.read(4), base=16)).decode(), f.read(int(f.read(8), base=16)))
             for _ in range(nfiles)
-        }
+        )
 
         return data
 
