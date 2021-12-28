@@ -85,6 +85,11 @@ TEMPLATE_DIR = CONFIG_DIR / "templates"
 # Name validation.
 VALID_NAME_PATTERN = re.compile("[a-z0-9_]+$")
 
+# Spec values.
+MAX_FILES = 0xFFFF
+MAX_FILE_KEY_LEN = 0xFFF
+MAX_FILE_SIZE = 0xFFFFFFFF
+
 # Excludes
 DEFAULT_EXCLUDE_PATTERNS = [
     ".direnv",

@@ -334,10 +334,10 @@ class Template:
             raise TemplateError("No files provided")
 
         log.info(f"Template will contain {nfiles:,} file(s)")
-        if nfiles > 0xFFFF:
+        if nfiles > nusex.MAX_FILES:
             log.warning(
                 "You will not be able to save this template -- "
-                "there are more than 65,535 files"
+                f"there are more than {nusex.MAX_FILES:,} files"
             )
 
         if not project_slug:
@@ -357,13 +357,13 @@ class Template:
             for path in files
         }
 
-        if len(max(self._data.files.keys(), key=len)) > 0xFFFF:
+        if len(max(self._data.files.keys(), key=len)) > nusex.MAX_FILE_KEY_LEN:
             log.warning(
                 "You will not be able to save this template -- "
-                "a file name is longer than 65,535 characters"
+                f"a file name is longer than {nusex.MAX_FILE_KEY_LEN:,} characters"
             )
 
-        if len(max(self._data.files.keys(), key=len)) > 0xFFFFFFFF:
+        if len(max(self._data.files.keys(), key=len)) > nusex.MAX_FILE_SIZE:
             log.warning(
                 "You will not be able to save this template -- "
                 "a file is larger than 4 GiB"
@@ -383,7 +383,7 @@ class Template:
             )
 
         size = sum(len(v) for v in self._data.files.values())
-        log.info(f"Loaded ~{size / 1_000_000:,.0f} MiB into memory")
+        log.info(f"Loaded ~{size / 1_048_576:,.0f} MiB into memory")
         log.log(nusex.TRACE, f"Template manifest: {self._data.filenames}")
 
         # This is damn messy, yikes.
