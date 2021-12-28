@@ -38,9 +38,10 @@ from pathlib import Path
 from pathspec import PathSpec
 
 import nusex
+from nusex import checks
 from nusex.api import blueprints
-from nusex.api.data import TemplateData
-from nusex.errors import InvalidBlueprint, NotSupported, TemplateError
+from nusex.api.data import TemplateData, TemplateIO
+from nusex.errors import InvalidBlueprint, InvalidName, NotSupported, TemplateError
 
 if t.TYPE_CHECKING:
     from nusex.api.profile import Profile
@@ -83,6 +84,43 @@ class Template:
             return NotImplemented
 
         return self.name != other.name
+
+    @classmethod
+    def from_disk(cls, name: str, *, from_dir: Path | str) -> Template:
+        """Load a saved template.
+
+        Args:
+            name (:obj:`str`):
+                The name of the template to load.
+
+        Keyword Args:
+            from_dir (:obj:`pathlib.Path` | :obj:`str`):
+                The directory to load the template from.
+
+        Returns:
+            :obj:`Template`:
+                A template instance.
+        """
+        if not isinstance(from_dir, Path):
+            from_dir = Path(from_dir)
+
+        if not from_dir.is_dir():
+            raise NotADirectoryError("Not a directory")
+
+        path = from_dir / f"{name}.nsx"
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"No template named '{name}' exists in the given directory"
+            )
+
+        c = cls(name)
+        with TemplateIO(path, "rb") as t:
+            c._data = t.read()
+
+        log.info(f"Template '{name}' loaded")
+        log.log(nusex.TRACE, f"Manifest: {c._data.filenames}")
+        c._path = path
+        return c
 
     @property
     def path(self) -> Path | None:
@@ -296,9 +334,10 @@ class Template:
             raise TemplateError("No files provided")
 
         log.info(f"Template will contain {nfiles:,} file(s)")
-        if nfiles > 1000:
+        if nfiles > 0xFFFF:
             log.warning(
-                "You're creating a large template -- this might use a lot of memory"
+                "You will not be able to save this template -- "
+                "there are more than 65,536 files"
             )
 
         if not project_slug:
@@ -317,6 +356,18 @@ class Template:
             f"{path}"[cplen:].replace(project_slug, "PROJECTSLUG"): path.read_bytes()
             for path in files
         }
+
+        if len(max(self._data.files.keys(), key=len)) > 0xFFFF:
+            log.warning(
+                "You will not be able to save this template -- "
+                "a file name is longer than 65,536 characters"
+            )
+
+        if len(max(self._data.files.keys(), key=len)) > 0xFFFFFFFF:
+            log.warning(
+                "You will not be able to save this template -- "
+                "a file is larger than 4 GiB"
+            )
 
         if os.name == "nt":
             # Do some stupid unifications to make this work on Windows.
@@ -522,6 +573,48 @@ class Template:
 
     def install_dependencies(self) -> None:
         ...
+
+    def save(self, *, to_dir: Path | str, overwrite: bool = False) -> Path:
+        """Save this template to disk.
+
+        Keyword Args:
+            to_dir (:obj:`pathlib.Path`, :obj:`str`):
+                The directory to save the template to.
+            overwrite (:obj:`bool`):
+                Whether to overwrite an existing template. If this is
+                :obj:`False`, an :obj:`FileExistsError` error will be
+                raised if a template with the same name already exists.
+                Defaults to :obj:`False`.
+
+        Returns:
+            :obj:`pathlib.Path`:
+                A :obj:`pathlib.Path` object with the full path to the
+                template.
+        """
+        if not checks.name_is_valid(self.name):
+            raise InvalidName(
+                "Template names cannot be longer than 32 characters, which all "
+                "must be lower-case letters, numbers, or underscores"
+            )
+
+        if not isinstance(to_dir, Path):
+            to_dir = Path(to_dir)
+
+        if not to_dir.is_dir():
+            raise NotADirectoryError("Not a directory")
+
+        path = to_dir / f"{self.name}.nsx"
+        if path.is_file() and not overwrite:
+            raise FileExistsError(
+                f"A template called '{self.name}' already exists in the given directory"
+            )
+
+        with TemplateIO(path, "wb") as t:
+            t.write(self._data)
+
+        log.info(f"Template '{self.name}' saved to {path.resolve()}")
+        self._path = path
+        return path
 
     def copy(self, *, name: str | None = None) -> Template:
         """Create a new instance of this template with the same data.

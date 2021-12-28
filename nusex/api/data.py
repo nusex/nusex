@@ -28,14 +28,25 @@
 
 from __future__ import annotations
 
+import json
+import logging
 import sys
+import typing as t
 from dataclasses import dataclass, field
+from pathlib import Path
+from types import TracebackType
+
+from nusex.errors import TemplateIOError
 
 if sys.version_info >= (3, 10):
     # Gotta take advantage of it, right?
     kwargs = {"slots": True}
 else:
     kwargs = {}
+
+log = logging.getLogger(__name__)
+
+ID = b"\x99\x88"
 
 
 @dataclass(**kwargs)
@@ -48,3 +59,138 @@ class TemplateData:
     @property
     def filenames(self) -> list[str]:
         return list(self.files.keys())
+
+
+class TemplateIO:
+    __slots__ = ("_path", "_mode", "_file")
+
+    def __init__(self, path: Path, mode: t.Literal["rb", "wb"] = "rb") -> None:
+        if path.is_dir():
+            raise IsADirectoryError("Template path cannot be a directory")
+
+        if mode not in ("rb", "wb"):
+            raise TemplateIOError(
+                f"Invalid mode '{mode}' (choose between 'rb' and 'wb')"
+            )
+
+        self._path = path
+        self._mode = mode
+        self._file: t.IO[bytes] | None = None
+
+    def __enter__(self) -> TemplateIO:
+        self.open()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: t.Type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.close()
+
+    def open(self) -> None:
+        self._file = open(self._path, self._mode)
+
+    def close(self) -> None:
+        if not self._file:
+            raise TemplateIOError("No open file to close")
+
+        self._file.close()
+        self._file = None
+
+    def read(self) -> TemplateData:
+        if not self._file:
+            raise TemplateIOError("No open file to read from")
+
+        if self._mode != "rb":
+            raise TemplateIOError("Not in read mode")
+
+        f = self._file
+
+        _id = f.read(2)
+        if _id != ID:
+            if _id == b"\x99\x78":
+                raise TemplateIOError(
+                    "Wrong template specification version -- use `read_legacy` instead"
+                )
+            raise TemplateIOError("Invalid template specification")
+
+        # Skip headers for now.
+        f.read(4)
+
+        # Create object.
+        data = TemplateData()
+
+        # Language.
+        size = int(f.read(4), base=16)
+        log.debug(f"Reading language ({size:,} bytes)")
+        data.language = f.read(size).decode()
+
+        # Profile data + dependencies.
+        for attr in ("profile_data", "dependencies"):
+            size = int(f.read(4), base=16)
+            log.debug(f"Reading {attr} ({size:,} bytes)")
+            setattr(data, attr, json.loads(f.read(size).decode()))
+
+        # Files.
+        nfiles = int(f.read(4), base=16)
+        log.debug(f"Reading {nfiles:,} files")
+        data.files = {
+            f.read(int(f.read(4), base=16)).decode(): f.read(int(f.read(8), base=16))
+            for _ in range(nfiles)
+        }
+
+        return data
+
+    # def read_legacy(self) -> TemplateData:
+    #     ...
+
+    def write(self, data: TemplateData) -> None:
+        if not self._file:
+            raise TemplateIOError("No open file to write to")
+
+        if self._mode != "wb":
+            raise TemplateIOError("Not in write mode")
+
+        f = self._file
+
+        # Identifier.
+        f.write(ID)
+
+        # Headers.
+        f.write(b"0000")
+
+        # Language.
+        f.write((f"{hex(len(data.language))[2:]:>04}" + data.language).encode())
+
+        # Profile data + dependencies.
+        for attr in ("profile_data", "dependencies"):
+            value = json.dumps(getattr(data, attr))
+            len_v = len(value)
+
+            if len_v > 0xFFFF:
+                raise TemplateIOError(f"Too much data ({attr})")
+
+            f.write((f"{hex(len_v)[2:]:>04}" + value).encode())
+
+        # Files.
+        len_f = len(data.files)
+
+        if len_f > 0xFFFF:
+            raise TemplateIOError("Maximum file limit (65,536) exceeded")
+
+        f.write(f"{hex(len_f)[2:]:>04}".encode())
+
+        for k, v in data.files.items():
+            len_k = len(k)
+            len_v = len(v)
+
+            if len_k > 0xFFFF:
+                raise TemplateIOError("Maximum file key length (65,536) exceeded")
+
+            if len_v > 0xFFFFFFFF:
+                raise TemplateIOError("Maximum file size (4 GiB) exceeded")
+
+            f.write((f"{hex(len_k)[2:]:>04}" + k).encode())
+            f.write(f"{hex(len_v)[2:]:>08}".encode() + v)
