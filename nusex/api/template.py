@@ -41,7 +41,7 @@ import nusex
 from nusex import checks
 from nusex.api import blueprints
 from nusex.api.data import TemplateData, TemplateIO
-from nusex.errors import InvalidBlueprint, InvalidName, NotSupported, TemplateError
+from nusex.errors import InvalidName, NotSupported, TemplateError
 
 if t.TYPE_CHECKING:
     from nusex.api.profile import Profile
@@ -391,17 +391,15 @@ class Template:
             log.debug("Attempting to resolve blueprint")
             blueprint = blueprints.REGISTERED.get(blueprint, blueprint)
             if isinstance(blueprint, str):
-                raise InvalidBlueprint(
+                raise TemplateError(
                     f"{blueprint!r} is not a registered blueprint "
                     "(choose between: " + ", ".join(blueprints.REGISTERED.keys()) + ")"
                 )
         elif isinstance(blueprint, type):
             if not issubclass(blueprint, blueprints.Blueprint):
-                raise InvalidBlueprint(
-                    "Blueprint class must be a subclass of `Blueprint`"
-                )
+                raise TemplateError("Blueprint class must be a subclass of `Blueprint`")
         elif blueprint:
-            raise InvalidBlueprint("Invalid blueprint object")
+            raise TemplateError("Invalid blueprint object")
 
         if blueprint:
             log.debug("Modifying files")

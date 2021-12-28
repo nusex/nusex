@@ -314,7 +314,7 @@ def test_build_store_profile(
 def test_build_non_registered_blueprint(
     template: Template, generic_files: set[Path]
 ) -> None:
-    with pytest.raises(errors.InvalidBlueprint) as exc:
+    with pytest.raises(errors.TemplateError) as exc:
         template.build(generic_files, "Testarossa Generic", blueprint="invalid")
     assert str(exc.value).startswith(
         "'invalid' is not a registered blueprint (choose between:"
@@ -324,7 +324,7 @@ def test_build_non_registered_blueprint(
 def test_build_not_blueprint_subclass(
     template: Template, generic_files: set[Path]
 ) -> None:
-    with pytest.raises(errors.InvalidBlueprint) as exc:
+    with pytest.raises(errors.TemplateError) as exc:
         template.build(generic_files, "Testarossa Generic", blueprint=Profile)  # type: ignore
     assert str(exc.value) == "Blueprint class must be a subclass of `Blueprint`"
 
@@ -332,7 +332,7 @@ def test_build_not_blueprint_subclass(
 def test_build_invalid_blueprint_object(
     template: Template, generic_files: set[Path], profile: Profile
 ) -> None:
-    with pytest.raises(errors.InvalidBlueprint) as exc:
+    with pytest.raises(errors.TemplateError) as exc:
         template.build(generic_files, "Testarossa Generic", blueprint=profile)  # type: ignore
     assert str(exc.value) == "Invalid blueprint object"
 

@@ -55,8 +55,3 @@ class TemplateError(NusexAPIException):
 class TemplateIOError(TemplateError):
     """Exception thrown when something goes wrong during the reading or
     writing of templates."""
-
-
-class InvalidBlueprint(TemplateError):
-    """Exception thrown when attempting to use an invalid blueprint
-    when building a template."""
