@@ -83,7 +83,7 @@ PROFILE_DIR = CONFIG_DIR / "profiles"
 TEMPLATE_DIR = CONFIG_DIR / "templates"
 
 # Name validation.
-VALID_NAME_PATTERN = re.compile("[a-z0-9_]{,32}$")
+VALID_NAME_PATTERN = re.compile("[a-z0-9_]+$")
 
 # Excludes
 DEFAULT_EXCLUDE_PATTERNS = [

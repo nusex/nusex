@@ -178,7 +178,7 @@ class TemplateIO:
         len_f = len(data.files)
 
         if len_f > 0xFFFF:
-            raise TemplateIOError("Maximum file limit (65,536) exceeded")
+            raise TemplateIOError("Maximum file limit (65,535) exceeded")
 
         f.write(f"{hex(len_f)[2:]:>04}".encode())
 
@@ -187,7 +187,7 @@ class TemplateIO:
             len_v = len(v)
 
             if len_k > 0xFFFF:
-                raise TemplateIOError("Maximum file key length (65,536) exceeded")
+                raise TemplateIOError("Maximum file key length (65,535) exceeded")
 
             if len_v > 0xFFFFFFFF:
                 raise TemplateIOError("Maximum file size (4 GiB) exceeded")

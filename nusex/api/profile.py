@@ -224,8 +224,8 @@ class Profile:
         """
         if not checks.name_is_valid(self.name):
             raise InvalidName(
-                "Profile names cannot be longer than 32 characters, which all "
-                "must be lower-case letters, numbers, or underscores"
+                "Profile names must comprise entirely of lower-case "
+                "letters, numbers, and underscores"
             )
 
         if not isinstance(to_dir, Path):

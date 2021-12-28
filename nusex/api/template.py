@@ -337,7 +337,7 @@ class Template:
         if nfiles > 0xFFFF:
             log.warning(
                 "You will not be able to save this template -- "
-                "there are more than 65,536 files"
+                "there are more than 65,535 files"
             )
 
         if not project_slug:
@@ -360,7 +360,7 @@ class Template:
         if len(max(self._data.files.keys(), key=len)) > 0xFFFF:
             log.warning(
                 "You will not be able to save this template -- "
-                "a file name is longer than 65,536 characters"
+                "a file name is longer than 65,535 characters"
             )
 
         if len(max(self._data.files.keys(), key=len)) > 0xFFFFFFFF:
@@ -591,8 +591,8 @@ class Template:
         """
         if not checks.name_is_valid(self.name):
             raise InvalidName(
-                "Template names cannot be longer than 32 characters, which all "
-                "must be lower-case letters, numbers, or underscores"
+                "Template names must comprise entirely of lower-case "
+                "letters, numbers, and underscores"
             )
 
         if not isinstance(to_dir, Path):

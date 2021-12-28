@@ -41,7 +41,6 @@ def test_name_is_valid_pass() -> None:
 
 def test_name_is_valid_fail() -> None:
     assert checks.name_is_valid("CapitalName") == False
-    assert checks.name_is_valid("this_name_is_not_valid_because_its_long") == False
     assert checks.name_is_valid("kebab-case") == False
 
 

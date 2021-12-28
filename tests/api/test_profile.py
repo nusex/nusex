@@ -235,7 +235,7 @@ def test_save_invalid_name(loaded_profile: Profile) -> None:
         loaded_profile.save(to_dir=DATA_DIR)
     assert (
         f"{exc.value}"
-        == "Profile names cannot be longer than 32 characters, which all must be lower-case letters, numbers, or underscores"
+        == "Profile names must comprise entirely of lower-case letters, numbers, and underscores"
     )
 
 
